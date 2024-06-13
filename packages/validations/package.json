@@ -10,7 +10,7 @@
   "author": "",
   "license": "ISC",
   "exports" : {
-    "./schemas" : "./schema.ts"
-
+    "./purchaseSchema" : "./purchase.schema.ts",
+    "./purchaseDetailSchema" : "./purchaseDetails.schema.ts"
   }
 }
