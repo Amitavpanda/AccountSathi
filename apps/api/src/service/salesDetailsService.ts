@@ -91,10 +91,10 @@ export async function addSalesDetail(input : AddSalesDetailsSchema){
 }
 
 
-export async function getSupplierPurchaseDetailBySupplierId(supplierId :string){
+export async function getSalesDetailsBySalesInfoId(salesInfoId :string){
     try{
-        const details = await prisma.supplierPurchaseDetail.findMany({
-            where: { supplierPurchaseId : supplierId},
+        const details = await prisma.salesInfoDetail.findMany({
+            where: { salesInfoId : salesInfoId},
             orderBy: { date: 'asc' }, // Optional: Order by date ascending
           });
 
@@ -102,8 +102,8 @@ export async function getSupplierPurchaseDetailBySupplierId(supplierId :string){
     }
 
     catch(error){
-        console.log("error in getting supplier purchase details", error);
-        return {success : false, error : "failed to get supplier purchase details"};
+        console.log("error in getting sales details", error);
+        return {success : false, error : "failed to get sales details"};
     }
 }
 
