@@ -5,23 +5,25 @@ import path from "path";
 
 const payload = {
   body: z.object({
-    name: z.string().min(1).max(255),
-    phoneNumber : z.string(),
-    address : z.string(), 
-    propieder : z.string(),
-    totalAmountDue : z.number(),
+    stockName: z.string().min(1).max(255),
+    date : z.string(),
+    quantity : z.number(), 
+    price : z.number(), 
+    amountPaid : z.number(),
+    amountPaidDescription : z.string(),
+    salesInfoId : z.string()
   }),
 };
 
 const params = {
   params: z.object({
     salesInfoId: string({
-      required_error: "Sales Info Id is required",
+      required_error: "salesInfoId is required",
     }),
   }),
 };
 
-  export const addSalesInfoSchema = z.object({
+  export const addSalesDetailsSchema = z.object({
       ...payload,
   });
 
@@ -40,7 +42,7 @@ export const getSupplierPurchaseSchema = z.object({
 
 })
 
-export type AddSalesInfoSchema = z.infer<typeof addSalesInfoSchema>;
+export type AddSalesDetailsSchema = z.infer<typeof addSalesDetailsSchema>;
 export type UpdateOrder = z.infer<typeof updateOrderSchema>;
 export type DeleteOrderSchema = z.infer<typeof updateOrderSchema>;
 export type GetProductSchema = z.infer<typeof getSupplierPurchaseSchema>;
