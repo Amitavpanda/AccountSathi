@@ -48,3 +48,32 @@ model SupplierPurchaseDetail {
   @@index([supplierPurchaseId])
 }
 
+
+
+
+model SalesInfo {
+  id String  @id @unique @default(uuid())
+  name String
+  phoneNumber String
+  address String
+  propieder String
+  totalAmountDue Float
+  details SalesInfoDetail[]
+}
+
+
+model SalesInfoDetail {
+  id String  @id @unique @default(uuid())
+  stockName String
+  date DateTime
+  quantity Int
+  price Float
+  amount Float
+  totalAmountDue Float
+  amountPaid Float
+  amountPaidDescription String
+  salesInfoId String
+    // Relation field
+  salesInfo SalesInfo @relation(fields: [salesInfoId], references: [id])
+  @@index([salesInfoId])
+}

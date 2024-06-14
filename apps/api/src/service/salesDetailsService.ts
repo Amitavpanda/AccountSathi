@@ -3,36 +3,37 @@ import { error, info } from "@repo/logs/logs";
 const prisma = new PrismaClient();
 import {AddSupplierPurchaseDetailSchema} from "@repo/validations/purchaseDetailSchema";
 import { count } from "console";
+import { AddSalesDetailsSchema } from "../../../../packages/validations/salesDetail.schema";
 
 
-async function getTotalAmountDueOfTheSupplier(supplierPurchaseId: string): Promise<number | null> {
+async function getTotalAmountDueOfTheHotel(salesInfoId: string): Promise<number | null> {
     try {
       // Fetch the SupplierPurchase record by id
-      const supplierPurchase = await prisma.supplierPurchase.findUnique({
-        where: { id: supplierPurchaseId },
+      const salesInfo = await prisma.salesInfo.findUnique({
+        where: { id: salesInfoId },
         select: { totalAmountDue: true },
       });
   
       // If the record is found, return the totalAmountDue, otherwise return null
-      return supplierPurchase ? supplierPurchase.totalAmountDue : null;
+      return salesInfo ? salesInfo.totalAmountDue : null;
     } catch (error) {
       console.error('Error fetching total amount due:', error);
       return null;
     }
   }
 
-  async function hasSupplierPurchaseDetails(supplierPurchaseId: string): Promise<boolean> {
-    const count = await prisma.supplierPurchaseDetail.count({
-      where: { supplierPurchaseId },
+  async function hasSalesDetails(salesInfoId: string): Promise<boolean> {
+    const count = await prisma.salesInfoDetail.count({
+      where: { salesInfoId },
     });
     return count > 0;
   }
 
-  async function getLatestTotalAmountDue(supplierPurchaseId: string): Promise<number | null> {
+  async function getLatestTotalAmountDue(salesInfoId: string): Promise<number | null> {
     try {
       // Fetch the latest entry for the given supplierPurchaseId, sorted by date in descending order
-      const latestDetail = await prisma.supplierPurchaseDetail.findFirst({
-        where: { supplierPurchaseId },
+      const latestDetail = await prisma.salesInfoDetail.findFirst({
+        where: { salesInfoId },
         orderBy: { date: 'desc' }, // Assuming 'date' field exists and represents the timestamp of the entry
         select: { totalAmountDue: true },
       });
@@ -45,34 +46,29 @@ async function getTotalAmountDueOfTheSupplier(supplierPurchaseId: string): Promi
   }
 
 
-export async function addSupplierPurchaseDetail(input : AddSupplierPurchaseDetailSchema){
-    console.log("the input inside service is ", input);
-    const requestData = input.body;
-    console.log("the requestData", requestData);
-    const {stockName, date, price, quantity, supplierPurchaseId, amountPaid, amountPaidDescription} = requestData
+export async function addSalesDetail(input : AddSalesDetailsSchema){
+
+    const {stockName, date, price, quantity, amountPaid, amountPaidDescription, salesInfoId} = input.body;
     
-
-
-
 
     try{
         const amount : number =  price * quantity;
-        let totalAmountDue : number ;
+        let totalAmountDue : number;
 
-        if(!hasSupplierPurchaseDetails){
-            totalAmountDue = await getTotalAmountDueOfTheSupplier(supplierPurchaseId) || 0;
+        if(!hasSalesDetails){
+            totalAmountDue = await getTotalAmountDueOfTheHotel(salesInfoId) || 0;
         }
         else{
-            const latestTotalAmountDue = await getLatestTotalAmountDue(supplierPurchaseId) || 0;
+            const latestTotalAmountDue = await getLatestTotalAmountDue(salesInfoId) || 0;
             totalAmountDue = (latestTotalAmountDue + amount) - amountPaid;
         }
 
-        await prisma.supplierPurchase.update({
-            where: { id: supplierPurchaseId },
+        await prisma.salesInfo.update({
+            where: { id: salesInfoId },
             data: { totalAmountDue },
           });
 
-        const supplierPurchaseDetail = await prisma.supplierPurchaseDetail.create({
+        const salesDetails = await prisma.salesInfoDetail.create({
             data : {
                 stockName : stockName,
                 date : date,
@@ -82,15 +78,15 @@ export async function addSupplierPurchaseDetail(input : AddSupplierPurchaseDetai
                 totalAmountDue : totalAmountDue,
                 amountPaid : amountPaid,
                 amountPaidDescription : amountPaidDescription,
-                supplierPurchaseId : supplierPurchaseId
+                salesInfoId : salesInfoId
             }
         })
 
-        return {success : true, data : supplierPurchaseDetail};
+        return {success : true, data : salesDetails};
     }
     catch(error){
-        console.log("Error adding supplier Purchase Detail", error);
-        return {success : false, error : 'Failed to add supplier Purchase Detail'};
+        console.log("Error adding sales Info Details", error);
+        return {success : false, error : 'Failed to add sales Info Details'};
     }
 }
 
