@@ -8,17 +8,15 @@ import { addSalesInfoSchema } from "@repo/validations/salesInfoSchema";
 import { addSalesInfoHandler, getSalesInfoHandler } from "./contollers/salesInfo.controller";
 import { getAllSalesInfo } from "./service/salesInfoService";
 import { addSalesDetailsSchema } from "../../../packages/validations/salesDetail.schema";
-import { addSalesDetailsHandler } from "./contollers/salesDetails.controller";
+import { addSalesDetailsHandler, getSalesDetailsHandler } from "./contollers/salesDetails.controller";
 
 
 function routes(app : Express){
     app.get('/healthcheck', (req : Request, res : Response)  => res.sendStatus(200));
 
 
-    
-
     app.post('/addSalesDetails', validate(addSalesDetailsSchema), addSalesDetailsHandler);
-    app.get('/getSalesDetails', getSalesInfoHandler);
+    app.get('/getSalesDetails/:salesInfoId',  getSalesDetailsHandler);
 
     app.post('/addSalesInfo', validate(addSalesInfoSchema), addSalesInfoHandler);
     app.get('/getSalesInfo', getSalesInfoHandler);
