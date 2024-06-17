@@ -20,5 +20,3 @@ export async function getSupplierPurchaseHandler(req : Request, res : Response) 
 
 
 
-
-
