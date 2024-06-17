@@ -14,7 +14,6 @@ import { addSalesDetailsHandler, getSalesDetailsHandler } from "./contollers/sal
 function routes(app : Express){
     app.get('/healthcheck', (req : Request, res : Response)  => res.sendStatus(200));
 
-
     app.post('/addSalesDetails', validate(addSalesDetailsSchema), addSalesDetailsHandler);
     app.get('/getSalesDetails/:salesInfoId',  getSalesDetailsHandler);
 
