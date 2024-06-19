@@ -1,6 +1,10 @@
 import { PrismaClient, SupplierPurchase, SupplierPurchaseDetail } from "@repo/db/client";
 import { error, info } from "@repo/logs/logs";
 const prisma = new PrismaClient();
+import { format } from 'date-fns';
+import { enIN } from 'date-fns/locale';
+
+
 import {AddSupplierPurchaseDetailSchema} from "@repo/validations/purchaseDetailSchema";
 import { count } from "console";
 import { AddSalesDetailsSchema } from "../../../../packages/validations/salesDetail.schema";
@@ -34,7 +38,7 @@ async function getTotalAmountDueOfTheHotel(salesInfoId: string): Promise<number 
       // Fetch the latest entry for the given supplierPurchaseId, sorted by date in descending order
       const latestDetail = await prisma.salesInfoDetail.findFirst({
         where: { salesInfoId },
-        orderBy: { date: 'desc' }, // Assuming 'date' field exists and represents the timestamp of the entry
+        orderBy: { createdAt: 'desc' }, // Assuming 'date' field exists and represents the timestamp of the entry
         select: { totalAmountDue: true },
       });
   
@@ -98,7 +102,14 @@ export async function getSalesDetailsBySalesInfoId(salesInfoId :string){
             orderBy: { date: 'asc' }, // Optional: Order by date ascending
           });
 
-          return{success : true, data : details}
+          const formattedDetails = details.map((detail) => {
+            return {
+              ...detail,
+              date: format(new Date(detail.date), 'MMMM do yyyy', { locale: enIN }),
+            };
+          });
+
+          return{success : true, data : formattedDetails}
     }
 
     catch(error){

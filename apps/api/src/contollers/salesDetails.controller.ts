@@ -24,6 +24,8 @@ export async function getSalesDetailsHandler(req : Request, res : Response) {
       info("Sales info id is", salesInfoId);
     const response = await getSalesDetailsBySalesInfoId(salesInfoId);
 
+    info("response is ", response)
+
     return res.send(response);
 
 }

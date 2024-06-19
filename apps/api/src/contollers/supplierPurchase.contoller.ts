@@ -6,7 +6,7 @@ export async function addSupplierPurchaseHandler(req : Request, res : Response) 
     const body = req.body;
     info("req body :", {body});
     const response = await addSupplierPurchase(body);
-
+    
     return res.send(response);
 
 }

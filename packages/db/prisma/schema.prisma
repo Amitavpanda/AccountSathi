@@ -13,7 +13,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model User {
   id          String  @id @unique @default(uuid())
   phoneNumber String
@@ -21,59 +20,60 @@ model User {
 }
 
 model SupplierPurchase {
-  id String  @id @unique @default(uuid())
+  id                String                   @id @unique @default(uuid())
   nameOfTheSupplier String
-  phoneNumber String
-  address String
-  totalAmountDue Float
-  listOfItems String[]
-  details SupplierPurchaseDetail[]
-
+  phoneNumber       String
+  address           String
+  totalAmountDue    Float
+  listOfItems       String[]
+  details           SupplierPurchaseDetail[]
 }
 
-
 model SupplierPurchaseDetail {
-  id String  @id @unique @default(uuid())
-  stockName String
-  date DateTime
-  quantity Int
-  price Float
-  amount Float
-  totalAmountDue Float
-  amountPaid Float
+  id                    String   @id @unique @default(uuid())
+  stockName             String
+  date                  DateTime
+  quantity              Int
+  price                 Float
+  amount                Float
+  totalAmountDue        Float
+  amountPaid            Float
   amountPaidDescription String
-  supplierPurchaseId String
-    // Relation field
+  supplierPurchaseId    String
+
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  // Relation field
   supplierPurchase SupplierPurchase @relation(fields: [supplierPurchaseId], references: [id])
+
   @@index([supplierPurchaseId])
 }
 
-
-
-
 model SalesInfo {
-  id String  @id @unique @default(uuid())
-  name String
-  phoneNumber String
-  address String
-  propieder String
+  id             String            @id @unique @default(uuid())
+  name           String
+  phoneNumber    String
+  address        String
+  propieder      String
   totalAmountDue Float
-  details SalesInfoDetail[]
+  details        SalesInfoDetail[]
 }
 
-
 model SalesInfoDetail {
-  id String  @id @unique @default(uuid())
-  stockName String
-  date DateTime
-  quantity Int
-  price Float
-  amount Float
-  totalAmountDue Float
-  amountPaid Float
+  id                    String    @id @unique @default(uuid())
+  stockName             String
+  date                  DateTime
+  quantity              Int
+  price                 Float
+  amount                Float
+  totalAmountDue        Float
+  amountPaid            Float
   amountPaidDescription String
-  salesInfoId String
-    // Relation field
-  salesInfo SalesInfo @relation(fields: [salesInfoId], references: [id])
+  salesInfoId           String
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  // Relation field
+  salesInfo             SalesInfo @relation(fields: [salesInfoId], references: [id])
+
   @@index([salesInfoId])
 }
