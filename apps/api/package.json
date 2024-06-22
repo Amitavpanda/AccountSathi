@@ -2,9 +2,9 @@
   "name": "api",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "src/app.ts",
   "scripts": {
-    "start": "node dist/app.js",
+    "start": "node --no-warnings=ExperimentalWarning --loader ts-node/esm src/app.ts",
     "build": "tsc",
     "dev": "nodemon src/app.ts"
   },
@@ -41,5 +41,6 @@
     "pino": "^9.1.0",
     "pino-pretty": "^11.2.0",
     "zod": "^3.23.8"
-  }
+  },
+    "type" : "module"
 }

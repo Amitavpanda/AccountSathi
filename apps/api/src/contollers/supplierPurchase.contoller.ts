@@ -1,6 +1,6 @@
 import { Request, Response, response } from "express";
 import { info } from "@repo/logs/logs";
-import { addSupplierPurchase, getAllSupplierPurchase } from "../service/supplierPurchaseService";
+import { addSupplierPurchase, getAllSupplierPurchase } from "../service/supplierPurchaseService.js";
 export async function addSupplierPurchaseHandler(req : Request, res : Response) {
 
     const body = req.body;

@@ -1,6 +1,6 @@
 import { PrismaClient, SalesInfo} from "@repo/db/client";
 import { error, info } from "@repo/logs/logs";
-import { AddSalesInfoSchema } from "../../../../packages/validations/salesInfo.schema";
+import { AddSalesInfoSchema } from "../../../../packages/validations/salesInfo.schema.js";
 const prisma = new PrismaClient();
 export async function addSalesInfo(input : AddSalesInfoSchema){
     const {name, phoneNumber, address, totalAmountDue, propieder} = input.body
