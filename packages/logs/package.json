@@ -2,14 +2,18 @@
   "name": "@repo/logs",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "src/index.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node dist/index.js",
+    "build": "tsc",
+    "dev": "nodemon src/index.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "exports" : {
-    "./logs" : "./index.ts"
-  }
+    "./logs" : "./src/index.ts"
+  },
+  "type": "module"
 }

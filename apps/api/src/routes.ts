@@ -1,14 +1,14 @@
 import { Express, Request, Response } from "express";
-import validate from "./middleware/validateResource";
-import { addSupplierPurchaseSchema } from "../../../packages/validations/purchase.schema";
-import { addSupplierPurchaseHandler, getSupplierPurchaseHandler } from "./contollers/supplierPurchase.contoller";
+import validate from "./middleware/validateResource.js";
+import { addSupplierPurchaseSchema } from "../../../packages/validations/purchase.schema.js";
+import { addSupplierPurchaseHandler, getSupplierPurchaseHandler } from "./contollers/supplierPurchase.contoller.js";
 import { addSupplierPurchaseDetailSchema } from "@repo/validations/purchaseDetailSchema";
-import { addSupplierPurchaseDetailHandler, getSupplierPurchaseDetailHandler } from "./contollers/supplierPurchaseDetail.controller";
+import { addSupplierPurchaseDetailHandler, getSupplierPurchaseDetailHandler } from "./contollers/supplierPurchaseDetail.controller.js";
 import { addSalesInfoSchema } from "@repo/validations/salesInfoSchema";
-import { addSalesInfoHandler, getSalesInfoHandler } from "./contollers/salesInfo.controller";
-import { getAllSalesInfo } from "./service/salesInfoService";
-import { addSalesDetailsSchema } from "../../../packages/validations/salesDetail.schema";
-import { addSalesDetailsHandler, getSalesDetailsHandler } from "./contollers/salesDetails.controller";
+import { addSalesInfoHandler, getSalesInfoHandler } from "./contollers/salesInfo.controller.js";
+import { getAllSalesInfo } from "./service/salesInfoService.js";
+import { addSalesDetailsSchema } from "../../../packages/validations/salesDetail.schema.js";
+import { addSalesDetailsHandler, getSalesDetailsHandler } from "./contollers/salesDetails.controller.js";
 
 
 function routes(app : Express){

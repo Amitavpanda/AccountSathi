@@ -4,7 +4,7 @@
 
 import { Request, Response, response } from "express";
 import { error, info } from "@repo/logs/logs";
-import { addSalesDetail, getSalesDetailsBySalesInfoId } from "../service/salesDetailsService";
+import { addSalesDetail, getSalesDetailsBySalesInfoId } from "../service/salesDetailsService.js";
 export async function addSalesDetailsHandler(req : Request, res : Response) {
 
     info("req body :", req);

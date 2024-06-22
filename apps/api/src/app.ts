@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 // import routes from "./routes";
 dotenv.config();
 import { info } from "@repo/logs/logs";
-import routes from "./routes";
+import routes from "./routes.js";
 
 const app = express();
 

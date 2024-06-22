@@ -13,5 +13,6 @@
     "./purchaseSchema" : "./purchase.schema.ts",
     "./purchaseDetailSchema" : "./purchaseDetails.schema.ts",
     "./salesInfoSchema" : "./salesInfo.schema.ts"
-  }
+  },
+    "type": "module"
 }

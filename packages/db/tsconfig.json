@@ -2,8 +2,19 @@
   "extends": "@repo/typescript-config/base.json",
   "compilerOptions": {
     "jsx": "react", // or "preserve"
-    "outDir": "dist"
+    "outDir": "dist",
+    "declaration": true,
+    "target": "es2016",
+    "module": "NodeNext",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "skipLibCheck": true
   },
+
+  "ts-node": {
+    "esm": true
+},
   "include": ["src"],
   "exclude": ["node_modules", "dist"]
 }
