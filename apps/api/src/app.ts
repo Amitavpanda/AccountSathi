@@ -12,15 +12,16 @@ app.use(express.json());
 
 app.use(cors());
 
-const port = process.env.PORT || 1338;
+const port = parseInt(process.env.PORT || '4000');
+
+const host = process.env.HOST || '0.0.0.0';
 
 
 
-
-app.listen(port , async () => {
-    info(`App is running at port: http://localhost:${port}`);
-    routes(app);
-})
+app.listen(port, host, async () => {
+    console.log(`App is running at port: http://${host}:${port}`);
+    await routes(app);
+  });
 
 
 export default app;
