@@ -7,7 +7,7 @@ import { enIN } from 'date-fns/locale';
 
 import {AddSupplierPurchaseDetailSchema} from "@repo/validations/purchaseDetailSchema";
 import { count } from "console";
-import { AddSalesDetailsSchema } from "../../../../packages/validations/salesDetail.schema";
+import { AddSalesDetailsSchema } from "../../../../packages/validations/salesDetail.schema.js";
 
 
 async function getTotalAmountDueOfTheHotel(salesInfoId: string): Promise<number | null> {

@@ -14,12 +14,10 @@
   },
   "exports": {
     "./client": "./index.ts"
-<<<<<<< Updated upstream
-=======
+
   },
   "type": "module",
   "devDependencies": {
     "supabase": "^1.178.2"
->>>>>>> Stashed changes
   }
 }

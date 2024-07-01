@@ -1,6 +1,6 @@
 import { Request, Response, response } from "express";
 import { error, info } from "@repo/logs/logs";
-import { addSupplierPurchaseDetail, getSupplierPurchaseDetailBySupplierId } from "../service/supplierPurchaseDetailServce";
+import { addSupplierPurchaseDetail, getSupplierPurchaseDetailBySupplierId } from "../service/supplierPurchaseDetailServce.js";
 export async function addSupplierPurchaseDetailHandler(req : Request, res : Response) {
 
     info("req body :", req);
