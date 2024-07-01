@@ -21,7 +21,8 @@ export default function SalesDetails({id} : SalesDetailsProps){
         const fetchSalesDetails = async () => {
     
             try {
-                const response: AxiosResponse<{ data: SalesDetailsType[] }> = await axios.get(`http://localhost:1338/getSalesDetails/${id}`);
+                const baseUri = process.env.NEXT_PUBLIC_UI_BASE_URI;
+                const response: AxiosResponse<{ data: SalesDetailsType[] }> = await axios.get(`${baseUri}/getSalesDetails/${id}`);
                 info("the response of salesDetails is", response);
                 if (response.status == 200) {
                     console.log("the response.data is ", response.data.data);

@@ -52,8 +52,9 @@ export default function AddNewPurchaseComponent() {
             listOfItems: values.listOfItems.split(",") // Split string into array
           };
         try {
+            const baseUri = process.env.NEXT_PUBLIC_UI_BASE_URI;
             console.log("Form data submitted: ", transformedValues);
-            const response = await axios.post('http://localhost:1338/addSupplierPurchase', transformedValues);
+            const response = await axios.post(`${baseUri}/addSupplierPurchase`, transformedValues);
             console.log("response", response);
             if (response.status === 200) {
                 console.log('Form data successfully stored in the backend.');

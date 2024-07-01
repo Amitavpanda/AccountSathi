@@ -21,7 +21,8 @@ export default function PurchaseDetails({id} : PurchaseDetailsProps){
         const fetchPurchaseDetails = async () => {
     
             try {
-                const response: AxiosResponse<{ data: PurchaseDetailsType[] }> = await axios.get(`http://localhost:1338/getSupplierPurchaseDetails/${id}`);
+                const baseUri = process.env.NEXT_PUBLIC_UI_BASE_URI;
+                const response: AxiosResponse<{ data: PurchaseDetailsType[] }> = await axios.get(`${baseUri}/getSupplierPurchaseDetails/${id}`);
                 info("the response of purchaseDetails is", response);
                 if (response.status == 200) {
                     console.log("the response.data is ", response.data.data);

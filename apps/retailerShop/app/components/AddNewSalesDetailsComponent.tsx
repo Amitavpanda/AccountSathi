@@ -71,8 +71,9 @@ export default function AddNewSalesDetailsComponent({ id }: AddNewSalesDetailsPr
 
         };
         try {
+            const baseUri = process.env.NEXT_PUBLIC_UI_BASE_URI;
             console.log("Form data submitted: ", transformedValues);
-            const response = await axios.post('http://localhost:1338/addSalesDetails', transformedValues);
+            const response = await axios.post(`${baseUri}/addSalesDetails`, transformedValues);
             console.log("response", response);
             if (response.status === 200) {
                 console.log('Form data successfully stored in the backend.');
