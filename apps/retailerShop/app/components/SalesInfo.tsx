@@ -16,9 +16,9 @@ import { DataTable } from "./SalesInfoComponent/data-table";
 
         console.log("I am getting called")
         const fetchSalesInfo = async () => {
-    
+            const baseUri = process.env.NEXT_PUBLIC_UI_BASE_URI;
             try {
-                const response: AxiosResponse<{ data: SalesInfoType[] }> = await axios.get('http://localhost:1338/getSalesInfo');
+                const response: AxiosResponse<{ data: SalesInfoType[] }> = await axios.get(`${baseUri}/getSalesInfo`);
                 info("the response of salesInfo is", response);
                 if (response.status == 200) {
                     console.log("the response.data is ", response.data.data);

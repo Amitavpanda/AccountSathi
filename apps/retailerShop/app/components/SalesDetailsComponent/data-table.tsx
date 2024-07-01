@@ -53,7 +53,7 @@ export function DataTable<TData, TValue>({
     return (
         <div>
 
-            <div className="flex items-center py-4">
+            <div className="flex items-center justify-between py-4">
                 <Input
                     placeholder="Search by date"
                     value={(table.getColumn("date")?.getFilterValue() as string) ?? ""}
@@ -62,6 +62,8 @@ export function DataTable<TData, TValue>({
                     }
                     className="max-w-sm rounded-xl"
                 />
+
+
             </div>
             <div className="rounded-md border">
                 <Table className="bg-white rounded-xl">

@@ -16,7 +16,8 @@ import { error, info } from "@repo/logs/logs";
         const fetchPurchaseInfo = async () => {
     
             try {
-                const response: AxiosResponse<{ data: PurchaseInfoType[] }> = await axios.get('http://localhost:1338/getSupplierPurchase');
+                const baseUri = process.env.NEXT_PUBLIC_UI_BASE_URI;
+                const response: AxiosResponse<{ data: PurchaseInfoType[] }> = await axios.get(`${baseUri}/getSupplierPurchase`);
                 info("the response of purchaseInfo is", response);
                 if (response.status == 200) {
                     console.log("the response.data is ", response.data.data);

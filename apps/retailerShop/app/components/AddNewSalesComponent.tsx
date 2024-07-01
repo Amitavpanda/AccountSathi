@@ -51,8 +51,10 @@ export default function AddNewSalesComponent() {
             totalAmountDue: Number(values.totalAmountDue), // Convert to number
         };
         try {
+
+            const baseUri = process.env.NEXT_PUBLIC_UI_BASE_URI;
             console.log("Form data submitted: ", transformedValues);
-            const response = await axios.post('http://localhost:1338/addSalesInfo', transformedValues);
+            const response = await axios.post(`${baseUri}/addSalesInfo`, transformedValues);
             console.log("response", response);
             if (response.status === 200) {
                 console.log('Form data successfully stored in the backend.');
