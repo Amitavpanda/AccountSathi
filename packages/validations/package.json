@@ -12,7 +12,8 @@
   "exports" : {
     "./purchaseSchema" : "./purchase.schema.ts",
     "./purchaseDetailSchema" : "./purchaseDetails.schema.ts",
-    "./salesInfoSchema" : "./salesInfo.schema.ts"
+    "./salesInfoSchema" : "./salesInfo.schema.ts",
+    "./getSalesDataDuration" : "./sales.data.duration.schema.ts"
   },
     "type": "module"
 }

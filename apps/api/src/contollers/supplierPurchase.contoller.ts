@@ -17,6 +17,7 @@ export async function getSupplierPurchaseHandler(req : Request, res : Response) 
     const response = await getAllSupplierPurchase();
     return res.send(response);
 }
+ 
 
 
 

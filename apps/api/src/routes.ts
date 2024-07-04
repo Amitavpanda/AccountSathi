@@ -9,11 +9,17 @@ import { addSalesInfoHandler, getSalesInfoHandler } from "./contollers/salesInfo
 import { getAllSalesInfo } from "./service/salesInfoService.js";
 import { addSalesDetailsSchema } from "../../../packages/validations/salesDetail.schema.js";
 import { addSalesDetailsHandler, getSalesDetailsHandler } from "./contollers/salesDetails.controller.js";
+import { getSalesDataDurationSchema } from "@repo/validations/getSalesDataDuration";
+import { salesDataDurationHandler } from "./contollers/dataDuration.controller.js";
 
 
 function routes(app : Express){
     app.get('/healthcheck', (req : Request, res : Response)  => res.sendStatus(200));
 
+
+
+    app.post('/getSalesDataDuration', validate(getSalesDataDurationSchema), salesDataDurationHandler);
+    
     app.post('/addSalesDetails', validate(addSalesDetailsSchema), addSalesDetailsHandler);
     app.get('/getSalesDetails/:salesInfoId',  getSalesDetailsHandler);
 
@@ -29,6 +35,8 @@ function routes(app : Express){
 
     app.post('/addSupplierPurchaseDetails', validate(addSupplierPurchaseDetailSchema), addSupplierPurchaseDetailHandler);
     app.get('/getSupplierPurchaseDetails/:supplierId',  getSupplierPurchaseDetailHandler);
+
+
 
 
 }

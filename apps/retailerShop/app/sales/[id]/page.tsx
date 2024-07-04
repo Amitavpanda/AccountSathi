@@ -7,7 +7,7 @@ import SalesDetails from "../../components/SalesDetails";
 
 
 
-export default function PurchaseDetailsMain({ params }: any) {
+export default function SalesDetailsMain({ params }: any) {
     const { id } = params;
     return (
         <div className="flex flex-col p-20">
