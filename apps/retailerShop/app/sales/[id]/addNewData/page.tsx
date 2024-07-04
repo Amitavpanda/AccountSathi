@@ -4,7 +4,7 @@ import AddNewSalesDetailsComponent from "../../../components/AddNewSalesDetailsC
 
 
 
-export default function AddNewPurchasDetails({ params }: any){
+export default function AddNewSalesDetails({ params }: any){
     const { id } = params;
     return(
             <>

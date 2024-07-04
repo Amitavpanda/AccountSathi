@@ -39,3 +39,9 @@ export const addSupplierPurchaseSchema = z.object({
     amountPaidDescription : z.string(),
     salesInfoId : z.string()
   })
+
+  export const salesDataDurationSchema = z.object({
+    salesInfoId : z.string(),
+    startingDate : z.date(),
+    endDate : z.date()
+  })

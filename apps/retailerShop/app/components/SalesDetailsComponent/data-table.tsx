@@ -10,6 +10,10 @@ import {
     getFilteredRowModel,
 } from "@tanstack/react-table"
 
+
+
+
+
 import {
     Table,
     TableBody,
@@ -22,15 +26,23 @@ import { Button } from "@repo/ui/button"
 import { Input } from "@repo/ui/input"
 import { useState } from "react"
 
+
+
+
+
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
-    data: TData[]
+    data: TData[],
+    id: string
 }
 
 export function DataTable<TData, TValue>({
     columns,
     data,
+    id
 }: DataTableProps<TData, TValue>) {
+
+
 
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(
         []
@@ -58,11 +70,12 @@ export function DataTable<TData, TValue>({
                     placeholder="Search by date"
                     value={(table.getColumn("date")?.getFilterValue() as string) ?? ""}
                     onChange={(event) =>
+
                         table.getColumn("date")?.setFilterValue(event.target.value)
                     }
                     className="max-w-sm rounded-xl"
                 />
-
+              
 
             </div>
             <div className="rounded-md border">
