@@ -17,6 +17,7 @@ import { Button } from "@repo/ui/button"
 
 
 
+import { DataTable } from './SalesDetailsComponent/data-table';
 
 
 
@@ -42,14 +43,21 @@ import {
 import { salesDataDurationSchema } from "../utils/validator"
 import { cn } from "../../../../packages/ui/@/lib/utils"
 import axios from "axios"
+import { useEffect, useState, useRef } from "react"
+import { SalesDetailsType, columns } from "./SalesDetailsComponent/columns";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 
 
 interface SalesDataDownloadPDFProps {
     id: string
 }
 
-export  function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
-
+export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
+    let tempAmountSum = 0;
+    const [salesDataDuration, setSalesDataDuration] = useState<SalesDetailsType[]>([]);
+    const [amountSum, setAmountSum] = useState<Number>(0);
+    const salesDataDurationRef = useRef(null);
 
     const form = useForm<z.infer<typeof salesDataDurationSchema>>({
         resolver: zodResolver(salesDataDurationSchema),
@@ -59,29 +67,58 @@ export  function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
     })
 
 
-     async function onSubmit(values: z.infer<typeof salesDataDurationSchema>) {
-        
-        try{
-            console.log("form data submitted", values);
-            const response = await axios.post("http://0.0.0.0:1337/getSalesDataDuration", values);
-            console.log("response", response);
+    async function onSubmit(values: z.infer<typeof salesDataDurationSchema>) {
 
-            if(response.status = 200){
+
+        try {
+            const baseUri = process.env.NEXT_PUBLIC_UI_BASE_URI;
+            console.log("form data submitted", values);
+            const response = await axios.post(`${baseUri}/getSalesDataDuration`, values);
+            console.log("response", response.data.data);
+            setSalesDataDuration(response.data.data);
+
+            if (response.status = 200) {
                 console.log('Successfully got the data from the backend.');
 
                 await new Promise(resolve => setTimeout(resolve, 1000));
                 form.reset();
             }
-            else{
+            else {
                 console.error("does not got the data from the backend");
             }
 
         }
 
-        catch(err){
+        catch (err) {
             console.error("Error Getting response: ", err);
         }
 
+    }
+
+    const handleGeneratePDF = async () => {
+        const inputData = salesDataDurationRef.current;
+
+        try {
+            const canvas = await html2canvas(inputData);
+            const imgData = canvas.toDataURL("image/png");
+
+            const pdf = new jsPDF({
+                orientation: "landscape",
+                unit: "px",
+                format: "a4",
+            });
+
+            const width = pdf.internal.pageSize.getWidth();
+            const height = (canvas.height * width) / canvas.width;
+
+
+            pdf.addImage(imgData, "PNG", 0, 0, width, height);
+            pdf.save("SalesDataDuration.pdf");
+        }
+
+        catch (error) {
+            console.log(error);
+        }
     }
     return (
         <>
@@ -187,6 +224,55 @@ export  function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
                         </div>
                     </form>
                 </Form>
+
+
+                {salesDataDuration && (
+                    <>
+
+                        <div className="">
+                            <DataTable columns={columns} data={salesDataDuration} id={id} />
+                        </div>
+
+                        <div className="flex flex-col gap-y-4 p-5 bg-white w-[45rem] rounded-xl" ref={salesDataDurationRef}>
+                            {salesDataDuration.map((item) => {
+                                tempAmountSum += Number(item.amount);
+                                return (
+                                    <>
+                                        <div className="flex flex-col gap-y-2 w-[40rem] ">
+                                            {/* 1st row */}
+                                            <h2>{item.date}</h2>
+                                            {/* 2nd row */}
+                                            <div className="flex flex-row items-center justify-between">
+                                                <div className="flex flex-row items-center justify-center gap-3">
+                                                    <p>{item.stockName} - </p>
+                                                    <p>{item.quantity} *</p>
+                                                    <p> Rs {item.price} =</p>
+                                                    <p> Rs {item.amount}</p>
+                                                </div>
+                                                <div> Rs {`${tempAmountSum}`} </div>
+                                            </div>
+                                            {/* 3rd row */}
+                                            <div className="flex flex-row items-center justify-between">
+                                                <div className="items-end">
+                                                    <p>{item.amountPaidDescription}</p>
+                                                </div>
+                                                <p>{item.amountPaid}</p>
+                                            </div>
+                                            <hr className="h-px my-2 border-4"></hr>
+                                            {/* 4th row */}
+                                            <div className="flex flex-row items-center justify-between">
+                                                <p>Total Amount Due - </p>
+                                                <p>{item.totalAmountDue}</p>
+                                            </div>
+                                        </div>
+                                    </>
+                                );
+                            })}
+                        </div>
+                        <Button onClick={() => handleGeneratePDF()} className="w-40 h-15 rounded-md bg-blue-90 text-white rounded-xl">Download PDF</Button>
+
+                    </>
+                )}
             </div>
         </>
     )
