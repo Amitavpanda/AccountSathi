@@ -1,15 +1,47 @@
 import { Prisma, PrismaClient } from "@repo/db/client";
+import { info } from "@repo/logs/logs";
 import { GetSalesDetaDurationSchema } from "@repo/validations/getSalesDataDuration";
 const prisma = new PrismaClient();
 
 import { format } from 'date-fns';
 import { enIN } from 'date-fns/locale';
 import { start } from "repl";
+import { object } from "zod";
 
 
+
+interface NotCashPaid  {
+    cashPaid : String,
+    stockName : String,
+    quantity : number,
+    price : number,
+    amount : number,
+    presentAmount : number,
+    previousAmount : number
+    totalAmountDue : number
+}
+
+interface CashPaid {
+    cashPaid : String,
+    amountPaid : number,
+    amountPaidDescription : String,
+    presentAmount : number
+    previousAmount : number
+    totalAmountDue : number
+}
+
+interface ObjectType {
+    date : string,
+    info : (CashPaid | NotCashPaid)[];
+}
 export async function salesDataDurationService(input : GetSalesDetaDurationSchema) {
+    console.log("I am inside saleDataDurationService");
     const {salesInfoId, startingDate, endDate} = input.body;
-
+    // let response : Map<string, ObjectType>[] = [];
+    let presentAmount : number = 0;
+    let previousAmount : number = 0;
+    let previousDate : string = "";
+    let response = new Map<string, ObjectType>();
     const salesDataDuration = await prisma.salesInfoDetail.findMany({
         where : {
             salesInfoId,
@@ -29,6 +61,91 @@ export async function salesDataDurationService(input : GetSalesDetaDurationSchem
         }
     }) 
 
+
+
+    for (const d of formattedSalesDataDuration){
+        info("i am in");
+        if(previousDate !== d.date){
+            previousDate = d.date;
+            let infoList : (CashPaid | NotCashPaid)[] = [];
+            if(d.amountPaid === 0 && d.amountPaidDescription === ""){
+                presentAmount += d.amount,
+                previousAmount = presentAmount - d.amount;
+                const item : NotCashPaid = {
+                    cashPaid : "no",
+                    stockName : d.stockName,
+                    quantity : d.quantity,
+                    price : d.price,
+                    amount : d.amount,
+                    presentAmount : presentAmount,
+                    previousAmount : previousAmount,
+                    totalAmountDue : d.totalAmountDue
+                }
+                infoList.push(item);
+                console.log("info list", infoList);
+            }
+            else if(d.amountPaid > 0 && d.amountPaidDescription !== "" ){
+                presentAmount -= d.amountPaid
+                previousAmount = d.amountPaid + presentAmount;
+
+                const item : CashPaid = {
+                    cashPaid : "yes",
+                    amountPaid : d.amountPaid,
+                    amountPaidDescription : d.amountPaidDescription,
+                    presentAmount : presentAmount,
+                    previousAmount : previousAmount,
+                    totalAmountDue : d.totalAmountDue
+                }
+                infoList.push(item);
+                console.log("info list", infoList);
+            }
+            const object = {
+                date : d.date,
+                info : infoList
+            }
+            response.set(d.date, object);
+            console.log("response", response);
+        }
+        else{
+            let existingData = response.get(d.date);
+            console.log("existing data", existingData);
+            if(d.amountPaid === 0 && d.amountPaidDescription === ""){
+                presentAmount += d.amount,
+                previousAmount = presentAmount - d.amount;
+                const item : NotCashPaid = {
+                    cashPaid : "no",
+                    stockName : d.stockName,
+                    quantity : d.quantity,
+                    price : d.price,
+                    amount : d.amount,
+                    presentAmount : presentAmount,
+                    previousAmount : previousAmount,
+                    totalAmountDue : d.totalAmountDue
+                }
+                existingData?.info.push(item);
+                console.log("response inside amount not paid,", response);    
+            }
+            else if(d.amountPaid > 0 && d.amountPaidDescription !== "" ){
+                presentAmount -= d.amountPaid
+                previousAmount = d.amountPaid + presentAmount;
+
+                const item : CashPaid = {
+                    cashPaid : "yes",
+                    amountPaid : d.amountPaid,
+                    amountPaidDescription : d.amountPaidDescription,
+                    presentAmount : presentAmount,
+                    previousAmount : previousAmount,
+                    totalAmountDue : d.totalAmountDue
+                }
+                existingData?.info.push(item);
+                console.log("response inside amountpaid,", response);
+            }
+
+
+        }
+
+    }
+    // console.log("final response", response);
     const hotelName = await prisma.salesInfo.findUnique({
         where : {
             id : salesInfoId
@@ -41,8 +158,8 @@ export async function salesDataDurationService(input : GetSalesDetaDurationSchem
     const startingDateResponse = format(new Date(startingDate), 'MMMM do yyyy', { locale: enIN });
     const endDateResponse = format(new Date(endDate), 'MMMM do yyyy', { locale: enIN });
 
-
-    return {success : true, data : formattedSalesDataDuration, hotelName : hotelName, startingDateResponse : startingDateResponse, endDateResponse : endDateResponse}
+    console.log("final response", response);
+    return {success : true, data : Object.fromEntries(response), hotelName : hotelName, startingDateResponse : startingDateResponse, endDateResponse : endDateResponse}
 }
 
 

@@ -20,6 +20,7 @@ import { Button } from "@repo/ui/button"
 import { DataTable } from './SalesDetailsComponent/data-table';
 
 
+import "../globals.css";
 
 
 
@@ -56,7 +57,10 @@ interface SalesDataDownloadPDFProps {
 export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
     let tempAmountSum = 0;
     const [salesDataDuration, setSalesDataDuration] = useState<SalesDetailsType[]>([]);
-    const [amountSum, setAmountSum] = useState<Number>(0);
+    const [endDate, setEndDate] = useState<String>("");
+    const [startingDate, setStartingDate] = useState<String>("");
+    const [hotelName, setHotelName] = useState<String>();
+
     const salesDataDurationRef = useRef(null);
 
     const form = useForm<z.infer<typeof salesDataDurationSchema>>({
@@ -74,8 +78,11 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
             const baseUri = process.env.NEXT_PUBLIC_UI_BASE_URI;
             console.log("form data submitted", values);
             const response = await axios.post(`${baseUri}/getSalesDataDuration`, values);
-            console.log("response", response.data.data);
+            console.log("response", response.data);
             setSalesDataDuration(response.data.data);
+            setEndDate(response.data.endDateResponse);
+            setStartingDate(response.data.startingDateResponse);
+            setHotelName(response.data.hotelName.name);
 
             if (response.status = 200) {
                 console.log('Successfully got the data from the backend.');
@@ -113,7 +120,7 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
 
 
             pdf.addImage(imgData, "PNG", 0, 0, width, height);
-            pdf.save("SalesDataDuration.pdf");
+            pdf.save(`${hotelName} ${startingDate} - ${endDate}.pdf`);
         }
 
         catch (error) {
@@ -124,6 +131,7 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
         <>
 
             <div className="flex flex-col gap-y-4 p-20">
+                
                 <h1>Download the data between a specified duration</h1>
 
                 <Form {...form}>
@@ -233,20 +241,25 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
                             <DataTable columns={columns} data={salesDataDuration} id={id} />
                         </div>
 
-                        <div className="flex flex-col gap-y-4 p-5 bg-white w-[45rem] rounded-xl" ref={salesDataDurationRef}>
-                            {salesDataDuration.map((item) => {
+                        <div className="flex flex-col gap-y-4 p-5 bg-white w-[45rem] rounded-xl
+                        " ref={salesDataDurationRef}>
+
+                            <h1 className="text-[24px] font-[700] leading-[120%] text-center">Hotel {hotelName}</h1>
+                            <h1 className="text-[16px] font-[700] leading-[120%] text-center">Data between {startingDate} and {endDate}</h1>
+
+                            {salesDataDuration.map((item : any) => {
                                 tempAmountSum += Number(item.amount);
                                 return (
-                                    <>
-                                        <div className="flex flex-col gap-y-2 w-[40rem] ">
+                                    <>  
+                                        <div className="flex flex-col mb-4 w-[40rem] ">
                                             {/* 1st row */}
-                                            <h2>{item.date}</h2>
+                                            <h2 className="underline">{item.date}</h2>
                                             {/* 2nd row */}
                                             <div className="flex flex-row items-center justify-between">
                                                 <div className="flex flex-row items-center justify-center gap-3">
                                                     <p>{item.stockName} - </p>
                                                     <p>{item.quantity} *</p>
-                                                    <p> Rs {item.price} =</p>
+                                                    <p>Rs {item.price} =</p>
                                                     <p> Rs {item.amount}</p>
                                                 </div>
                                                 <div> Rs {`${tempAmountSum}`} </div>
@@ -258,7 +271,7 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
                                                 </div>
                                                 <p>{item.amountPaid}</p>
                                             </div>
-                                            <hr className="h-px my-2 border-4"></hr>
+                                            <hr className="h-px my-1 border-4"></hr>
                                             {/* 4th row */}
                                             <div className="flex flex-row items-center justify-between">
                                                 <p>Total Amount Due - </p>
