@@ -101,7 +101,7 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
         }
 
     }
-
+    console.log("the salesDataDuration", salesDataDuration);
     const handleGeneratePDF = async () => {
         const inputData = salesDataDurationRef.current;
 
@@ -131,7 +131,7 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
         <>
 
             <div className="flex flex-col gap-y-4 p-20">
-                
+
                 <h1>Download the data between a specified duration</h1>
 
                 <Form {...form}>
@@ -247,40 +247,50 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
                             <h1 className="text-[24px] font-[700] leading-[120%] text-center">Hotel {hotelName}</h1>
                             <h1 className="text-[16px] font-[700] leading-[120%] text-center">Data between {startingDate} and {endDate}</h1>
 
-                            {salesDataDuration.map((item : any) => {
-                                tempAmountSum += Number(item.amount);
-                                return (
-                                    <>  
-                                        <div className="flex flex-col mb-4 w-[40rem] ">
-                                            {/* 1st row */}
-                                            <h2 className="underline">{item.date}</h2>
-                                            {/* 2nd row */}
-                                            <div className="flex flex-row items-center justify-between">
-                                                <div className="flex flex-row items-center justify-center gap-3">
-                                                    <p>{item.stockName} - </p>
-                                                    <p>{item.quantity} *</p>
-                                                    <p>Rs {item.price} =</p>
-                                                    <p> Rs {item.amount}</p>
+                            {Object.keys(salesDataDuration).map((date: string) => (
+
+                                <div className="flex flex-col">
+                                    <h1 className="underline">{date}</h1>
+                                    {salesDataDuration[date].info.map((item: any) => (
+                                        <>
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex items-center justify-center gap-4">
+                                                    {item.cashPaid === "no" ? (
+                                                        <>
+                                                            <h1>{item.stockName}</h1>
+                                                            <div className="flex flex-row item-center justify-center gap-2">
+                                                                <h1>{item.quantity} *</h1>
+                                                                <h1> Rs {item.price} </h1>
+                                                            </div>
+                                                            <div>=</div>
+                                                            <div className="flex flex-row item-center justify-center gap-2">
+                                                                <h1> Rs {item.amount} + </h1>
+                                                                <h1 className="font-[700]"> Rs {item.previousAmount}</h1>
+                                                            </div>
+
+                                                        </>
+
+                                                    ) :
+                                                        (
+                                                            <div className="bg-green-50 rounded-xl p-2">
+                                                                <h1>{item.amountPaidDescription}(Rs {item.amountPaid})</h1>
+                                                                <div className="flex flex-row item-center justify-center gap-2">
+                                                                    <h1 className="font-[700]"> Rs {item.previousAmount} - </h1>
+                                                                    <h1>Rs {item.amountPaid}</h1>
+                                                                </div>
+
+                                                            </div>
+                                                        )}
                                                 </div>
-                                                <div> Rs {`${tempAmountSum}`} </div>
-                                            </div>
-                                            {/* 3rd row */}
-                                            <div className="flex flex-row items-center justify-between">
-                                                <div className="items-end">
-                                                    <p>{item.amountPaidDescription}</p>
+                                                <div> = </div>
+                                                <div >
+                                                    <h1> Rs {item.presentAmount}</h1>
                                                 </div>
-                                                <p>{item.amountPaid}</p>
                                             </div>
-                                            <hr className="h-px my-1 border-4"></hr>
-                                            {/* 4th row */}
-                                            <div className="flex flex-row items-center justify-between">
-                                                <p>Total Amount Due - </p>
-                                                <p>{item.totalAmountDue}</p>
-                                            </div>
-                                        </div>
-                                    </>
-                                );
-                            })}
+                                        </>
+                                    ))}
+                                </div>
+                            ))}
                         </div>
                         <Button onClick={() => handleGeneratePDF()} className="w-40 h-15 rounded-md bg-blue-90 text-white rounded-xl">Download PDF</Button>
 

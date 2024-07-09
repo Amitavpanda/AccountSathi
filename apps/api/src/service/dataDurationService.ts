@@ -5,6 +5,7 @@ const prisma = new PrismaClient();
 
 import { format } from 'date-fns';
 import { enIN } from 'date-fns/locale';
+import { existsSync } from "fs";
 import { start } from "repl";
 import { object } from "zod";
 
@@ -30,9 +31,12 @@ interface CashPaid {
     totalAmountDue : number
 }
 
+
+
 interface ObjectType {
     date : string,
     info : (CashPaid | NotCashPaid)[];
+    finalAmount : number 
 }
 export async function salesDataDurationService(input : GetSalesDetaDurationSchema) {
     console.log("I am inside saleDataDurationService");
@@ -60,7 +64,7 @@ export async function salesDataDurationService(input : GetSalesDetaDurationSchem
             date : format(new Date(detail.date), 'MMMM do yyyy', { locale: enIN }),
         }
     }) 
-
+    console.log("formattedSalesDuration", formattedSalesDataDuration);
 
 
     for (const d of formattedSalesDataDuration){
@@ -101,13 +105,14 @@ export async function salesDataDurationService(input : GetSalesDetaDurationSchem
             }
             const object = {
                 date : d.date,
-                info : infoList
+                info : infoList,
+                finalAmount : presentAmount
             }
             response.set(d.date, object);
             console.log("response", response);
         }
         else{
-            let existingData = response.get(d.date);
+            let existingData : ObjectType | undefined  = response.get(d.date)  ;
             console.log("existing data", existingData);
             if(d.amountPaid === 0 && d.amountPaidDescription === ""){
                 presentAmount += d.amount,
@@ -124,6 +129,9 @@ export async function salesDataDurationService(input : GetSalesDetaDurationSchem
                 }
                 existingData?.info.push(item);
                 console.log("response inside amount not paid,", response);    
+                if (existingData) {
+                    existingData.finalAmount = presentAmount;
+                  }
             }
             else if(d.amountPaid > 0 && d.amountPaidDescription !== "" ){
                 presentAmount -= d.amountPaid
@@ -139,11 +147,29 @@ export async function salesDataDurationService(input : GetSalesDetaDurationSchem
                 }
                 existingData?.info.push(item);
                 console.log("response inside amountpaid,", response);
+                if (existingData) {
+                    existingData.finalAmount = presentAmount;
+                  }
             }
 
-
+            
         }
 
+        
+
+    }
+    let flag = 1;
+    let BF = 0;
+    for(const d of formattedSalesDataDuration){
+        if(flag > 1) break;
+
+        if(d.amountPaid === 0 && d.amountPaidDescription === ""){
+            BF = d.totalAmountDue - d.amount;
+        }
+        if(d.amountPaid > 0 && d.amountPaidDescription !== ""){
+            BF = d.amountPaid + d.totalAmountDue;
+        }
+        flag += 1;
     }
     // console.log("final response", response);
     const hotelName = await prisma.salesInfo.findUnique({
@@ -159,7 +185,7 @@ export async function salesDataDurationService(input : GetSalesDetaDurationSchem
     const endDateResponse = format(new Date(endDate), 'MMMM do yyyy', { locale: enIN });
 
     console.log("final response", response);
-    return {success : true, data : Object.fromEntries(response), hotelName : hotelName, startingDateResponse : startingDateResponse, endDateResponse : endDateResponse}
+    return {success : true, BF: BF, data : Object.fromEntries(response), hotelName : hotelName, startingDateResponse : startingDateResponse, endDateResponse : endDateResponse}
 }
 
 
