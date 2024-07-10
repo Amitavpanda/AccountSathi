@@ -61,12 +61,25 @@ export async function salesDataDurationService(input : GetSalesDetaDurationSchem
     const formattedSalesDataDuration = salesDataDuration.map((detail) => {
         return {
             ...detail,
-            date : format(new Date(detail.date), 'MMMM do yyyy', { locale: enIN }),
+            date : format(new Date(detail.date), 'dd/MM/yyyy', { locale: enIN }),
         }
     }) 
     console.log("formattedSalesDuration", formattedSalesDataDuration);
 
+    let flag = 1;
+    let BF = 0;
+    for(const d of formattedSalesDataDuration){
+        if(flag > 1) break;
 
+        if(d.amountPaid === 0 && d.amountPaidDescription === ""){
+            BF = d.totalAmountDue - d.amount;
+        }
+        if(d.amountPaid > 0 && d.amountPaidDescription !== ""){
+            BF = d.amountPaid + d.totalAmountDue;
+        }
+        flag += 1;
+    }
+    presentAmount = BF;
     for (const d of formattedSalesDataDuration){
         info("i am in");
         if(previousDate !== d.date){
@@ -158,19 +171,7 @@ export async function salesDataDurationService(input : GetSalesDetaDurationSchem
         
 
     }
-    let flag = 1;
-    let BF = 0;
-    for(const d of formattedSalesDataDuration){
-        if(flag > 1) break;
 
-        if(d.amountPaid === 0 && d.amountPaidDescription === ""){
-            BF = d.totalAmountDue - d.amount;
-        }
-        if(d.amountPaid > 0 && d.amountPaidDescription !== ""){
-            BF = d.amountPaid + d.totalAmountDue;
-        }
-        flag += 1;
-    }
     // console.log("final response", response);
     const hotelName = await prisma.salesInfo.findUnique({
         where : {

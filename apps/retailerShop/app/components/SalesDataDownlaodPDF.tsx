@@ -55,11 +55,12 @@ interface SalesDataDownloadPDFProps {
 }
 
 export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
-    let tempAmountSum = 0;
+    let finalAmount = 0;
     const [salesDataDuration, setSalesDataDuration] = useState<SalesDetailsType[]>([]);
     const [endDate, setEndDate] = useState<String>("");
     const [startingDate, setStartingDate] = useState<String>("");
     const [hotelName, setHotelName] = useState<String>();
+    const [BF, setBF] = useState<number>(0);
 
     const salesDataDurationRef = useRef(null);
 
@@ -83,6 +84,7 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
             setEndDate(response.data.endDateResponse);
             setStartingDate(response.data.startingDateResponse);
             setHotelName(response.data.hotelName.name);
+            setBF(response.data.BF);
 
             if (response.status = 200) {
                 console.log('Successfully got the data from the backend.');
@@ -246,12 +248,23 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
 
                             <h1 className="text-[24px] font-[700] leading-[120%] text-center">Hotel {hotelName}</h1>
                             <h1 className="text-[16px] font-[700] leading-[120%] text-center">Data between {startingDate} and {endDate}</h1>
+                            <div className="flex flex-row items-center justify-end gap-2">
 
+                                {BF !== 0 && (
+                                    <>
+                                        <h1>BF</h1>
+                                        <h1>=</h1>
+                                        <h1>{BF}</h1>
+
+                                    </>
+                                )}
+                            </div>
                             {Object.keys(salesDataDuration).map((date: string) => (
 
                                 <div className="flex flex-col">
                                     <h1 className="underline">{date}</h1>
                                     {salesDataDuration[date].info.map((item: any) => (
+
                                         <>
                                             <div className="flex items-center justify-between">
                                                 <div className="flex items-center justify-center gap-4">
@@ -288,6 +301,7 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
                                                 </div>
                                             </div>
                                         </>
+
                                     ))}
                                 </div>
                             ))}
