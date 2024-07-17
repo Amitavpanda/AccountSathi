@@ -17,6 +17,7 @@ import { Button } from "@repo/ui/button"
 
 
 
+
 import { DataTable } from './SalesDetailsComponent/data-table';
 
 
@@ -106,29 +107,27 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
     console.log("the salesDataDuration", salesDataDuration);
     const handleGeneratePDF = async () => {
         const inputData = salesDataDurationRef.current;
-
         try {
-            const canvas = await html2canvas(inputData);
-            const imgData = canvas.toDataURL("image/png");
-
-            const pdf = new jsPDF({
-                orientation: "landscape",
-                unit: "px",
-                format: "a4",
-            });
-
-            const width = pdf.internal.pageSize.getWidth();
-            const height = (canvas.height * width) / canvas.width;
-
-
-            pdf.addImage(imgData, "PNG", 0, 0, width, height);
-            pdf.save(`${hotelName} ${startingDate} - ${endDate}.pdf`);
+          const canvas = await html2canvas(inputData);
+          const imgWidth = 400;
+          const pageHeight = 400;
+          const imgHeight = (canvas.height * imgWidth) / canvas.width;
+          let heightLeft = imgHeight;
+          let position = 0;
+          heightLeft -= pageHeight;
+          const pdf = new jsPDF({ orientation: "landscape", unit: "px", format: "a4", });
+          pdf.addImage(canvas, "PNG", 0, position, imgWidth, imgHeight);
+          while (heightLeft > 0) {
+            position = heightLeft - imgHeight;
+            pdf.addPage();
+            pdf.addImage(canvas, "PNG", 0, position, imgWidth, imgHeight);
+            heightLeft -= pageHeight;
+          }
+          pdf.save(`${hotelName} ${startingDate} - ${endDate}.pdf`);
+        } catch (error) {
+          console.log(error);
         }
-
-        catch (error) {
-            console.log(error);
-        }
-    }
+      }
     return (
         <>
 
@@ -243,18 +242,18 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
                             <DataTable columns={columns} data={salesDataDuration} id={id} />
                         </div>
 
-                        <div className="flex flex-col gap-y-4 p-5 bg-white w-[45rem] rounded-xl
+                        <div className="flex flex-col gap-y-3 p-5 bg-white w-[30rem] rounded-xl
                         " ref={salesDataDurationRef}>
 
                             <h1 className="text-[24px] font-[700] leading-[120%] text-center">Hotel {hotelName}</h1>
-                            <h1 className="text-[16px] font-[700] leading-[120%] text-center">Data between {startingDate} and {endDate}</h1>
-                            <div className="flex flex-row items-center justify-end gap-2">
+                            {/* <h1 className="text-[16px] font-[700] leading-[120%] text-center">Data between {startingDate} and {endDate}</h1> */}
+                            <div className="flex flex-row items-center justify-end gap-2 mr-1">
 
                                 {BF !== 0 && (
                                     <>
                                         <h1>BF</h1>
                                         <h1>=</h1>
-                                        <h1>{BF}</h1>
+                                        <h1>Rs {BF}</h1>
 
                                     </>
                                 )}
@@ -263,7 +262,7 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
 
                                 <div className="flex flex-col">
                                     <h1 className="underline">{date}</h1>
-                                    {salesDataDuration[date].info.map((item: any) => (
+                                    {salesDataDuration[date].info.map((item: any, index: number) => (
 
                                         <>
                                             <div className="flex items-center justify-between">
@@ -272,42 +271,68 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
                                                         <>
                                                             <h1>{item.stockName}</h1>
                                                             <div className="flex flex-row item-center justify-center gap-2">
-                                                                <h1>{item.quantity} *</h1>
+                                                                <h1>{item.quantity} X</h1>
                                                                 <h1> Rs {item.price} </h1>
                                                             </div>
-                                                            <div>=</div>
+                                                            {/* <div>=</div>
                                                             <div className="flex flex-row item-center justify-center gap-2">
                                                                 <h1> Rs {item.amount} + </h1>
                                                                 <h1 className="font-[700]"> Rs {item.previousAmount}</h1>
-                                                            </div>
+                                                            </div> */}
 
                                                         </>
 
                                                     ) :
                                                         (
                                                             <div className="bg-green-50 rounded-xl p-2">
-                                                                <h1>{item.amountPaidDescription}(Rs {item.amountPaid})</h1>
-                                                                <div className="flex flex-row item-center justify-center gap-2">
+                                                                <h1>{item.amountPaidDescription}</h1>
+                                                                {/* <div className="flex flex-row item-center justify-center gap-2">
                                                                     <h1 className="font-[700]"> Rs {item.previousAmount} - </h1>
                                                                     <h1>Rs {item.amountPaid}</h1>
-                                                                </div>
+                                                                </div> */}
 
                                                             </div>
                                                         )}
                                                 </div>
-                                                <div> = </div>
+                                                {/* <div> = </div> */}
                                                 <div >
-                                                    <h1> Rs {item.presentAmount}</h1>
+                                                    {item.cashPaid === "no" ? (
+                                                        <>
+                                                            {BF === 0 && index === 0 ? (
+                                                                <>
+                                                                    <h1>Rs {item.amount}</h1>
+
+                                                                </>
+                                                            ) : (
+                                                                <>
+                                                                    <h1> <span className="font-[700] text-[20px]"> + </span> Rs {item.amount}</h1>
+
+                                                                </>
+                                                            )}
+
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <h1><span className="font-[700] text-[20px]"> - </span> Rs {item.amountPaid}</h1>
+
+                                                        </>
+
+                                                    )}
                                                 </div>
                                             </div>
                                         </>
 
                                     ))}
+
+                                    <hr className="text-black-100 w-full mt-2" style={{ borderWidth: '3px' }}/>
+                                    <div className="flex flex-row items-center justify-between -gap-4">
+                                        <h1> Total Amount </h1>
+                                        <h1>Rs {salesDataDuration[date].finalAmount}</h1>
+                                    </div>
                                 </div>
                             ))}
                         </div>
                         <Button onClick={() => handleGeneratePDF()} className="w-40 h-15 rounded-md bg-blue-90 text-white rounded-xl">Download PDF</Button>
-
                     </>
                 )}
             </div>
