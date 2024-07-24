@@ -16,6 +16,8 @@ export async function addSalesInfo(input : AddSalesInfoSchema){
             }
         })
 
+
+
         return {success : true, data : salesInfoDetails};
     }
     catch(error){
@@ -28,7 +30,12 @@ export async function addSalesInfo(input : AddSalesInfoSchema){
 export async function getAllSalesInfo(){
     try{
         const  salesInfo = await prisma.salesInfo.findMany();
-        return {success : true, data : salesInfo};
+        let totalAmountDueSum = 0;
+        console.log("salesInfoDetails",salesInfo);
+        for(const salesInfoIndex of salesInfo){
+            totalAmountDueSum += salesInfoIndex.totalAmountDue;
+        }
+        return {success : true, data : salesInfo, totalAmountDueSum : totalAmountDueSum};
     }
 
     catch(error){
