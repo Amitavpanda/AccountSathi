@@ -66,6 +66,10 @@ export async function salesDataDurationService(input : GetSalesDetaDurationSchem
     }) 
     console.log("formattedSalesDuration", formattedSalesDataDuration);
 
+    // const getTotalAmountDueFromSalesInfo = await prisma.salesInfo.findUnique({
+
+    // })
+
     let flag = 1;
     let BF = 0;
     for(const d of formattedSalesDataDuration){
@@ -182,11 +186,20 @@ export async function salesDataDurationService(input : GetSalesDetaDurationSchem
         }
     })
 
+    const hotelAddress = await prisma.salesInfo.findUnique({
+        where : {
+            id : salesInfoId
+        },
+        select : {
+            address : true
+        }
+    })
+
     const startingDateResponse = format(new Date(startingDate), 'MMMM do yyyy', { locale: enIN });
     const endDateResponse = format(new Date(endDate), 'MMMM do yyyy', { locale: enIN });
 
     console.log("final response", response);
-    return {success : true, BF: BF, data : Object.fromEntries(response), hotelName : hotelName, startingDateResponse : startingDateResponse, endDateResponse : endDateResponse}
+    return {success : true, BF: BF, data : Object.fromEntries(response), hotelName : hotelName, startingDateResponse : startingDateResponse, endDateResponse : endDateResponse, hotelAddress : hotelAddress}
 }
 
 
