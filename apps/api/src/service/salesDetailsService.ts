@@ -58,13 +58,18 @@ export async function addSalesDetail(input : AddSalesDetailsSchema){
     try{
         const amount : number =  price * quantity;
         let totalAmountDue : number;
-
-        if(!hasSalesDetails){
-            totalAmountDue = await getTotalAmountDueOfTheHotel(salesInfoId) || 0;
+        console.log("hasSalesDetails ",hasSalesDetails(salesInfoId));
+        const hasSalesDetailsValue = await hasSalesDetails(salesInfoId);
+        console.log("hasSalesDetailsValue ",hasSalesDetailsValue);
+        if(!hasSalesDetailsValue){
+            const totalAmountDueValue= await getTotalAmountDueOfTheHotel(salesInfoId) || 0;
+            totalAmountDue = (totalAmountDueValue + amount) - amountPaid;
+            console.log("totalAmountDue", totalAmountDue);
         }
         else{
             const latestTotalAmountDue = await getLatestTotalAmountDue(salesInfoId) || 0;
             totalAmountDue = (latestTotalAmountDue + amount) - amountPaid;
+            console.log("totalAmountDue else", totalAmountDue);
         }
 
         await prisma.salesInfo.update({
