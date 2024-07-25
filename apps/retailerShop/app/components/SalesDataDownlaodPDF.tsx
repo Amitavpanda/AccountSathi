@@ -61,6 +61,8 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
     const [endDate, setEndDate] = useState<String>("");
     const [startingDate, setStartingDate] = useState<String>("");
     const [hotelName, setHotelName] = useState<String>();
+    const [hotelAddress, setHotelAddress] = useState<String>();
+
     const [BF, setBF] = useState<number>(0);
 
     const salesDataDurationRef = useRef(null);
@@ -85,6 +87,7 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
             setEndDate(response.data.endDateResponse);
             setStartingDate(response.data.startingDateResponse);
             setHotelName(response.data.hotelName.name);
+            setHotelAddress(response.data.hotelAddress.address);
             setBF(response.data.BF);
 
             if (response.status = 200) {
@@ -246,12 +249,14 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
                         " ref={salesDataDurationRef}>
 
                             <h1 className="text-[24px] font-[700] leading-[120%] text-center">Hotel {hotelName}</h1>
+                            <h1 className="text-[16px] font-[700] leading-[120%] text-center">{hotelAddress}</h1>
+
                             {/* <h1 className="text-[16px] font-[700] leading-[120%] text-center">Data between {startingDate} and {endDate}</h1> */}
                             <div className="flex flex-row items-center justify-end gap-2 mr-1">
 
                                 {BF !== 0 && (
                                     <>
-                                        <h1>BF</h1>
+                                        <h1>BF Total Balance</h1>
                                         <h1>=</h1>
                                         <h1>Rs {BF}</h1>
 
@@ -326,7 +331,7 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
 
                                     <hr className="text-black-100 w-full mt-2" style={{ borderWidth: '3px' }}/>
                                     <div className="flex flex-row items-center justify-between -gap-4">
-                                        <h1> Total Amount </h1>
+                                        <h1> Balance Total Amount </h1>
                                         <h1>Rs {salesDataDuration[date].finalAmount}</h1>
                                     </div>
                                 </div>
