@@ -13,7 +13,8 @@
     "./purchaseSchema" : "./purchase.schema.ts",
     "./purchaseDetailSchema" : "./purchaseDetails.schema.ts",
     "./salesInfoSchema" : "./salesInfo.schema.ts",
-    "./getSalesDataDuration" : "./sales.data.duration.schema.ts"
+    "./getSalesDataDuration" : "./sales.data.duration.schema.ts",
+    "./userSchema" : "./users.schema.ts"
   },
     "type": "module"
 }

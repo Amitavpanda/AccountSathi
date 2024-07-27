@@ -15,6 +15,7 @@ export type SalesDetailsType = {
     totalAmountDue : string,
     amountPaid : string,
     amountPaidDescription : string,
+    dateDescription : string
     salesInfoId : string
 }
 

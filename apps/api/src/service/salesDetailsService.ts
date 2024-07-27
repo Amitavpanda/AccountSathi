@@ -52,7 +52,7 @@ async function getTotalAmountDueOfTheHotel(salesInfoId: string): Promise<number 
 
 export async function addSalesDetail(input : AddSalesDetailsSchema){
 
-    const {stockName, date, price, quantity, amountPaid, amountPaidDescription, salesInfoId} = input.body;
+    const {stockName, date, price, quantity, amountPaid, amountPaidDescription, salesInfoId, dateDescription} = input.body;
     
 
     try{
@@ -86,7 +86,8 @@ export async function addSalesDetail(input : AddSalesDetailsSchema){
                 amount : amount,
                 totalAmountDue : totalAmountDue,
                 amountPaid : amountPaid,
-                amountPaidDescription : amountPaidDescription,
+                amountPaidDescription : amountPaidDescription, 
+                dateDescription : dateDescription,
                 salesInfoId : salesInfoId
             }
         })
