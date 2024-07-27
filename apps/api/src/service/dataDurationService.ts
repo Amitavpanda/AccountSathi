@@ -123,7 +123,8 @@ export async function salesDataDurationService(input : GetSalesDetaDurationSchem
             const object = {
                 date : d.date,
                 info : infoList,
-                finalAmount : presentAmount
+                finalAmount : presentAmount,
+                dateDescription : d.dateDescription
             }
             response.set(d.date, object);
             console.log("response", response);

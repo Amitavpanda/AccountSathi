@@ -35,12 +35,14 @@
     "cors": "^2.8.5",
     "dayjs": "^1.11.11",
     "express": "^4.19.2",
+    "firebase": "^10.12.3",
     "jsonwebtoken": "^9.0.2",
     "lodash": "^4.17.21",
     "mongoose": "^8.4.1",
     "nanoid": "^5.0.7",
     "pino": "^9.1.0",
     "pino-pretty": "^11.2.0",
+    "twilio": "^5.2.2",
     "zod": "^3.23.8"
   },
   "type": "module"

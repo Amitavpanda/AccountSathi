@@ -32,12 +32,13 @@ export const addSupplierPurchaseSchema = z.object({
 
   export const addSalesDetailsSchema = z.object({
     stockName: z.string().min(1).max(255),
-    date : z.date(),
+    date : z.date().optional(),
     quantity : z.string(), 
     price : z.string(), 
     amountPaid : z.string(),
     amountPaidDescription : z.string(),
-    salesInfoId : z.string()
+    salesInfoId : z.string(),
+    dateDescription : z.string().optional()
   })
 
   export const salesDataDurationSchema = z.object({

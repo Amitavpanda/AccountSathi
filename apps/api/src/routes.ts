@@ -11,7 +11,8 @@ import { addSalesDetailsSchema } from "../../../packages/validations/salesDetail
 import { addSalesDetailsHandler, getSalesDetailsHandler } from "./contollers/salesDetails.controller.js";
 import { getSalesDataDurationSchema } from "@repo/validations/getSalesDataDuration";
 import { salesDataDurationHandler } from "./contollers/dataDuration.controller.js";
-
+import {loginUserSchema, otpVerificationSchema, registerUserSchema} from "@repo/validations/userSchema"
+import { loginHandler, otpVerificationHandler, register } from "./contollers/users.controller.js";
 
 function routes(app : Express){
     app.get('/healthcheck', (req : Request, res : Response)  => res.sendStatus(200));
@@ -37,6 +38,9 @@ function routes(app : Express){
     app.get('/getSupplierPurchaseDetails/:supplierId',  getSupplierPurchaseDetailHandler);
 
 
+    app.post('/register', validate(registerUserSchema), register );
+    app.post('/login', validate(loginUserSchema), loginHandler);
+    app.post('/otpVerification', validate(otpVerificationSchema), otpVerificationHandler)
 
 
 }

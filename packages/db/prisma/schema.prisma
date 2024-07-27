@@ -14,9 +14,12 @@ datasource db {
 }
 
 model User {
-  id          String  @id @unique @default(uuid())
-  phoneNumber String
-  name        String?
+  loginId      String  @id @unique
+  phoneNumber  String
+  password     String
+  otp          String?
+  refreshToken String?
+  name         String?
 }
 
 model SupplierPurchase {
@@ -69,6 +72,7 @@ model SalesInfoDetail {
   totalAmountDue        Float
   amountPaid            Float
   amountPaidDescription String
+  dateDescription       String?
   salesInfoId           String
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt

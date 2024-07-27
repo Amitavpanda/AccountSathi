@@ -7,10 +7,11 @@ const payload = {
   body: z.object({
     stockName: z.string().min(1).max(255),
     date : z.string(),
-    quantity : z.number(), 
-    price : z.number(), 
+    quantity : z.number(),
+    price : z.number(),
     amountPaid : z.number(),
     amountPaidDescription : z.string(),
+    dateDescription : z.string(),
     salesInfoId : z.string()
   }),
 };

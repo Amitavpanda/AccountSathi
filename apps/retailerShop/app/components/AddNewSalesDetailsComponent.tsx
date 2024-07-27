@@ -252,6 +252,23 @@ export default function AddNewSalesDetailsComponent({ id }: AddNewSalesDetailsPr
                                     )}
                                 />
                             </div>
+                            <div className="flex-1">
+                                <FormField
+                                    control={form.control}
+                                    name="dateDescription"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Date Description</FormLabel>
+                                            <FormControl>
+                                                <Input placeholder="Amount Paid Description" {...field} />
+                                            </FormControl>
+                                            <FormDescription>
+                                            Date Description                                        </FormDescription>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
                         </div>
                         <Button
                             className="w-40 h-15 rounded-md bg-blue-90 text-white rounded-xl"

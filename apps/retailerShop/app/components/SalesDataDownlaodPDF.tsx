@@ -111,26 +111,26 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
     const handleGeneratePDF = async () => {
         const inputData = salesDataDurationRef.current;
         try {
-          const canvas = await html2canvas(inputData);
-          const imgWidth = 400;
-          const pageHeight = 400;
-          const imgHeight = (canvas.height * imgWidth) / canvas.width;
-          let heightLeft = imgHeight;
-          let position = 0;
-          heightLeft -= pageHeight;
-          const pdf = new jsPDF({ orientation: "landscape", unit: "px", format: "a4", });
-          pdf.addImage(canvas, "PNG", 0, position, imgWidth, imgHeight);
-          while (heightLeft > 0) {
-            position = heightLeft - imgHeight;
-            pdf.addPage();
-            pdf.addImage(canvas, "PNG", 0, position, imgWidth, imgHeight);
+            const canvas = await html2canvas(inputData);
+            const imgWidth = 400;
+            const pageHeight = 400;
+            const imgHeight = (canvas.height * imgWidth) / canvas.width;
+            let heightLeft = imgHeight;
+            let position = 0;
             heightLeft -= pageHeight;
-          }
-          pdf.save(`${hotelName} ${startingDate} - ${endDate}.pdf`);
+            const pdf = new jsPDF({ orientation: "landscape", unit: "px", format: "a4", });
+            pdf.addImage(canvas, "PNG", 0, position, imgWidth, imgHeight);
+            while (heightLeft > 0) {
+                position = heightLeft - imgHeight;
+                pdf.addPage();
+                pdf.addImage(canvas, "PNG", 0, position, imgWidth, imgHeight);
+                heightLeft -= pageHeight;
+            }
+            pdf.save(`${hotelName} ${startingDate} - ${endDate}.pdf`);
         } catch (error) {
-          console.log(error);
+            console.log(error);
         }
-      }
+    }
     return (
         <>
 
@@ -177,6 +177,8 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
                                                             date > new Date() || date < new Date("1900-01-01")
                                                         }
                                                         initialFocus
+
+
 
                                                     />
                                                 </PopoverContent>
@@ -249,7 +251,7 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
                         " ref={salesDataDurationRef}>
 
                             <h1 className="text-[24px] font-[700] leading-[120%] text-center">Hotel {hotelName}</h1>
-                            <h1 className="text-[16px] font-[700] leading-[120%] text-center">{hotelAddress}</h1>
+                            <h1 className="text-[16px] font-[700] leading-[120%] text-center -mt-2">{hotelAddress}</h1>
 
                             {/* <h1 className="text-[16px] font-[700] leading-[120%] text-center">Data between {startingDate} and {endDate}</h1> */}
                             <div className="flex flex-row items-center justify-end gap-2 mr-1">
@@ -263,10 +265,12 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
                                     </>
                                 )}
                             </div>
+
                             {Object.keys(salesDataDuration).map((date: string) => (
 
                                 <div className="flex flex-col">
-                                    <h1 className="underline">{date}</h1>
+                                    <h1>{salesDataDuration[date].dateDescription}</h1>
+                                    {salesDataDuration[date].dateDescription  !== "no" && (<h1 className="underline">{date}</h1>)}
                                     {salesDataDuration[date].info.map((item: any, index: number) => (
 
                                         <>
@@ -329,7 +333,7 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
 
                                     ))}
 
-                                    <hr className="text-black-100 w-full mt-2" style={{ borderWidth: '3px' }}/>
+                                    <hr className="text-black-100 w-full mt-2" style={{ borderWidth: '3px' }} />
                                     <div className="flex flex-row items-center justify-between -gap-4">
                                         <h1> Balance Total Amount </h1>
                                         <h1>Rs {salesDataDuration[date].finalAmount}</h1>
