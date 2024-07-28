@@ -23,7 +23,7 @@ import {
     Popover,
     PopoverContent,
     PopoverTrigger,
-  } from "@repo/ui/popover"
+} from "@repo/ui/popover"
 
 
 import { format } from "date-fns"
@@ -246,6 +246,25 @@ export default function AddNewPurchaseDetailsComponent({ id }: AddNewPurchaseDet
                                             </FormControl>
                                             <FormDescription>
                                                 Amount Paid Description                                            </FormDescription>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
+
+                            <div className="flex-1">
+                                <FormField
+                                    control={form.control}
+                                    name="dateDescription"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Date Description</FormLabel>
+                                            <FormControl>
+                                                <Input placeholder="Date Description" {...field} />
+                                            </FormControl>
+                                            <FormDescription>
+                                                Date Description
+                                            </FormDescription>
                                             <FormMessage />
                                         </FormItem>
                                     )}

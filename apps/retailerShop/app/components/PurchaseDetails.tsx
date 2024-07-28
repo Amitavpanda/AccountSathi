@@ -6,6 +6,8 @@ import { PurchaseDetailsType, columns } from './PurchaseDetailsComponent/columns
 import axios, { AxiosResponse } from 'axios';
 import { error, info } from '@repo/logs/logs';
 import { DataTable } from './PurchaseDetailsComponent/data-table';
+import Link from 'next/link';
+import { Button } from '@repo/ui/button';
 
 interface  PurchaseDetailsProps {
     id : any;
@@ -41,6 +43,10 @@ export default function PurchaseDetails({id} : PurchaseDetailsProps){
     return(
         <>
             <h1>Purchase Details for id : {id}</h1>
+
+            <Link href={`/purchase/${id}/downloadPDF`}>
+                <Button className="w-40 h-15 rounded-md bg-blue-90 text-white rounded-xl">Download PDF</Button>
+            </Link>
 
             <div className="container mx-auto py-10">
                 <DataTable columns={columns} data={purchaseDetails}/>

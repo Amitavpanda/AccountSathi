@@ -15,6 +15,7 @@ export type PurchaseDetailsType = {
     totalAmountDue : string,
     amountPaid : string,
     amountPaidDescription : string,
+    dateDescription : string
     supplierPurchaseId : string
 }
 

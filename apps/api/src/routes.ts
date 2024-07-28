@@ -13,12 +13,14 @@ import { getSalesDataDurationSchema } from "@repo/validations/getSalesDataDurati
 import { salesDataDurationHandler } from "./contollers/dataDuration.controller.js";
 import {loginUserSchema, otpVerificationSchema, registerUserSchema} from "@repo/validations/userSchema"
 import { loginHandler, otpVerificationHandler, register } from "./contollers/users.controller.js";
+import { getPurchaseDataDurationSchema } from "@repo/validations/getPurchaseDataDuration";
+import { purchaseDataDurationHandler } from "./contollers/purchaseDataDuration.contoller.js";
 
 function routes(app : Express){
     app.get('/healthcheck', (req : Request, res : Response)  => res.sendStatus(200));
 
 
-
+    app.post('/getPurchasesDataDuration', validate(getPurchaseDataDurationSchema), purchaseDataDurationHandler);
     app.post('/getSalesDataDuration', validate(getSalesDataDurationSchema), salesDataDurationHandler);
     
     app.post('/addSalesDetails', validate(addSalesDetailsSchema), addSalesDetailsHandler);
