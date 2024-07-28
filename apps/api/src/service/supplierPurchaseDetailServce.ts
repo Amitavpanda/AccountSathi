@@ -51,8 +51,11 @@ export async function addSupplierPurchaseDetail(input : AddSupplierPurchaseDetai
     console.log("the input inside service is ", input);
     const requestData = input.body;
     console.log("the requestData", requestData);
-    const {stockName, date, price, quantity, supplierPurchaseId, amountPaid, amountPaidDescription} = requestData
-    
+    const {stockName, date, price, quantity, supplierPurchaseId, amountPaid, amountPaidDescription, dateDescription} = requestData
+
+
+
+
 
 
 
@@ -84,6 +87,7 @@ export async function addSupplierPurchaseDetail(input : AddSupplierPurchaseDetai
                 totalAmountDue : totalAmountDue,
                 amountPaid : amountPaid,
                 amountPaidDescription : amountPaidDescription,
+                dateDescription : dateDescription,
                 supplierPurchaseId : supplierPurchaseId
             }
         })

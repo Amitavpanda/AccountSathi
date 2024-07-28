@@ -42,6 +42,7 @@ model SupplierPurchaseDetail {
   totalAmountDue        Float
   amountPaid            Float
   amountPaidDescription String
+  dateDescription       String?
   supplierPurchaseId    String
 
   createdAt        DateTime         @default(now())

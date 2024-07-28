@@ -18,7 +18,8 @@ export const addSupplierPurchaseSchema = z.object({
     price : z.string(), 
     amountPaid : z.string(),
     amountPaidDescription : z.string(),
-    supplierPurchaseId : z.string()
+    supplierPurchaseId : z.string(),
+    dateDescription : z.string().optional()
   })
 
 
@@ -43,6 +44,12 @@ export const addSupplierPurchaseSchema = z.object({
 
   export const salesDataDurationSchema = z.object({
     salesInfoId : z.string(),
+    startingDate : z.date(),
+    endDate : z.date()
+  })
+
+  export const purchaseDataDurationSchema = z.object({
+    purchaseInfoId : z.string(),
     startingDate : z.date(),
     endDate : z.date()
   })

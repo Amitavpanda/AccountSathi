@@ -18,7 +18,7 @@ import { Button } from "@repo/ui/button"
 
 
 
-import { DataTable } from './SalesDetailsComponent/data-table';
+import { DataTable } from './PurchaseDetailsComponent/data-table';
 
 
 import "../globals.css";
@@ -42,52 +42,52 @@ import {
     FormLabel,
     FormMessage,
 } from "@repo/ui/form"
-import { salesDataDurationSchema } from "../utils/validator"
+import { purchaseDataDurationSchema } from "../utils/validator"
 import { cn } from "../../../../packages/ui/@/lib/utils"
 import axios from "axios"
 import { useEffect, useState, useRef } from "react"
-import { SalesDetailsType, columns } from "./SalesDetailsComponent/columns";
+import { PurchaseDetailsType, columns } from "./PurchaseDetailsComponent/columns";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 
 
-interface SalesDataDownloadPDFProps {
+interface PurchaseDataDownloadPDFProps {
     id: string
 }
 
-export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
+export function PurchaseDataDownloadPDF({ id }: PurchaseDataDownloadPDFProps) {
     let finalAmount = 0;
-    const [salesDataDuration, setSalesDataDuration] = useState<SalesDetailsType[]>([]);
+    const [purchaseDataDuration, setPurchaseDataDuration] = useState<PurchaseDetailsType[]>([]);
     const [endDate, setEndDate] = useState<String>("");
     const [startingDate, setStartingDate] = useState<String>("");
-    const [hotelName, setHotelName] = useState<String>();
-    const [hotelAddress, setHotelAddress] = useState<String>();
+    const [supplierName, setSupplierName] = useState<String>();
+    const [supplierAddress, setSupplierAddress] = useState<String>();
 
     const [BF, setBF] = useState<number>(0);
 
-    const salesDataDurationRef = useRef(null);
+    const purchaseDataDurationRef = useRef(null);
 
-    const form = useForm<z.infer<typeof salesDataDurationSchema>>({
-        resolver: zodResolver(salesDataDurationSchema),
+    const form = useForm<z.infer<typeof purchaseDataDurationSchema>>({
+        resolver: zodResolver(purchaseDataDurationSchema),
         defaultValues: {
-            salesInfoId: id,
+            purchaseInfoId: id,
         },
     })
 
 
-    async function onSubmit(values: z.infer<typeof salesDataDurationSchema>) {
+    async function onSubmit(values: z.infer<typeof purchaseDataDurationSchema>) {
 
 
         try {
             const baseUri = process.env.NEXT_PUBLIC_UI_BASE_URI;
             console.log("form data submitted", values);
-            const response = await axios.post(`${baseUri}/getSalesDataDuration`, values);
+            const response = await axios.post(`${baseUri}/getPurchasesDataDuration`, values);
             console.log("response", response.data);
-            setSalesDataDuration(response.data.data);
+            setPurchaseDataDuration(response.data.data);
             setEndDate(response.data.endDateResponse);
             setStartingDate(response.data.startingDateResponse);
-            setHotelName(response.data.hotelName.name);
-            setHotelAddress(response.data.hotelAddress.address);
+            setSupplierName(response.data.supplierName.nameOfTheSupplier);
+            setSupplierAddress(response.data.supplierAddress.address);
             setBF(response.data.BF);
 
             if (response.status = 200) {
@@ -107,9 +107,9 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
         }
 
     }
-    console.log("the salesDataDuration", salesDataDuration);
+    console.log("the purchaseDataDuration", purchaseDataDuration);
     const handleGeneratePDF = async () => {
-        const inputData = salesDataDurationRef.current;
+        const inputData = purchaseDataDurationRef.current;
         try {
             const canvas = await html2canvas(inputData);
             const imgWidth = 400;
@@ -126,7 +126,7 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
                 pdf.addImage(canvas, "PNG", 0, position, imgWidth, imgHeight);
                 heightLeft -= pageHeight;
             }
-            pdf.save(`${hotelName} ${startingDate} - ${endDate}.pdf`);
+            pdf.save(`${supplierName} ${startingDate} - ${endDate}.pdf`);
         } catch (error) {
             console.log(error);
         }
@@ -240,18 +240,18 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
                 </Form>
 
 
-                {salesDataDuration && (
+                {purchaseDataDuration && (
                     <>
 
                         <div className="">
-                            <DataTable columns={columns} data={salesDataDuration} id={id} />
+                            <DataTable columns={columns} data={purchaseDataDuration} id={id} />
                         </div>
 
                         <div className="flex flex-col gap-y-3 p-5 bg-white w-[30rem] rounded-xl
-                        " ref={salesDataDurationRef}>
+                        " ref={purchaseDataDurationRef}>
 
-                            <h1 className="text-[24px] font-[700] leading-[120%] text-center">Hotel {hotelName}</h1>
-                            <h1 className="text-[16px] font-[700] leading-[120%] text-center -mt-2">{hotelAddress}</h1>
+                            <h1 className="text-[24px] font-[700] leading-[120%] text-center">Hotel {supplierName}</h1>
+                            <h1 className="text-[16px] font-[700] leading-[120%] text-center -mt-2">{supplierAddress}</h1>
 
                             {/* <h1 className="text-[16px] font-[700] leading-[120%] text-center">Data between {startingDate} and {endDate}</h1> */}
                             <div className="flex flex-row items-center justify-end gap-2 mr-1">
@@ -266,11 +266,11 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
                                 )}
                             </div>
 
-                            {Object.keys(salesDataDuration).map((date: string) => (
+                            {Object.keys(purchaseDataDuration).map((date: string) => (
 
                                 <div className="flex flex-col">
-                                    {salesDataDuration[date].dateDescription  !== "no" && (<h1 className="underline">{date}</h1>)}
-                                    {salesDataDuration[date].info.map((item: any, index: number) => (
+                                    {purchaseDataDuration[date].dateDescription  !== "no" && (<h1 className="underline">{date}</h1>)}
+                                    {purchaseDataDuration[date].info.map((item: any, index: number) => (
 
                                         <>
                                             <div className="flex items-center justify-between">
@@ -335,7 +335,7 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
                                     <hr className="text-black-100 w-full mt-2" style={{ borderWidth: '3px' }} />
                                     <div className="flex flex-row items-center justify-between -gap-4">
                                         <h1> Balance Total Amount </h1>
-                                        <h1>Rs {salesDataDuration[date].finalAmount}</h1>
+                                        <h1>Rs {purchaseDataDuration[date].finalAmount}</h1>
                                     </div>
                                 </div>
                             ))}

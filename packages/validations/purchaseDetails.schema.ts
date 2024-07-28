@@ -11,6 +11,7 @@ const payload = {
     price : z.number(), 
     amountPaid : z.number(),
     amountPaidDescription : z.string(),
+    dateDescription : z.string(),
     supplierPurchaseId : z.string()
   }),
 };
