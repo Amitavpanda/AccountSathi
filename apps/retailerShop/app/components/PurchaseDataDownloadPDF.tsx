@@ -250,8 +250,8 @@ export function PurchaseDataDownloadPDF({ id }: PurchaseDataDownloadPDFProps) {
                         <div className="flex flex-col gap-y-3 p-5 bg-white w-[30rem] rounded-xl
                         " ref={purchaseDataDurationRef}>
 
-                            <h1 className="text-[24px] font-[700] leading-[120%] text-center">Hotel {supplierName}</h1>
-                            <h1 className="text-[16px] font-[700] leading-[120%] text-center -mt-2">{supplierAddress}</h1>
+                            <h1 className="text-[24px] font-[700] leading-[120%] text-center"> {supplierName}</h1>
+                            {/* <h1 className="text-[16px] font-[700] leading-[120%] text-center -mt-2">{supplierAddress}</h1> */}
 
                             {/* <h1 className="text-[16px] font-[700] leading-[120%] text-center">Data between {startingDate} and {endDate}</h1> */}
                             <div className="flex flex-row items-center justify-end gap-2 mr-1">
