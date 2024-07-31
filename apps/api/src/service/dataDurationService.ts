@@ -51,7 +51,7 @@ export async function salesDataDurationService(input : GetSalesDetaDurationSchem
             salesInfoId,
             date : {
                 gte : startingDate,
-                lte : endDate
+                lte : endDate 
             }
         },
         orderBy : {
