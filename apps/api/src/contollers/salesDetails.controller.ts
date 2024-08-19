@@ -4,7 +4,7 @@
 
 import { Request, Response, response } from "express";
 import { error, info } from "@repo/logs/logs";
-import { addSalesDetail, getSalesDetailsBySalesInfoId } from "../service/salesDetailsService.js";
+import { addSalesDetail, getInfoPerDayMonth, getSalesDetailsBySalesInfoId } from "../service/salesDetailsService.js";
 export async function addSalesDetailsHandler(req : Request, res : Response) {
 
     info("req body :", req);
@@ -23,6 +23,15 @@ export async function getSalesDetailsHandler(req : Request, res : Response) {
     
       info("Sales info id is", salesInfoId);
     const response = await getSalesDetailsBySalesInfoId(salesInfoId);
+
+    info("response is ", response)
+
+    return res.send(response);
+
+}
+
+export async function getInfoPerDayMonthHandler(req : Request, res : Response) {
+    const response = await getInfoPerDayMonth(req);
 
     info("response is ", response)
 

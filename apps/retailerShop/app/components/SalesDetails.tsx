@@ -21,7 +21,7 @@ interface SalesDetailsProps {
 
 export default function SalesDetails({ id }: SalesDetailsProps) {
     const [salesDetails, setSalesDetails] = useState<SalesDetailsType[]>([]);
-
+    // const [hotelName, setHotelName] = 
 
 
 
@@ -51,6 +51,7 @@ export default function SalesDetails({ id }: SalesDetailsProps) {
     return (
         <>
             <h1>Sales Details for id : {id}</h1>
+            <h1>Hotel Name : {}</h1>
 
             
             <Link href={`/sales/${id}/downloadPDF`}>

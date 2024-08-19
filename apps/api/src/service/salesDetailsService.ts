@@ -7,7 +7,8 @@ import { enIN } from 'date-fns/locale';
 
 import {AddSupplierPurchaseDetailSchema} from "@repo/validations/purchaseDetailSchema";
 import { count } from "console";
-import { AddSalesDetailsSchema } from "../../../../packages/validations/salesDetail.schema.js";
+import { AddSalesDetailsSchema, GetInfoPerDayMonthSchema } from "../../../../packages/validations/salesDetail.schema.js";
+import { getInfoPerDay, getInfoPerMonth } from "../utils/salesDetailsUtil.js";
 
 
 async function getTotalAmountDueOfTheHotel(salesInfoId: string): Promise<number | null> {
@@ -76,7 +77,18 @@ export async function addSalesDetail(input : AddSalesDetailsSchema){
             where: { id: salesInfoId },
             data: { totalAmountDue },
           });
+          let hotelName;
+           hotelName = await prisma.salesInfo.findUnique({
+            where : {
+              id : salesInfoId
+            },
+            select : {
+              name : true
+            }
+          })
+          hotelName = hotelName?.name;
 
+          console.log("hotelName", hotelName);
         const salesDetails = await prisma.salesInfoDetail.create({
             data : {
                 stockName : stockName,
@@ -88,7 +100,8 @@ export async function addSalesDetail(input : AddSalesDetailsSchema){
                 amountPaid : amountPaid,
                 amountPaidDescription : amountPaidDescription, 
                 dateDescription : dateDescription,
-                salesInfoId : salesInfoId
+                salesInfoId : salesInfoId,
+                hotelName : hotelName
             }
         })
 
@@ -124,6 +137,36 @@ export async function getSalesDetailsBySalesInfoId(salesInfoId :string){
     }
 }
 
+export async function getInfoPerDayMonth(input : GetInfoPerDayMonthSchema){
+  const {date, month} = input.body;
+  let perDayData;
+  let perMonthData;
+  try{
+      if(date != null){
+      perDayData = await getInfoPerDay(date);
+      // perMonthData = await getInfoPerMonth(month);
+      }
+      // else if(month !=null){
+      //  perMonthData = await getInfoPerMonth(month);
+      // }
+      // else if(date != null){
+      //   perDayData = await getInfoPerDay(date);
+      // }
+      else {
+        return {success : false, error : "please provide date or month/ date or month is null"}
+      }
+      if (perDayData instanceof Map) {
+        return { success: true, perDayData: Object.fromEntries(perDayData) };
+      } else {
+        return { success: false, error: "error in getting data else" };
+      }
+  }
+
+  catch(error){
+      console.log("error in getting sales details", error);
+      return {success : false, error : "failed to get sales details"};
+  }
+}
 
 
 

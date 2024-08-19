@@ -1,14 +1,14 @@
 import { Express, Request, Response } from "express";
 import validate from "./middleware/validateResource.js";
 import { addSupplierPurchaseSchema } from "../../../packages/validations/purchase.schema.js";
-import { addSupplierPurchaseHandler, getSupplierPurchaseHandler } from "./contollers/supplierPurchase.contoller.js";
+import { addSupplierPurchaseHandler, getAllSuppliersHandler, getSupplierPurchaseHandler } from "./contollers/supplierPurchase.contoller.js";
 import { addSupplierPurchaseDetailSchema } from "@repo/validations/purchaseDetailSchema";
 import { addSupplierPurchaseDetailHandler, getSupplierPurchaseDetailHandler } from "./contollers/supplierPurchaseDetail.controller.js";
 import { addSalesInfoSchema } from "@repo/validations/salesInfoSchema";
 import { addSalesInfoHandler, getSalesInfoHandler } from "./contollers/salesInfo.controller.js";
 import { getAllSalesInfo } from "./service/salesInfoService.js";
-import { addSalesDetailsSchema } from "../../../packages/validations/salesDetail.schema.js";
-import { addSalesDetailsHandler, getSalesDetailsHandler } from "./contollers/salesDetails.controller.js";
+import { addSalesDetailsSchema, getInfoPerDayMonthSchema } from "../../../packages/validations/salesDetail.schema.js";
+import { addSalesDetailsHandler, getInfoPerDayMonthHandler, getSalesDetailsHandler } from "./contollers/salesDetails.controller.js";
 import { getSalesDataDurationSchema } from "@repo/validations/getSalesDataDuration";
 import { salesDataDurationHandler } from "./contollers/dataDuration.controller.js";
 import {loginUserSchema, otpVerificationSchema, registerUserSchema} from "@repo/validations/userSchema"
@@ -31,18 +31,19 @@ function routes(app : Express){
 
     app.post('/addSupplierPurchaseDetails', validate(addSupplierPurchaseDetailSchema), addSupplierPurchaseDetailHandler);
     app.get('/getSupplierPurchaseDetails/:supplierId',  getSupplierPurchaseDetailHandler);
-
+    app.get('/getAllSuppliers', getAllSuppliersHandler);
     
     app.post('/addSupplierPurchase', validate(addSupplierPurchaseSchema), addSupplierPurchaseHandler);
     app.get('/getSupplierPurchase', getSupplierPurchaseHandler);
-
     app.post('/addSupplierPurchaseDetails', validate(addSupplierPurchaseDetailSchema), addSupplierPurchaseDetailHandler);
     app.get('/getSupplierPurchaseDetails/:supplierId',  getSupplierPurchaseDetailHandler);
-
+    app.post('/infoPerDayMonth', validate(getInfoPerDayMonthSchema), getInfoPerDayMonthHandler);
 
     app.post('/register', validate(registerUserSchema), register );
     app.post('/login', validate(loginUserSchema), loginHandler);
-    app.post('/otpVerification', validate(otpVerificationSchema), otpVerificationHandler)
+    app.post('/otpVerification', validate(otpVerificationSchema), otpVerificationHandler);
+
+
 
 
 }
