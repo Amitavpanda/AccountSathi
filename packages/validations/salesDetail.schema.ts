@@ -16,6 +16,13 @@ const payload = {
   }),
 };
 
+const perDayMonthPayload = {
+  body: z.object({
+    date : z.string().optional(),
+    month : z.string().optional()
+  }),
+}
+
 const params = {
   params: z.object({
     salesInfoId: string({
@@ -27,6 +34,10 @@ const params = {
   export const addSalesDetailsSchema = z.object({
       ...payload,
   });
+
+  export const getInfoPerDayMonthSchema = z.object({
+    ...perDayMonthPayload,
+});
 
 export const updateOrderSchema = z.object({
   ...payload,
@@ -47,4 +58,6 @@ export type AddSalesDetailsSchema = z.infer<typeof addSalesDetailsSchema>;
 export type UpdateOrder = z.infer<typeof updateOrderSchema>;
 export type DeleteOrderSchema = z.infer<typeof updateOrderSchema>;
 export type GetProductSchema = z.infer<typeof getSupplierPurchaseSchema>;
+export type GetInfoPerDayMonthSchema = z.infer<typeof getInfoPerDayMonthSchema>;
+
 

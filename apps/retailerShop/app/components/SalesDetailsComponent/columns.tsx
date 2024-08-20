@@ -17,6 +17,7 @@ export type SalesDetailsType = {
     amountPaidDescription : string,
     dateDescription : string
     salesInfoId : string
+    hotelName : string
 }
 
 export const columns: ColumnDef<SalesDetailsType>[] = [
@@ -57,5 +58,9 @@ export const columns: ColumnDef<SalesDetailsType>[] = [
         accessorKey: "amountPaidDescription",
         header: "Amount Paid Description",
     },
+    {
+        accessorKey : "hotelName",
+        header : "hotelName"
+    }
 
 ]

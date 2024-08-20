@@ -75,6 +75,9 @@ model SalesInfoDetail {
   amountPaidDescription String
   dateDescription       String?
   salesInfoId           String
+  supplierName          String?
+  supplierId            String?
+  hotelName             String?
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
   // Relation field
