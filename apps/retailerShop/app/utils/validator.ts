@@ -48,6 +48,10 @@ export const addSupplierPurchaseSchema = z.object({
     endDate : z.date()
   })
 
+  export const infoPerDayMonthSchema = z.object({
+    date : z.date(),
+  })
+
   export const purchaseDataDurationSchema = z.object({
     purchaseInfoId : z.string(),
     startingDate : z.date(),
