@@ -6,7 +6,6 @@ import SalesInfo from "../components/SalesInfo";
 
 
 function Sales() {
-
     return (
         <>
             <div className="flex flex-col p-20">

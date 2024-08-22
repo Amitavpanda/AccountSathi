@@ -77,7 +77,7 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
 
     async function onSubmit(values: z.infer<typeof salesDataDurationSchema>) {
 
-
+        console.log("I am getting called after");
         try {
             const baseUri = process.env.NEXT_PUBLIC_UI_BASE_URI;
             console.log("form data submitted", values);
