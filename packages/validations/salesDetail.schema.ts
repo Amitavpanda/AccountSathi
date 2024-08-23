@@ -6,13 +6,19 @@ import path from "path";
 const payload = {
   body: z.object({
     stockName: z.string().min(1).max(255),
+    stockNameDetails : z.string().optional(),
     date : z.string(),
     quantity : z.number(),
+    quantityType : z.string().optional(),
+    quantityDetails : z.string().optional(),
     price : z.number(),
+    priceDetails : z.string().optional(),
     amountPaid : z.number(),
     amountPaidDescription : z.string(),
     dateDescription : z.string(),
-    salesInfoId : z.string()
+    salesInfoId : z.string(),
+    additionalDetails1 : z.string().optional(),
+    additionalDetails2 : z.string().optional()
   }),
 };
 

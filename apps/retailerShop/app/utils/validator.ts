@@ -7,7 +7,9 @@ export const addSupplierPurchaseSchema = z.object({
     phoneNumber : z.string(),
     address : z.string(), 
     totalAmountDue : z.string(), 
-    listOfItems : z.string()
+    listOfItems : z.string(),
+    accountDetails : z.string().optional(),
+    additionalDetails : z.string().optional()
   })
 
 
@@ -29,6 +31,8 @@ export const addSupplierPurchaseSchema = z.object({
     address : z.string(), 
     propieder : z.string(),
     totalAmountDue : z.string(), 
+    accountDetails : z.string().optional(), 
+    additionalDetails : z.string().optional()
   })
 
   export const addSalesDetailsSchema = z.object({

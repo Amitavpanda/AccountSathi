@@ -29,19 +29,27 @@ model SupplierPurchase {
   address           String
   totalAmountDue    Float
   listOfItems       String[]
+  accountDetails    String?
+  additionalDetails String?
   details           SupplierPurchaseDetail[]
 }
 
 model SupplierPurchaseDetail {
   id                    String   @id @unique @default(uuid())
   stockName             String
+  stockNameDetails      String?
   date                  DateTime
   quantity              Int
+  quantityType          String?
+  quantityDetails       String?
   price                 Float
+  priceDetails          String?
   amount                Float
   totalAmountDue        Float
   amountPaid            Float
   amountPaidDescription String
+  additionalDetails1     String?
+  additionalDetails2    String?
   dateDescription       String?
   supplierPurchaseId    String
 
@@ -60,15 +68,21 @@ model SalesInfo {
   address        String
   propieder      String
   totalAmountDue Float
+  accountDetails  String?
+  additionalDetails  String?
   details        SalesInfoDetail[]
 }
 
 model SalesInfoDetail {
   id                    String    @id @unique @default(uuid())
   stockName             String
+  stockNameDetails      String?
   date                  DateTime
   quantity              Int
+  quantityType          String?
+  quantityDetails       String?
   price                 Float
+  priceDetails          String?
   amount                Float
   totalAmountDue        Float
   amountPaid            Float
@@ -78,6 +92,8 @@ model SalesInfoDetail {
   supplierName          String?
   supplierId            String?
   hotelName             String?
+  additonalDetails1     String?
+  additonalDetails2     String?
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
   // Relation field

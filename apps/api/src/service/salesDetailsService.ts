@@ -53,7 +53,7 @@ async function getTotalAmountDueOfTheHotel(salesInfoId: string): Promise<number 
 
 export async function addSalesDetail(input : AddSalesDetailsSchema){
 
-    const {stockName, date, price, quantity, amountPaid, amountPaidDescription, salesInfoId, dateDescription} = input.body;
+    const {stockName, date, price, priceDetails,quantity, amountPaid, amountPaidDescription, salesInfoId, dateDescription, stockNameDetails, quantityType, quantityDetails, additionalDetails1, additionalDetails2} = input.body;
     
 
     try{
@@ -92,16 +92,22 @@ export async function addSalesDetail(input : AddSalesDetailsSchema){
         const salesDetails = await prisma.salesInfoDetail.create({
             data : {
                 stockName : stockName,
+                stockNameDetails : stockNameDetails,
                 date : date,
                 quantity : quantity,
+                quantityType : quantityType,
+                quantityDetails : quantityDetails,
                 price : price,
+                priceDetails : priceDetails,
                 amount : amount,
                 totalAmountDue : totalAmountDue,
                 amountPaid : amountPaid,
                 amountPaidDescription : amountPaidDescription, 
                 dateDescription : dateDescription,
                 salesInfoId : salesInfoId,
-                hotelName : hotelName
+                hotelName : hotelName,
+                additonalDetails1 : additionalDetails1,
+                additonalDetails2 : additionalDetails2
             }
         })
 

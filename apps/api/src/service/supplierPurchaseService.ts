@@ -9,8 +9,10 @@ export async function addSupplierPurchase(input : SupplierPurchase){
                 phoneNumber : input.phoneNumber,
                 address : input.address,
                 totalAmountDue : input.totalAmountDue,
-                listOfItems : input.listOfItems
-
+                listOfItems : input.listOfItems,
+                accountDetails : input.accountDetails,
+                additionalDetails : input.additionalDetails
+                
             }
         })
 
