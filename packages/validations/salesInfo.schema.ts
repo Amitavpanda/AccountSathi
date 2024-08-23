@@ -10,6 +10,8 @@ const payload = {
     address : z.string(), 
     propieder : z.string(),
     totalAmountDue : z.number(),
+    accountDetails : z.string().optional(),
+    additionalDetails : z.string().optional()
   }),
 };
 

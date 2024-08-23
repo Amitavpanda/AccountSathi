@@ -9,7 +9,9 @@ const payload = {
     phoneNumber : z.string(),
     address : z.string(), 
     totalAmountDue : z.number(), 
-    listOfItems : z.array(z.string())
+    listOfItems : z.array(z.string()),
+    accountDetails : z.string().optional(),
+    additionalDetails : z.string().optional()
   }),
 };
 

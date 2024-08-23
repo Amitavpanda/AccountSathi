@@ -31,6 +31,7 @@ export async function getSalesDetailsHandler(req : Request, res : Response) {
 }
 
 export async function getInfoPerDayMonthHandler(req : Request, res : Response) {
+    
     const response = await getInfoPerDayMonth(req);
 
     info("response is ", response)

@@ -51,7 +51,7 @@ export async function addSupplierPurchaseDetail(input : AddSupplierPurchaseDetai
     console.log("the input inside service is ", input);
     const requestData = input.body;
     console.log("the requestData", requestData);
-    const {stockName, date, price, quantity, supplierPurchaseId, amountPaid, amountPaidDescription, dateDescription} = requestData
+    const {stockName, stockNameDetails, date, price, priceDetails, quantity, quantityDetails, quantityType, supplierPurchaseId, amountPaid, amountPaidDescription, dateDescription, additionalDetails1, additionalDetails2} = requestData
 
 
 
@@ -80,15 +80,21 @@ export async function addSupplierPurchaseDetail(input : AddSupplierPurchaseDetai
         const supplierPurchaseDetail = await prisma.supplierPurchaseDetail.create({
             data : {
                 stockName : stockName,
+                stockNameDetails : stockNameDetails,
                 date : date,
                 quantity : quantity,
+                quantityType : quantityType,
+                quantityDetails : quantityDetails,
                 price : price,
+                priceDetails : priceDetails,
                 amount : amount,
                 totalAmountDue : totalAmountDue,
                 amountPaid : amountPaid,
                 amountPaidDescription : amountPaidDescription,
                 dateDescription : dateDescription,
-                supplierPurchaseId : supplierPurchaseId
+                supplierPurchaseId : supplierPurchaseId,
+                additionalDetails1 : additionalDetails1,
+                additionalDetails2 : additionalDetails2
             }
         })
 

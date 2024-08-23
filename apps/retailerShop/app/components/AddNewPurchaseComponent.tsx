@@ -39,6 +39,8 @@ export default function AddNewPurchaseComponent() {
             address: "",
             totalAmountDue: "",
             listOfItems: "",
+            accountDetails : "",
+            additionalDetails : ""
         },
     })
     // 2. Define a submit handler.
@@ -164,6 +166,48 @@ export default function AddNewPurchaseComponent() {
                                 />
                             </div>
                         </div>
+
+                        <div className="flex flex-col gap-2 md:flex-row items-center justify-center">
+                            <div className="flex-1">
+                                <FormField
+                                    control={form.control}
+                                    name="accountDetails"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Account Details</FormLabel>
+                                            <FormControl>
+                                                <Input placeholder="Enter Account Details" {...field} />
+                                            </FormControl>
+                                            <FormDescription>
+                                                Account Details
+                                            </FormDescription>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                            </div>
+
+                            <div className="flex-1">
+                                <FormField
+                                    control={form.control}
+                                    name="additionalDetails"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Additional Details</FormLabel>
+                                            <FormControl>
+                                                <Input placeholder="Enter Additional Details" {...field} />
+                                            </FormControl>
+                                            <FormDescription>
+                                                Enter Additional Details
+                                            </FormDescription>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
+                        </div>
+
                         
                         <div className="flex-1">
                                 <FormField
