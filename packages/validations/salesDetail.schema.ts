@@ -18,7 +18,8 @@ const payload = {
     dateDescription : z.string(),
     salesInfoId : z.string(),
     additionalDetails1 : z.string().optional(),
-    additionalDetails2 : z.string().optional()
+    additionalDetails2 : z.string().optional(),
+    supplierName : z.string().optional()
   }),
 };
 

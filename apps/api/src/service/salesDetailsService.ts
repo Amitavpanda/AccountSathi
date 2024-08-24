@@ -53,7 +53,7 @@ async function getTotalAmountDueOfTheHotel(salesInfoId: string): Promise<number 
 
 export async function addSalesDetail(input : AddSalesDetailsSchema){
 
-    const {stockName, date, price, priceDetails,quantity, amountPaid, amountPaidDescription, salesInfoId, dateDescription, stockNameDetails, quantityType, quantityDetails, additionalDetails1, additionalDetails2} = input.body;
+    const {stockName, date, price, priceDetails,quantity, amountPaid, amountPaidDescription, salesInfoId, dateDescription, stockNameDetails, quantityType, quantityDetails, additionalDetails1, additionalDetails2, supplierName} = input.body;
     
 
     try{
@@ -107,7 +107,8 @@ export async function addSalesDetail(input : AddSalesDetailsSchema){
                 salesInfoId : salesInfoId,
                 hotelName : hotelName,
                 additonalDetails1 : additionalDetails1,
-                additonalDetails2 : additionalDetails2
+                additonalDetails2 : additionalDetails2,
+                supplierName : supplierName
             }
         })
 
