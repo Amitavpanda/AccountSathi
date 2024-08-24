@@ -23,7 +23,18 @@ import {
     Popover,
     PopoverContent,
     PopoverTrigger,
-  } from "@repo/ui/popover"
+} from "@repo/ui/popover"
+
+
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+  } from "@repo/ui/select"
+//   import { toast } from "@repo/ui"
+  
 
 
 import { format } from "date-fns"
@@ -38,6 +49,7 @@ import { useEffect, useState } from "react"
 import { error, info } from "@repo/logs/logs"
 import axios, { AxiosResponse } from "axios"
 import { cn } from "../../../../packages/ui/@/lib/utils"
+import Link from "next/link"
 
 
 
@@ -45,19 +57,46 @@ interface AddNewSalesDetailsProps {
     id: any;
 }
 
-export default function AddNewSalesDetailsComponent({ id }: AddNewSalesDetailsProps) {
+interface SupplierType {
+    id : string,
+    nameOfTheSupplier : string
+}
 
+export default function AddNewSalesDetailsComponent({ id }: AddNewSalesDetailsProps) {
+    const [suppliers, setSuppliers] = useState<SupplierType[]>([]);
     const form = useForm<z.infer<typeof addSalesDetailsSchema>>({
         resolver: zodResolver(addSalesDetailsSchema),
         defaultValues: {
             stockName: "",
+            stockNameDetails: "",
             quantity: "",
+            quantityType: "",
+            quantityDetails: "",
             price: "",
+            priceDetails: "",
             amountPaid: "",
             amountPaidDescription: "",
-            salesInfoId: id
+            salesInfoId: id,
+            additionalDetails1: "",
+            additionalDetails2: "",
+            supplierName : ""
         },
     })
+
+    useEffect(() => {
+
+        const fetchSuppliers = async() => {
+            const baseUri = process.env.NEXT_PUBLIC_UI_BASE_URI;
+            const getSuppliersResponse = await axios.get(`${baseUri}/getAllSuppliers`);
+
+            if(getSuppliersResponse.status === 200){
+                setSuppliers(getSuppliersResponse.data.data);
+            }
+        }
+        
+        fetchSuppliers();
+
+    }, [])
     // 2. Define a submit handler.
     async function onSubmit(values: z.infer<typeof addSalesDetailsSchema>) {
         // Do something with the form values.
@@ -74,6 +113,7 @@ export default function AddNewSalesDetailsComponent({ id }: AddNewSalesDetailsPr
             const baseUri = process.env.NEXT_PUBLIC_UI_BASE_URI;
             console.log("Form data submitted: ", transformedValues);
             const response = await axios.post(`${baseUri}/addSalesDetails`, transformedValues);
+            
             console.log("response", response);
             if (response.status === 200) {
                 console.log('Form data successfully stored in the backend.');
@@ -103,22 +143,49 @@ export default function AddNewSalesDetailsComponent({ id }: AddNewSalesDetailsPr
 
                         <div className="flex flex-col gap-2 md:flex-row items-center justify-center">
                             <div className="flex-1">
-                                <FormField
-                                    control={form.control}
-                                    name="stockName"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Name of the Stock</FormLabel>
-                                            <FormControl>
-                                                <Input placeholder="Enter name of the stock" {...field} />
-                                            </FormControl>
-                                            <FormDescription>
-                                                This is your public display name.
-                                            </FormDescription>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
+                                <div className="flex flex-row items-center gap-2 justify-center">
+                                    <div className="flex-1 w-50">
+                                        <FormField
+                                            control={form.control}
+                                            name="stockName"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Name of the Stock </FormLabel>
+                                                    <FormControl>
+                                                        <Input placeholder="Enter name of the stock" {...field} />
+                                                    </FormControl>
+                                                    <FormDescription>
+                                                        This is your public display name.
+                                                    </FormDescription>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
+
+                                    <div className="flex-1 w-50">
+                                        <FormField
+                                            control={form.control}
+                                            name="stockNameDetails"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Stock Name Details</FormLabel>
+                                                    <FormControl>
+                                                        <Input placeholder="Enter Stock Name Details" {...field} />
+                                                    </FormControl>
+                                                    <FormDescription>
+                                                        Stock Name Details.
+                                                    </FormDescription>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
+
+
+
+                                </div>
+
 
                             </div>
 
@@ -157,7 +224,7 @@ export default function AddNewSalesDetailsComponent({ id }: AddNewSalesDetailsPr
                                                             date > new Date() || date < new Date("1900-01-01")
                                                         }
                                                         initialFocus
-                                                        
+
                                                     />
                                                 </PopoverContent>
                                             </Popover>
@@ -175,42 +242,114 @@ export default function AddNewSalesDetailsComponent({ id }: AddNewSalesDetailsPr
 
                         <div className="flex flex-col gap-2 md:flex-row items-center justify-center">
                             <div className="flex-1">
-                                <FormField
-                                    control={form.control}
-                                    name="quantity"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Quantity</FormLabel>
-                                            <FormControl>
-                                                <Input placeholder="Enter Quantity" {...field} />
-                                            </FormControl>
-                                            <FormDescription>
-                                                Quantity
-                                            </FormDescription>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
+
+
+                                <div className="flex flex-row gap-2 items-center justify-center">
+                                    <div className="flex-1 w-40">
+                                        <FormField
+                                            control={form.control}
+                                            name="quantity"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Quantity</FormLabel>
+                                                    <FormControl>
+                                                        <Input placeholder="Enter Quantity" {...field} />
+                                                    </FormControl>
+                                                    <FormDescription>
+                                                        Quantity
+                                                    </FormDescription>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
+                                    <div className="w-20">
+                                        <FormField
+                                            control={form.control}
+                                            name="quantityType"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Type</FormLabel>
+                                                    <FormControl>
+                                                        <Input placeholder="Enter Type" {...field} />
+                                                    </FormControl>
+                                                    <FormDescription>
+                                                        Type
+                                                    </FormDescription>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
+                                    <div className=" w-40">
+                                        <FormField
+                                            control={form.control}
+                                            name="quantityDetails"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Quantity Details</FormLabel>
+                                                    <FormControl>
+                                                        <Input placeholder="Enter Quantity Details" {...field} />
+                                                    </FormControl>
+                                                    <FormDescription>
+                                                        Quantity Details
+                                                    </FormDescription>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
+                                </div>
+
+
 
                             </div>
 
                             <div className="flex-1">
-                                <FormField
-                                    control={form.control}
-                                    name="price"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Enter Price</FormLabel>
-                                            <FormControl>
-                                                <Input placeholder="Enter Price" {...field} />
-                                            </FormControl>
-                                            <FormDescription>
-                                                Enter Price
-                                            </FormDescription>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
+
+
+                                <div className="flex flex-row gap-2 items-center justify-center">
+                                    <div className="flex-1">
+                                        <FormField
+                                            control={form.control}
+                                            name="price"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Price</FormLabel>
+                                                    <FormControl>
+                                                        <Input placeholder="Enter Price" {...field} />
+                                                    </FormControl>
+                                                    <FormDescription>
+                                                        Price
+                                                    </FormDescription>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
+                                    <div className="flex-1">
+                                        <FormField
+                                            control={form.control}
+                                            name="priceDetails"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Price Details</FormLabel>
+                                                    <FormControl>
+                                                        <Input placeholder="Enter Price Details" {...field} />
+                                                    </FormControl>
+                                                    <FormDescription>
+                                                        Price Details
+                                                    </FormDescription>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
+
+                                </div>
+
+
+
                             </div>
                         </div>
 
@@ -263,12 +402,84 @@ export default function AddNewSalesDetailsComponent({ id }: AddNewSalesDetailsPr
                                                 <Input placeholder="Amount Paid Description" {...field} />
                                             </FormControl>
                                             <FormDescription>
-                                            Date Description                                        </FormDescription>
+                                                Date Description                                        </FormDescription>
                                             <FormMessage />
                                         </FormItem>
                                     )}
                                 />
                             </div>
+                        </div>
+                        <div className="flex flex-col gap-2 md:flex-row items-center justify-center">
+                            <div className="flex-1">
+                                <FormField
+                                    control={form.control}
+                                    name="additionalDetails1"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Additional Details 1</FormLabel>
+                                            <FormControl>
+                                                <Input placeholder="Additional Details 1" {...field} />
+                                            </FormControl>
+                                            <FormDescription>
+                                                Additional Details 1
+                                            </FormDescription>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                            </div>
+
+                            <div className="flex-1">
+                                <FormField
+                                    control={form.control}
+                                    name="additionalDetails2"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Additional Details 2</FormLabel>
+                                            <FormControl>
+                                                <Input placeholder="Additional Details 2" {...field} />
+                                            </FormControl>
+                                            <FormDescription>
+                                                Additional Details 2                                          </FormDescription>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
+
+                        </div>
+
+                        <div className="flex-1">
+                            <FormField
+                                control={form.control}
+                                name="supplierName"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Supplier</FormLabel>
+                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                            <FormControl>
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder="Select a Supplier" />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent className="bg-blue-90 rounded-xl">
+                                                {suppliers.map((supplier : SupplierType) => (
+                                                    <>
+                                                        <SelectItem className="text-white focus:bg-white focus:rounded-xl" value={supplier.nameOfTheSupplier}>{supplier.nameOfTheSupplier}</SelectItem>
+                                                    </>
+                                                ))}
+                                    
+                                            </SelectContent>
+                                        </Select>
+                                        <FormDescription>
+                                          Select the supplier
+                                        </FormDescription>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
                         </div>
                         <Button
                             className="w-40 h-15 rounded-md bg-blue-90 text-white rounded-xl"

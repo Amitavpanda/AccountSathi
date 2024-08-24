@@ -15,13 +15,19 @@ export const addSupplierPurchaseSchema = z.object({
 
   export const addSupplierPurchaseDetailsSchema = z.object({
     stockName: z.string().min(1).max(255),
+    stockNameDetails : z.string().optional(),
     date : z.date(),
     quantity : z.string(), 
+    quantityType : z.string().optional(),
+    quantityDetails : z.string().optional(),
     price : z.string(), 
+    priceDetails : z.string().optional(),
     amountPaid : z.string(),
     amountPaidDescription : z.string(),
     supplierPurchaseId : z.string(),
-    dateDescription : z.string().optional()
+    dateDescription : z.string().optional(),
+    additionalDetails1 : z.string().optional(),
+    additionalDetails2 : z.string().optional()
   })
 
 
@@ -37,13 +43,20 @@ export const addSupplierPurchaseSchema = z.object({
 
   export const addSalesDetailsSchema = z.object({
     stockName: z.string().min(1).max(255),
+    stockNameDetails : z.string().optional(),
     date : z.date().optional(),
     quantity : z.string(), 
+    quantityType : z.string().optional(),
+    quantityDetails : z.string().optional(),
     price : z.string(), 
+    priceDetails : z.string().optional(),
     amountPaid : z.string(),
     amountPaidDescription : z.string(),
     salesInfoId : z.string(),
-    dateDescription : z.string().optional()
+    dateDescription : z.string().optional(),
+    additionalDetails1 : z.string().optional(),
+    additionalDetails2 : z.string().optional(),
+    supplierName : z.string().optional()
   })
 
   export const salesDataDurationSchema = z.object({

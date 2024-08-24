@@ -12,6 +12,8 @@ export type PurchaseInfoType = {
     address: string,
     totalAmountDue: number,
     listOfItems: string
+    accountDetails : string,
+    additionalDetails : string
 }
 
 export const columns: ColumnDef<PurchaseInfoType>[] = [
@@ -36,6 +38,14 @@ export const columns: ColumnDef<PurchaseInfoType>[] = [
     {
         accessorKey: "listOfItems",
         header: "ListOfItems",
+    },
+    {
+        accessorKey: "accountDetails",
+        header: "Account Details",
+    },
+    {
+        accessorKey: "additionalDetails",
+        header: "Additional Details",
     },
 
     {
