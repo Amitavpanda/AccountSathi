@@ -51,11 +51,17 @@ export default function AddNewPurchaseDetailsComponent({ id }: AddNewPurchaseDet
         resolver: zodResolver(addSupplierPurchaseDetailsSchema),
         defaultValues: {
             stockName: "",
+            stockNameDetails: "",
             quantity: "",
+            quantityType: "",
+            quantityDetails: "",
             price: "",
+            priceDetails: "",
             amountPaid: "",
             amountPaidDescription: "",
-            supplierPurchaseId: id
+            supplierPurchaseId: id,
+            additionalDetails1: "",
+            additionalDetails2: ""
         },
     })
     // 2. Define a submit handler.
@@ -103,22 +109,49 @@ export default function AddNewPurchaseDetailsComponent({ id }: AddNewPurchaseDet
 
                         <div className="flex flex-col gap-2 md:flex-row items-center justify-center">
                             <div className="flex-1">
-                                <FormField
-                                    control={form.control}
-                                    name="stockName"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Name of the Stock</FormLabel>
-                                            <FormControl>
-                                                <Input placeholder="Enter name of the stock" {...field} />
-                                            </FormControl>
-                                            <FormDescription>
-                                                This is your public display name.
-                                            </FormDescription>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
+                                <div className="flex flex-row items-center gap-2 justify-center">
+                                    <div className="flex-1 w-50">
+                                        <FormField
+                                            control={form.control}
+                                            name="stockName"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Name of the Stock </FormLabel>
+                                                    <FormControl>
+                                                        <Input placeholder="Enter name of the stock" {...field} />
+                                                    </FormControl>
+                                                    <FormDescription>
+                                                        This is your public display name.
+                                                    </FormDescription>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
+
+                                    <div className="flex-1 w-50">
+                                        <FormField
+                                            control={form.control}
+                                            name="stockNameDetails"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Stock Name Details</FormLabel>
+                                                    <FormControl>
+                                                        <Input placeholder="Enter Stock Name Details" {...field} />
+                                                    </FormControl>
+                                                    <FormDescription>
+                                                        Stock Name Details.
+                                                    </FormDescription>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
+
+
+
+                                </div>
+
 
                             </div>
 
@@ -128,7 +161,7 @@ export default function AddNewPurchaseDetailsComponent({ id }: AddNewPurchaseDet
                                     name="date"
                                     render={({ field }) => (
                                         <FormItem className="flex flex-col">
-                                            <FormLabel>Date of birth</FormLabel>
+                                            <FormLabel>Date</FormLabel>
                                             <Popover>
                                                 <PopoverTrigger asChild>
                                                     <FormControl>
@@ -157,11 +190,12 @@ export default function AddNewPurchaseDetailsComponent({ id }: AddNewPurchaseDet
                                                             date > new Date() || date < new Date("1900-01-01")
                                                         }
                                                         initialFocus
+
                                                     />
                                                 </PopoverContent>
                                             </Popover>
                                             <FormDescription>
-                                                Your date of birth is used to calculate your age.
+                                                Date when the stock is being
                                             </FormDescription>
                                             <FormMessage />
                                         </FormItem>
@@ -174,42 +208,114 @@ export default function AddNewPurchaseDetailsComponent({ id }: AddNewPurchaseDet
 
                         <div className="flex flex-col gap-2 md:flex-row items-center justify-center">
                             <div className="flex-1">
-                                <FormField
-                                    control={form.control}
-                                    name="quantity"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Quantity</FormLabel>
-                                            <FormControl>
-                                                <Input placeholder="Enter Quantity" {...field} />
-                                            </FormControl>
-                                            <FormDescription>
-                                                Quantity
-                                            </FormDescription>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
+
+
+                                <div className="flex flex-row gap-2 items-center justify-center">
+                                    <div className="flex-1 w-40">
+                                        <FormField
+                                            control={form.control}
+                                            name="quantity"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Quantity</FormLabel>
+                                                    <FormControl>
+                                                        <Input placeholder="Enter Quantity" {...field} />
+                                                    </FormControl>
+                                                    <FormDescription>
+                                                        Quantity
+                                                    </FormDescription>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
+                                    <div className="w-20">
+                                        <FormField
+                                            control={form.control}
+                                            name="quantityType"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Type</FormLabel>
+                                                    <FormControl>
+                                                        <Input placeholder="Enter Type" {...field} />
+                                                    </FormControl>
+                                                    <FormDescription>
+                                                        Type
+                                                    </FormDescription>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
+                                    <div className=" w-40">
+                                        <FormField
+                                            control={form.control}
+                                            name="quantityDetails"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Quantity Details</FormLabel>
+                                                    <FormControl>
+                                                        <Input placeholder="Enter Quantity Details" {...field} />
+                                                    </FormControl>
+                                                    <FormDescription>
+                                                        Quantity Details
+                                                    </FormDescription>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
+                                </div>
+
+
 
                             </div>
 
                             <div className="flex-1">
-                                <FormField
-                                    control={form.control}
-                                    name="price"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Enter Price</FormLabel>
-                                            <FormControl>
-                                                <Input placeholder="Enter Price" {...field} />
-                                            </FormControl>
-                                            <FormDescription>
-                                                Enter Price
-                                            </FormDescription>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
+
+
+                                <div className="flex flex-row gap-2 items-center justify-center">
+                                    <div className="flex-1">
+                                        <FormField
+                                            control={form.control}
+                                            name="price"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Price</FormLabel>
+                                                    <FormControl>
+                                                        <Input placeholder="Enter Price" {...field} />
+                                                    </FormControl>
+                                                    <FormDescription>
+                                                        Price
+                                                    </FormDescription>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
+                                    <div className="flex-1">
+                                        <FormField
+                                            control={form.control}
+                                            name="priceDetails"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Price Details</FormLabel>
+                                                    <FormControl>
+                                                        <Input placeholder="Enter Price Details" {...field} />
+                                                    </FormControl>
+                                                    <FormDescription>
+                                                        Price Details
+                                                    </FormDescription>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
+
+                                </div>
+
+
+
                             </div>
                         </div>
 
@@ -270,6 +376,47 @@ export default function AddNewPurchaseDetailsComponent({ id }: AddNewPurchaseDet
                                     )}
                                 />
                             </div>
+                        </div>
+
+                        <div className="flex flex-col gap-2 md:flex-row items-center justify-center">
+                            <div className="flex-1">
+                                <FormField
+                                    control={form.control}
+                                    name="additionalDetails1"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Additional Details 1</FormLabel>
+                                            <FormControl>
+                                                <Input placeholder="Additional Details 1" {...field} />
+                                            </FormControl>
+                                            <FormDescription>
+                                                Additional Details 1
+                                            </FormDescription>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                            </div>
+
+                            <div className="flex-1">
+                                <FormField
+                                    control={form.control}
+                                    name="additionalDetails2"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Additional Details 2</FormLabel>
+                                            <FormControl>
+                                                <Input placeholder="Additional Details 2" {...field} />
+                                            </FormControl>
+                                            <FormDescription>
+                                                Additional Details 2                                          </FormDescription>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
+
                         </div>
                         <Button
                             className="w-40 h-15 rounded-md bg-blue-90 text-white rounded-xl"

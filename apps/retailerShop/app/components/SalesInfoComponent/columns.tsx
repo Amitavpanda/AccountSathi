@@ -12,6 +12,8 @@ export type SalesInfoType = {
     address: string,
     propieder : string,
     totalAmountDue: number,
+    accountDetails : string,
+    additionalDetails : string
 }
 
 export const columns: ColumnDef<SalesInfoType>[] = [
@@ -32,6 +34,16 @@ export const columns: ColumnDef<SalesInfoType>[] = [
     {
         accessorKey: "propieder",
         header: "Propieder",
+    },
+
+    {
+        accessorKey: "accountDetails",
+        header: "Account Details",
+    },
+
+    {
+        accessorKey: "additionalDetails",
+        header: "Additional Details",
     },
 
     {

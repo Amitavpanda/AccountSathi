@@ -9,7 +9,9 @@
     "./input": "./@/components/ui/input.tsx",
     "./calendar": "./@/components/ui/calendar.tsx",
     "./popover": "./@/components/ui/popover.tsx",
-    "./dialog" : "./@/components/ui/dialog.tsx"
+    "./dialog": "./@/components/ui/dialog.tsx",
+    "./label": "./@/components/ui/label.tsx",
+    "./select": "./@/components/ui/select.tsx"
   },
   "scripts": {
     "lint": "eslint . --max-warnings 0",
@@ -35,7 +37,9 @@
     "@radix-ui/react-dialog": "^1.1.1",
     "@radix-ui/react-label": "^2.0.2",
     "@radix-ui/react-popover": "^1.0.7",
+    "@radix-ui/react-select": "^2.1.1",
     "@radix-ui/react-slot": "^1.0.2",
+    "@radix-ui/react-toast": "^1.2.1",
     "@tanstack/react-table": "^8.17.3",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
