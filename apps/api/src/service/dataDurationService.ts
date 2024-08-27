@@ -19,7 +19,8 @@ interface NotCashPaid  {
     amount : number,
     presentAmount : number,
     previousAmount : number
-    totalAmountDue : number
+    totalAmountDue : number,
+    isPaymentDone : string | null
 }
 
 interface CashPaid {
@@ -90,8 +91,14 @@ export async function salesDataDurationService(input : GetSalesDetaDurationSchem
             previousDate = d.date;
             let infoList : (CashPaid | NotCashPaid)[] = [];
             if(d.amountPaid === 0 && d.amountPaidDescription === ""){
-                presentAmount += d.amount,
-                previousAmount = presentAmount - d.amount;
+                if(d.isPaymentDone === 'Yes'){
+                    presentAmount = presentAmount;
+                    previousAmount = presentAmount;
+                }
+                else{
+                    presentAmount += d.amount;
+                    previousAmount = presentAmount - d.amount;
+                }
                 const item : NotCashPaid = {
                     cashPaid : "no",
                     stockName : d.stockName,
@@ -100,7 +107,8 @@ export async function salesDataDurationService(input : GetSalesDetaDurationSchem
                     amount : d.amount,
                     presentAmount : presentAmount,
                     previousAmount : previousAmount,
-                    totalAmountDue : d.totalAmountDue
+                    totalAmountDue : d.totalAmountDue,
+                    isPaymentDone : d.isPaymentDone
                 }
                 infoList.push(item);
                 console.log("info list", infoList);
@@ -133,8 +141,14 @@ export async function salesDataDurationService(input : GetSalesDetaDurationSchem
             let existingData : ObjectType | undefined  = response.get(d.date)  ;
             console.log("existing data", existingData);
             if(d.amountPaid === 0 && d.amountPaidDescription === ""){
-                presentAmount += d.amount,
-                previousAmount = presentAmount - d.amount;
+                if(d.isPaymentDone === 'Yes'){
+                    presentAmount = presentAmount;
+                    previousAmount = presentAmount;
+                }
+                else{
+                    presentAmount += d.amount;
+                    previousAmount = presentAmount - d.amount;
+                }
                 const item : NotCashPaid = {
                     cashPaid : "no",
                     stockName : d.stockName,
@@ -143,7 +157,8 @@ export async function salesDataDurationService(input : GetSalesDetaDurationSchem
                     amount : d.amount,
                     presentAmount : presentAmount,
                     previousAmount : previousAmount,
-                    totalAmountDue : d.totalAmountDue
+                    totalAmountDue : d.totalAmountDue,
+                    isPaymentDone : d.isPaymentDone
                 }
                 existingData?.info.push(item);
                 console.log("response inside amount not paid,", response);    

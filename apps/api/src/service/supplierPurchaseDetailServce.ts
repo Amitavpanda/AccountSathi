@@ -51,7 +51,7 @@ export async function addSupplierPurchaseDetail(input : AddSupplierPurchaseDetai
     console.log("the input inside service is ", input);
     const requestData = input.body;
     console.log("the requestData", requestData);
-    const {stockName, stockNameDetails, date, price, priceDetails, quantity, quantityDetails, quantityType, supplierPurchaseId, amountPaid, amountPaidDescription, dateDescription, additionalDetails1, additionalDetails2} = requestData
+    const {stockName, stockNameDetails, date, price, priceDetails, quantity, quantityDetails, quantityType, supplierPurchaseId, amountPaid, amountPaidDescription, dateDescription, additionalDetails1, additionalDetails2, isPaymentDone} = requestData
 
 
 
@@ -65,11 +65,24 @@ export async function addSupplierPurchaseDetail(input : AddSupplierPurchaseDetai
         let totalAmountDue : number ;
 
         if(!hasSupplierPurchaseDetails){
-            totalAmountDue = await getTotalAmountDueOfTheSupplier(supplierPurchaseId) || 0;
+            const totalAmountDueValue = await getTotalAmountDueOfTheSupplier(supplierPurchaseId) || 0;
+            if(isPaymentDone === 'Yes'){
+              totalAmountDue = totalAmountDueValue;
+            }
+            else {
+              totalAmountDue = (totalAmountDueValue + amount) - amountPaid;
+            }
+            console.log("totalAmountDue", totalAmountDue);
         }
         else{
             const latestTotalAmountDue = await getLatestTotalAmountDue(supplierPurchaseId) || 0;
-            totalAmountDue = (latestTotalAmountDue + amount) - amountPaid;
+            if(isPaymentDone === 'Yes'){
+              totalAmountDue = latestTotalAmountDue;
+            }
+            else {
+              totalAmountDue = (latestTotalAmountDue + amount) - amountPaid;
+            }
+            console.log("totalAmountDue", totalAmountDue);
         }
 
         await prisma.supplierPurchase.update({
@@ -94,7 +107,8 @@ export async function addSupplierPurchaseDetail(input : AddSupplierPurchaseDetai
                 dateDescription : dateDescription,
                 supplierPurchaseId : supplierPurchaseId,
                 additionalDetails1 : additionalDetails1,
-                additionalDetails2 : additionalDetails2
+                additionalDetails2 : additionalDetails2,
+                isPaymentDone : isPaymentDone
             }
         })
 

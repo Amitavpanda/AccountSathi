@@ -9,6 +9,7 @@ import {AddSupplierPurchaseDetailSchema} from "@repo/validations/purchaseDetailS
 import { count } from "console";
 import { AddSalesDetailsSchema, GetInfoPerDayMonthSchema } from "../../../../packages/validations/salesDetail.schema.js";
 import { getInfoPerDay, getInfoPerMonth } from "../utils/salesDetailsUtil.js";
+import { late } from "zod";
 
 
 async function getTotalAmountDueOfTheHotel(salesInfoId: string): Promise<number | null> {
@@ -53,7 +54,7 @@ async function getTotalAmountDueOfTheHotel(salesInfoId: string): Promise<number 
 
 export async function addSalesDetail(input : AddSalesDetailsSchema){
 
-    const {stockName, date, price, priceDetails,quantity, amountPaid, amountPaidDescription, salesInfoId, dateDescription, stockNameDetails, quantityType, quantityDetails, additionalDetails1, additionalDetails2, supplierName} = input.body;
+    const {stockName, date, price, priceDetails,quantity, amountPaid, amountPaidDescription, salesInfoId, dateDescription, stockNameDetails, quantityType, quantityDetails, additionalDetails1, additionalDetails2, supplierName, isPaymentDone} = input.body;
     
 
     try{
@@ -64,12 +65,22 @@ export async function addSalesDetail(input : AddSalesDetailsSchema){
         console.log("hasSalesDetailsValue ",hasSalesDetailsValue);
         if(!hasSalesDetailsValue){
             const totalAmountDueValue= await getTotalAmountDueOfTheHotel(salesInfoId) || 0;
-            totalAmountDue = (totalAmountDueValue + amount) - amountPaid;
+            if(isPaymentDone === 'Yes'){
+              totalAmountDue = totalAmountDueValue;
+            }
+            else {
+              totalAmountDue = (totalAmountDueValue + amount) - amountPaid;
+            }
             console.log("totalAmountDue", totalAmountDue);
         }
         else{
             const latestTotalAmountDue = await getLatestTotalAmountDue(salesInfoId) || 0;
-            totalAmountDue = (latestTotalAmountDue + amount) - amountPaid;
+            if(isPaymentDone === 'Yes'){
+              totalAmountDue = latestTotalAmountDue;
+            }
+            else {
+              totalAmountDue = (latestTotalAmountDue + amount) - amountPaid;
+            }
             console.log("totalAmountDue else", totalAmountDue);
         }
 
@@ -108,7 +119,8 @@ export async function addSalesDetail(input : AddSalesDetailsSchema){
                 hotelName : hotelName,
                 additonalDetails1 : additionalDetails1,
                 additonalDetails2 : additionalDetails2,
-                supplierName : supplierName
+                supplierName : supplierName,
+                isPaymentDone : isPaymentDone
             }
         })
 
