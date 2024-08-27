@@ -23,6 +23,7 @@ export type PurchaseDetailsType = {
     supplierPurchaseId : string,
     additionalDetails1 : string,
     additionalDetails2 : string,
+    isPaymentDone : string
 }
 
 export const columns: ColumnDef<PurchaseDetailsType>[] = [
@@ -86,5 +87,10 @@ export const columns: ColumnDef<PurchaseDetailsType>[] = [
         accessorKey: "additionalDetails2",
         header: "Additional Details 2",
     },
+    {
+        accessorKey: "isPaymentDone",
+        header: "Is Payment Done",
+    },
+
 
 ]
