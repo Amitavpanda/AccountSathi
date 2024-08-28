@@ -52,6 +52,8 @@ model SupplierPurchaseDetail {
   additionalDetails2    String?
   dateDescription       String?
   supplierPurchaseId    String
+  isPaymentDone         String?
+
 
   createdAt        DateTime         @default(now())
   updatedAt        DateTime         @updatedAt
@@ -96,6 +98,7 @@ model SalesInfoDetail {
   additonalDetails2     String?
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
+  isPaymentDone         String?
   // Relation field
   salesInfo             SalesInfo @relation(fields: [salesInfoId], references: [id])
 
