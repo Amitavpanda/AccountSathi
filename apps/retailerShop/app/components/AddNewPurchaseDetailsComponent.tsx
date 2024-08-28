@@ -18,6 +18,14 @@ import {
 } from "@repo/ui/form"
 import { Input } from "@repo/ui/input"
 
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+  } from "@repo/ui/select"
+
 
 import {
     Popover,
@@ -45,6 +53,11 @@ interface AddNewPurchaseDetailsProps {
     id: any;
 }
 
+const isPaymentDoneOptions = [
+    "Yes",
+    "No"
+]
+
 export default function AddNewPurchaseDetailsComponent({ id }: AddNewPurchaseDetailsProps) {
 
     const form = useForm<z.infer<typeof addSupplierPurchaseDetailsSchema>>({
@@ -61,7 +74,8 @@ export default function AddNewPurchaseDetailsComponent({ id }: AddNewPurchaseDet
             amountPaidDescription: "",
             supplierPurchaseId: id,
             additionalDetails1: "",
-            additionalDetails2: ""
+            additionalDetails2: "",
+            isPaymentDone : ""
         },
     })
     // 2. Define a submit handler.
@@ -418,6 +432,37 @@ export default function AddNewPurchaseDetailsComponent({ id }: AddNewPurchaseDet
                             </div>
 
                         </div>
+
+                        <div className="flex-1">
+                                <FormField
+                                    control={form.control}
+                                    name="isPaymentDone"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Payment Done</FormLabel>
+                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                            <FormControl>
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder="Select if Payment is Done or not" />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent className="bg-blue-90 rounded-xl">
+                                                {isPaymentDoneOptions.map((isPaymentDoneOption) => (
+                                                    <>
+                                                        <SelectItem className="text-white focus:bg-white focus:rounded-xl" value={isPaymentDoneOption}>{isPaymentDoneOption}</SelectItem>
+                                                    </>
+                                                
+                                            ))}
+                                            </SelectContent>
+                                        </Select>
+                                            
+                                            <FormDescription>
+                                                Payment Done or not                                        </FormDescription>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
                         <Button
                             className="w-40 h-15 rounded-md bg-blue-90 text-white rounded-xl"
                             type="submit">Submit</Button>

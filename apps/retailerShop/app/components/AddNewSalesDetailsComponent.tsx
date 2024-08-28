@@ -32,9 +32,9 @@ import {
     SelectItem,
     SelectTrigger,
     SelectValue,
-  } from "@repo/ui/select"
+} from "@repo/ui/select"
 //   import { toast } from "@repo/ui"
-  
+
 
 
 import { format } from "date-fns"
@@ -58,9 +58,15 @@ interface AddNewSalesDetailsProps {
 }
 
 interface SupplierType {
-    id : string,
-    nameOfTheSupplier : string
+    id: string,
+    nameOfTheSupplier: string
 }
+
+
+const isPaymentDoneOptions = [
+    "Yes",
+    "No"
+]
 
 export default function AddNewSalesDetailsComponent({ id }: AddNewSalesDetailsProps) {
     const [suppliers, setSuppliers] = useState<SupplierType[]>([]);
@@ -79,21 +85,22 @@ export default function AddNewSalesDetailsComponent({ id }: AddNewSalesDetailsPr
             salesInfoId: id,
             additionalDetails1: "",
             additionalDetails2: "",
-            supplierName : ""
+            supplierName: "",
+            isPaymentDone: ""
         },
     })
 
     useEffect(() => {
 
-        const fetchSuppliers = async() => {
+        const fetchSuppliers = async () => {
             const baseUri = process.env.NEXT_PUBLIC_UI_BASE_URI;
             const getSuppliersResponse = await axios.get(`${baseUri}/getAllSuppliers`);
 
-            if(getSuppliersResponse.status === 200){
+            if (getSuppliersResponse.status === 200) {
                 setSuppliers(getSuppliersResponse.data.data);
             }
         }
-        
+
         fetchSuppliers();
 
     }, [])
@@ -113,7 +120,7 @@ export default function AddNewSalesDetailsComponent({ id }: AddNewSalesDetailsPr
             const baseUri = process.env.NEXT_PUBLIC_UI_BASE_URI;
             console.log("Form data submitted: ", transformedValues);
             const response = await axios.post(`${baseUri}/addSalesDetails`, transformedValues);
-            
+
             console.log("response", response);
             if (response.status === 200) {
                 console.log('Form data successfully stored in the backend.');
@@ -450,37 +457,72 @@ export default function AddNewSalesDetailsComponent({ id }: AddNewSalesDetailsPr
 
                         </div>
 
-                        <div className="flex-1">
-                            <FormField
-                                control={form.control}
-                                name="supplierName"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Supplier</FormLabel>
-                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                            <FormControl>
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="Select a Supplier" />
-                                                </SelectTrigger>
-                                            </FormControl>
-                                            <SelectContent className="bg-blue-90 rounded-xl">
-                                                {suppliers.map((supplier : SupplierType) => (
-                                                    <>
-                                                        <SelectItem className="text-white focus:bg-white focus:rounded-xl" value={supplier.nameOfTheSupplier}>{supplier.nameOfTheSupplier}</SelectItem>
-                                                    </>
-                                                ))}
-                                    
-                                            </SelectContent>
-                                        </Select>
-                                        <FormDescription>
-                                          Select the supplier
-                                        </FormDescription>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
 
+                        <div className="flex flex-col gap-2 md:flex-row items-center justify-center">
+                            <div className="flex-1">
+                                <FormField
+                                    control={form.control}
+                                    name="supplierName"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Supplier</FormLabel>
+                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                <FormControl>
+                                                    <SelectTrigger>
+                                                        <SelectValue placeholder="Select a Supplier" />
+                                                    </SelectTrigger>
+                                                </FormControl>
+                                                <SelectContent className="bg-blue-90 rounded-xl">
+                                                    {suppliers.map((supplier: SupplierType) => (
+                                                        <>
+                                                            <SelectItem className="text-white focus:bg-white focus:rounded-xl" value={supplier.nameOfTheSupplier}>{supplier.nameOfTheSupplier}</SelectItem>
+                                                        </>
+                                                    ))}
+
+                                                </SelectContent>
+                                            </Select>
+                                            <FormDescription>
+                                                Select the supplier
+                                            </FormDescription>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                            </div>
+
+                            <div className="flex-1">
+                                <FormField
+                                    control={form.control}
+                                    name="isPaymentDone"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Payment Done</FormLabel>
+                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                <FormControl>
+                                                    <SelectTrigger>
+                                                        <SelectValue placeholder="Select if Payment is Done or not" />
+                                                    </SelectTrigger>
+                                                </FormControl>
+                                                <SelectContent className="bg-blue-90 rounded-xl">
+                                                    {isPaymentDoneOptions.map((isPaymentDoneOption) => (
+                                                        <>
+                                                            <SelectItem className="text-white focus:bg-white focus:rounded-xl" value={isPaymentDoneOption}>{isPaymentDoneOption}</SelectItem>
+                                                        </>
+
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
+
+                                            <FormDescription>
+                                                Payment Done or not                                        </FormDescription>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
                         </div>
+
                         <Button
                             className="w-40 h-15 rounded-md bg-blue-90 text-white rounded-xl"
                             type="submit">Submit</Button>

@@ -247,7 +247,7 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
                             <DataTable columns={columns} data={salesDataDuration} id={id} />
                         </div>
 
-                        <div className="flex flex-col gap-y-3 p-5 bg-white w-[30rem] rounded-xl
+                        <div className="flex flex-col gap-y-3 p-5 bg-white w-[35rem] rounded-xl
                         " ref={salesDataDurationRef}>
 
                             <h1 className="text-[24px] font-[700] leading-[120%] text-center">Hotel {hotelName}</h1>
@@ -282,6 +282,17 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
                                                                 <h1>{item.quantity} X</h1>
                                                                 <h1> Rs {item.price} </h1>
                                                             </div>
+                                                            {item.isPaymentDone === "Yes" && <>
+                                                                <div className="bg-green-50 rounded-xl p-2">
+                                                                <h1>Payment Done</h1>
+                                                                {/* <div className="flex flex-row item-center justify-center gap-2">
+                                                                    <h1 className="font-[700]"> Rs {item.previousAmount} - </h1>
+                                                                    <h1>Rs {item.amountPaid}</h1>
+                                                                </div> */}
+
+                                                            </div>
+                                                            </>}
+                                                            
                                                             {/* <div>=</div>
                                                             <div className="flex flex-row item-center justify-center gap-2">
                                                                 <h1> Rs {item.amount} + </h1>
@@ -313,7 +324,7 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
                                                                 </>
                                                             ) : (
                                                                 <>
-                                                                    <h1> <span className="font-[700] text-[20px]"> + </span> Rs {item.amount}</h1>
+                                                                    <h1> { item.isPaymentDone !== "Yes" && <span className="font-[700] text-[20px]"> + </span>} Rs {item.amount}</h1>
 
                                                                 </>
                                                             )}
