@@ -5,16 +5,20 @@ const prisma = new PrismaClient();
 
 interface hotelListType {
     name: string,
+    stockNameDetails : string | null,
     quantity: number,
+    quantityType : string | null,
     price: number,
     amount: number,
-    supplier: string | null
+    supplier: string | null,
+    additionalDetails : string | null
 }
 
 interface collectionItemType {
     hotelName: string | null,
     amountPaid: number,
-    amountPaidDescription: string
+    amountPaidDescription: string,
+    additionalDetails : string | null
 }
 interface ObjectType {
     hotelName: string | null,
@@ -41,10 +45,13 @@ export async function getInfoPerDay(date: string) {
                 if (obj.amountPaid === 0 && obj.amountPaidDescription === "") {
                     const hotelListItem: hotelListType = {
                         name: obj.stockName,
+                        stockNameDetails : obj.stockNameDetails,
                         quantity: obj.quantity,
+                        quantityType : obj.quantityType,
                         price: obj.price,
                         amount: obj.amount,
-                        supplier: obj.supplierName
+                        supplier: obj.supplierName,
+                        additionalDetails : obj.additonalDetails1
                     }
                     let existingData: any = ans.get(obj.salesInfoId);
                     console.log("existingData", existingData);
@@ -54,7 +61,8 @@ export async function getInfoPerDay(date: string) {
                     const collectionItem: collectionItemType = {
                         hotelName: obj.hotelName,
                         amountPaid: obj.amountPaid,
-                        amountPaidDescription: obj.amountPaidDescription
+                        amountPaidDescription: obj.amountPaidDescription,
+                        additionalDetails : obj.additonalDetails1
                     }
                     let existingData: any = ans.get(obj.salesInfoId);
                     console.log("existingData", existingData);
@@ -68,10 +76,13 @@ export async function getInfoPerDay(date: string) {
                 if (obj.amountPaid === 0 && obj.amountPaidDescription === "") {
                     const hotelListItem: hotelListType = {
                         name: obj.stockName,
+                        stockNameDetails : obj.stockNameDetails,
                         quantity: obj.quantity,
+                        quantityType : obj.quantityType,
                         price: obj.price,
                         amount: obj.amount,
-                        supplier: obj.supplierName
+                        supplier: obj.supplierName,
+                        additionalDetails : obj.additonalDetails1
                     }
                     console.log("hotelListITem", hotelListItem)
                     hotelList.push(hotelListItem);
@@ -80,7 +91,8 @@ export async function getInfoPerDay(date: string) {
                     const collectionItem: collectionItemType = {
                         hotelName: obj.hotelName,
                         amountPaid: obj.amountPaid,
-                        amountPaidDescription: obj.amountPaidDescription
+                        amountPaidDescription: obj.amountPaidDescription,
+                        additionalDetails : obj.additonalDetails1
                     }
                     console.log("collectionItem", collectionItem);
                     collectionList.push(collectionItem);
