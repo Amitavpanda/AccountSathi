@@ -75,3 +75,23 @@
         @apply text-[16px] font-[700];
       }
 }
+
+
+@layer base { img { display: initial; } } 
+
+
+@media print {
+  .page-break-avoid {
+    page-break-inside: avoid;
+  }
+}
+
+@layer utilities {
+  .break-inside-avoid {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+  .overflow-visible {
+    overflow: visible !important;
+  }
+}
