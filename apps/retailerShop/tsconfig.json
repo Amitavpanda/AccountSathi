@@ -6,7 +6,8 @@
         "name": "next"
       }
     ],
-    "jsx": "preserve" // or "preserve"
+    "jsx": "preserve", // or "preserve",
+    "allowJs": false
   },
   "include": [
     "next-env.d.ts",

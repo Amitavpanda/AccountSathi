@@ -65,19 +65,19 @@ export function DataTable<TData, TValue>({
     return (
         <div>
 
-            {/* <div className="flex items-center justify-between py-4">
+            <div className="flex items-center justify-between py-4">
                 <Input
-                    placeholder="Search by Name"
-                    value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
+                    placeholder="Search by date"
+                    value={(table.getColumn("date")?.getFilterValue() as string) ?? ""}
                     onChange={(event) =>
 
-                        table.getColumn("name")?.setFilterValue(event.target.value)
+                        table.getColumn("date")?.setFilterValue(event.target.value)
                     }
                     className="max-w-sm rounded-xl"
                 />
               
 
-            </div> */}
+            </div>
             <div className="rounded-md border">
                 <Table className="bg-white rounded-xl">
                     <TableHeader>
