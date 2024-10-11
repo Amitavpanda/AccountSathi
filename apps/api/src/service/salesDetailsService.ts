@@ -160,9 +160,11 @@ export async function getInfoPerDayMonth(input : GetInfoPerDayMonthSchema){
   const {date, month} = input.body;
   let perDayData;
   let perMonthData;
+  let perDayDataPurchase
   try{
       if(date != null){
       perDayData = await getInfoPerDay(date);
+      perDayDataPurchase = await getInfoPerDayPurchase(date);
       // perMonthData = await getInfoPerMonth(month);
       }
       // else if(month !=null){

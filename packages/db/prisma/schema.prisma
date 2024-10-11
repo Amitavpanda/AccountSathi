@@ -53,6 +53,7 @@ model SupplierPurchaseDetail {
   dateDescription       String?
   supplierPurchaseId    String
   isPaymentDone         String?
+  supplierName          String?
 
 
   createdAt        DateTime         @default(now())

@@ -8,9 +8,11 @@ import Link from "next/link"
 export type GetInfoPerDayMonthType = {
     name: string,
     quantity: string,
+    quantityType : string,
     price: number,
     amount : string,
-    supplier : string
+    supplier : string,
+    additionalDetails : string
 }
 
 export const columns: ColumnDef<GetInfoPerDayMonthType>[] = [
@@ -22,6 +24,11 @@ export const columns: ColumnDef<GetInfoPerDayMonthType>[] = [
     {
         accessorKey: "quantity",
         header: "Quantity",
+    },
+
+    {
+        accessorKey: "quantityType",
+        header: "Quantity Type",
     },
 
     {
@@ -38,6 +45,11 @@ export const columns: ColumnDef<GetInfoPerDayMonthType>[] = [
     {
         accessorKey : "supplier",
         header : "Supplier"
+    },
+
+    {
+        accessorKey : "additionalDetails",
+        header : "Additional Details"
     }
 
 ]

@@ -24,6 +24,10 @@ import { Popover, PopoverContent, PopoverTrigger } from "@repo/ui/popover"
 import { CalendarIcon } from "lucide-react"
 import { Calendar } from "@repo/ui/calendar"
 import { Button } from "@repo/ui/button";
+import { columns } from "../components/SalesDetailsComponent/geInfoPerDayMonthComponent/columns";
+import { columnsCollection}  from "../components/SalesDetailsComponent/getCollectionPerDayMonthComponent/columns";
+
+import { DataTable } from "../components/SalesDetailsComponent/geInfoPerDayMonthComponent/data-table";
 
 
 
@@ -137,27 +141,18 @@ function GetInfoPerDay() {
                             <>
                                 {/* <h1>length of info {infoDetails[salesInfoId].info.length}</h1>
                                 <h1>lenght of collection {infoDetails[salesInfoId].collectionInfo.length}</h1> */}
-                                <h1>{infoDetails[salesInfoId].info.length > 0  && ` hotel name ${infoDetails[salesInfoId].hotelName}`}</h1>
+                                <h1 className="flex items-center justify-center bold-18">{infoDetails[salesInfoId].info.length > 0 && ` ${infoDetails[salesInfoId].hotelName}`}</h1>
                                 {infoDetails[salesInfoId].info.length > 0 ? (
                                     <>
-                                        <div className="flex flex-col">
-                                            {infoDetails[salesInfoId].info.map((item : any) => (
-                                                <>
-                                                    <div className="flex items-center justify-center">
-                                                        <h1>name {item.name}</h1>
-                                                        <h1>quantity {item.quantity}</h1>
-                                                        <h1>price {item.price}</h1>
-                                                        <h1>supplier {item.supplier}</h1>
-                                                    </div>
-                                                </>
-                                            ))}
+                                        <div className="container mx-auto py-3">
+                                            <DataTable columns={columns} data={infoDetails[salesInfoId].info} id={salesInfoId} />
                                         </div>
                                     </>
-                                ): 
-                                (
-                                    <>
-                                    </>
-                                )}
+                                ) :
+                                    (
+                                        <>
+                                        </>
+                                    )}
 
                             </>
                         ))}
@@ -171,25 +166,18 @@ function GetInfoPerDay() {
                             <>
                                 {/* <h1>length of info {infoDetails[salesInfoId].info.length}</h1>
                                 <h1>lenght of collection {infoDetails[salesInfoId].collectionInfo.length}</h1> */}
-                                <h1>{infoDetails[salesInfoId].collectionInfo.length > 0  && ` hotel name ${infoDetails[salesInfoId].hotelName}`}</h1>
+                                <h1 className="flex items-center justify-center bold-18">{infoDetails[salesInfoId].collectionInfo.length > 0 && `${infoDetails[salesInfoId].hotelName}`}</h1>
                                 {infoDetails[salesInfoId].collectionInfo.length > 0 ? (
                                     <>
-                                        <div className="flex flex-col">
-                                            {infoDetails[salesInfoId].collectionInfo.map((item : any) => (
-                                                <>
-                                                    <div className="flex items-center justify-center">
-                                                            <h1>amount paid {item.amountPaid}</h1>
-                                                            <h1>amount paid description {item.amountPaidDescription}</h1>
-                                                    </div>
-                                                </>
-                                            ))}
+                                          <div className="container mx-auto py-3">
+                                            <DataTable columns={columnsCollection} data={infoDetails[salesInfoId].collectionInfo} id={salesInfoId} />
                                         </div>
                                     </>
-                                ): 
-                                (
-                                    <>
-                                    </>
-                                )}
+                                ) :
+                                    (
+                                        <>
+                                        </>
+                                    )}
                             </>
                         ))}
 

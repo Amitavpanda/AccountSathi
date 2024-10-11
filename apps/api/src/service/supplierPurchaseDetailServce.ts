@@ -90,6 +90,16 @@ export async function addSupplierPurchaseDetail(input : AddSupplierPurchaseDetai
             data: { totalAmountDue },
           });
 
+        
+        const supplierName = await prisma.supplierPurchase.findUnique({
+          where : {
+            id : supplierPurchaseId
+          },
+          select : {
+            nameOfTheSupplier : true
+          }
+        })
+
         const supplierPurchaseDetail = await prisma.supplierPurchaseDetail.create({
             data : {
                 stockName : stockName,
@@ -108,7 +118,8 @@ export async function addSupplierPurchaseDetail(input : AddSupplierPurchaseDetai
                 supplierPurchaseId : supplierPurchaseId,
                 additionalDetails1 : additionalDetails1,
                 additionalDetails2 : additionalDetails2,
-                isPaymentDone : isPaymentDone
+                isPaymentDone : isPaymentDone,
+                supplierName : supplierName?.nameOfTheSupplier
             }
         })
 
