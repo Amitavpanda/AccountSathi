@@ -16,8 +16,6 @@ import { format } from "date-fns"
 import { Button } from "@repo/ui/button"
 
 
-
-
 import { DataTable } from './PurchaseDetailsComponent/data-table';
 
 
@@ -48,6 +46,7 @@ import axios from "axios"
 import { useEffect, useState, useRef } from "react"
 import { PurchaseDetailsType, columns } from "./PurchaseDetailsComponent/columns";
 import html2canvas from "html2canvas";
+import html2pdf from "html2pdf.js";
 import jsPDF from "jspdf";
 
 
@@ -106,29 +105,60 @@ export function PurchaseDataDownloadPDF({ id }: PurchaseDataDownloadPDFProps) {
             console.error("Error Getting response: ", err);
         }
 
+
     }
     console.log("the purchaseDataDuration", purchaseDataDuration);
     const handleGeneratePDF = async () => {
-        const inputData = purchaseDataDurationRef.current;
+        // const inputData = purchaseDataDurationRef.current;
+
         try {
-            const canvas = await html2canvas(inputData);
-            const imgWidth = 400;
-            const pageHeight = 400;
-            const imgHeight = (canvas.height * imgWidth) / canvas.width;
-            let heightLeft = imgHeight;
-            let position = 0;
-            heightLeft -= pageHeight;
-            const pdf = new jsPDF({ orientation: "landscape", unit: "px", format: "a4", });
-            pdf.addImage(canvas, "PNG", 0, position, imgWidth, imgHeight);
-            while (heightLeft > 0) {
-                position = heightLeft - imgHeight;
-                pdf.addPage();
-                pdf.addImage(canvas, "PNG", 0, position, imgWidth, imgHeight);
-                heightLeft -= pageHeight;
-            }
-            pdf.save(`${supplierName} ${startingDate} - ${endDate}.pdf`);
+            // // Capture the content as a canvas
+            // const canvas = await html2canvas(inputData);
+
+            // // Set image and page dimensions
+            // const imgWidth = 300; // A4 page width in landscape mode (px)
+            // const pageHeight = 300; // A4 page height in landscape mode (px)
+            // const imgHeight = (canvas.height * imgWidth) / canvas.width; // Scale height based on width
+
+            // let heightLeft = imgHeight;
+            // let position = 0;
+
+            // // Initialize jsPDF document (landscape, A4 format)
+            // const pdf = new jsPDF({
+            //     orientation: "landscape",
+            //     unit: "px",
+            //     format: "a4"
+            // });
+
+            // // Add the first page with content
+            // pdf.addImage(canvas, "PNG", 0, position, imgWidth, imgHeight);
+            // heightLeft -= pageHeight;
+
+            // // Add new pages as needed if content exceeds one page
+            // while (heightLeft > 0) {
+            //     position = heightLeft - imgHeight;
+            //     pdf.addPage();
+            //     pdf.addImage(canvas, "PNG", 0, position, imgWidth, imgHeight);
+            //     heightLeft -= pageHeight;
+            // }
+
+            // // Save the PDF with a filename
+            // pdf.save(`${supplierName} ${startingDate} - ${endDate}.pdf`);
+            const element = document.querySelector("#pdfDownload");
+            html2pdf(element);
+            const opt = {
+                margin: 0.5, // Adjust margin as needed
+                filename: `${supplierName}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, logging: true, dpi: 192, letterRendering: true },
+                jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' },
+                pagebreak: { mode: ['avoid-all', 'css', 'legacy'] } // Avoids splitting content across pages
+            };
+            
+            // Generate the PDF
+            html2pdf().from(element).set(opt).save();
         } catch (error) {
-            console.log(error);
+            console.log("Error generating PDF:", error);
         }
     }
     return (
@@ -248,7 +278,7 @@ export function PurchaseDataDownloadPDF({ id }: PurchaseDataDownloadPDFProps) {
                         </div>
 
                         <div className="flex flex-col gap-y-3 p-5 bg-white w-[35rem] rounded-xl
-                        " ref={purchaseDataDurationRef}>
+                        " ref={purchaseDataDurationRef} id="pdfDownload">
 
                             <h1 className="text-[24px] font-[700] leading-[120%] text-center"> {supplierName}</h1>
                             {/* <h1 className="text-[16px] font-[700] leading-[120%] text-center -mt-2">{supplierAddress}</h1> */}
@@ -269,12 +299,16 @@ export function PurchaseDataDownloadPDF({ id }: PurchaseDataDownloadPDFProps) {
                             {Object.keys(purchaseDataDuration).map((date: string) => (
 
                                 <div className="flex flex-col">
-                                    {purchaseDataDuration[date].dateDescription  !== "no" && (<h1 className="underline">{date}</h1>)}
+                                    {purchaseDataDuration[date].dateDescription !== "no" && (
+                                        <div className="break-inside-avoid overflow-visible">
+                                            <h1 className="underline ">{date}</h1>
+                                        </div>
+                                        )}
                                     {purchaseDataDuration[date].info.map((item: any, index: number) => (
 
                                         <>
                                             <div className="flex items-center justify-between">
-                                                <div className="flex items-center justify-center gap-4">
+                                                <div className="flex items-center justify-center gap-4 overflow-visible	break-inside-avoid">
                                                     {item.cashPaid === "no" ? (
                                                         <>
                                                             <h1>{item.stockName}</h1>
@@ -285,13 +319,13 @@ export function PurchaseDataDownloadPDF({ id }: PurchaseDataDownloadPDFProps) {
 
                                                             {item.isPaymentDone === "Yes" && <>
                                                                 <div className="bg-green-50 rounded-xl p-2">
-                                                                <h1>Payment Done</h1>
-                                                                {/* <div className="flex flex-row item-center justify-center gap-2">
+                                                                    <h1>Payment Done</h1>
+                                                                    {/* <div className="flex flex-row item-center justify-center gap-2">
                                                                     <h1 className="font-[700]"> Rs {item.previousAmount} - </h1>
                                                                     <h1>Rs {item.amountPaid}</h1>
                                                                 </div> */}
 
-                                                            </div>
+                                                                </div>
                                                             </>}
                                                             {/* <div>=</div>
                                                             <div className="flex flex-row item-center justify-center gap-2">
@@ -303,7 +337,7 @@ export function PurchaseDataDownloadPDF({ id }: PurchaseDataDownloadPDFProps) {
 
                                                     ) :
                                                         (
-                                                            <div className="bg-green-50 rounded-xl p-2">
+                                                            <div className="bg-green-50 rounded-xl p-2 break-inside-avoid overflow-visible">
                                                                 <h1>{item.amountPaidDescription}</h1>
                                                                 {/* <div className="flex flex-row item-center justify-center gap-2">
                                                                     <h1 className="font-[700]"> Rs {item.previousAmount} - </h1>
@@ -314,7 +348,7 @@ export function PurchaseDataDownloadPDF({ id }: PurchaseDataDownloadPDFProps) {
                                                         )}
                                                 </div>
                                                 {/* <div> = </div> */}
-                                                <div >
+                                                <div className="break-inside-avoid overflow-visible">
                                                     {item.cashPaid === "no" ? (
                                                         <>
                                                             {BF === 0 && index === 0 ? (
@@ -324,7 +358,7 @@ export function PurchaseDataDownloadPDF({ id }: PurchaseDataDownloadPDFProps) {
                                                                 </>
                                                             ) : (
                                                                 <>
-                                                                    <h1> { item.isPaymentDone !== "Yes" && <span className="font-[700] text-[20px]"> + </span>}  Rs {item.amount}</h1>
+                                                                    <h1> {item.isPaymentDone !== "Yes" && <span className="font-[700] text-[20px]"> + </span>}  Rs {item.amount}</h1>
 
                                                                 </>
                                                             )}
@@ -344,7 +378,7 @@ export function PurchaseDataDownloadPDF({ id }: PurchaseDataDownloadPDFProps) {
                                     ))}
 
                                     <hr className="text-black-100 w-full mt-2" style={{ borderWidth: '3px' }} />
-                                    <div className="flex flex-row items-center justify-between -gap-4">
+                                    <div className="flex flex-row items-center justify-between -gap-4 break-inside-avoid overflow-visible">
                                         <h1> Balance Total Amount </h1>
                                         <h1>Rs {purchaseDataDuration[date].finalAmount}</h1>
                                     </div>
@@ -358,3 +392,8 @@ export function PurchaseDataDownloadPDF({ id }: PurchaseDataDownloadPDFProps) {
         </>
     )
 }
+
+
+
+
+

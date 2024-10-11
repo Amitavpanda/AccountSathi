@@ -49,6 +49,7 @@ import { useEffect, useState, useRef } from "react"
 import { SalesDetailsType, columns } from "./SalesDetailsComponent/columns";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
+import html2pdf from "html2pdf.js";
 
 
 interface SalesDataDownloadPDFProps {
@@ -111,22 +112,36 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
     const handleGeneratePDF = async () => {
         const inputData = salesDataDurationRef.current;
         try {
-            const canvas = await html2canvas(inputData);
-            const imgWidth = 400;
-            const pageHeight = 400;
-            const imgHeight = (canvas.height * imgWidth) / canvas.width;
-            let heightLeft = imgHeight;
-            let position = 0;
-            heightLeft -= pageHeight;
-            const pdf = new jsPDF({ orientation: "landscape", unit: "px", format: "a4", });
-            pdf.addImage(canvas, "PNG", 0, position, imgWidth, imgHeight);
-            while (heightLeft > 0) {
-                position = heightLeft - imgHeight;
-                pdf.addPage();
-                pdf.addImage(canvas, "PNG", 0, position, imgWidth, imgHeight);
-                heightLeft -= pageHeight;
-            }
-            pdf.save(`${hotelName} ${startingDate} - ${endDate}.pdf`);
+            // const canvas = await html2canvas(inputData);
+            // const imgWidth = 400;
+            // const pageHeight = 400;
+            // const imgHeight = (canvas.height * imgWidth) / canvas.width;
+            // let heightLeft = imgHeight;
+            // let position = 0;
+            // heightLeft -= pageHeight;
+            // const pdf = new jsPDF({ orientation: "landscape", unit: "px", format: "a4", });
+            // pdf.addImage(canvas, "PNG", 0, position, imgWidth, imgHeight);
+            // while (heightLeft > 0) {
+            //     position = heightLeft - imgHeight;
+            //     pdf.addPage();
+            //     pdf.addImage(canvas, "PNG", 0, position, imgWidth, imgHeight);
+            //     heightLeft -= pageHeight;
+            // }
+            // pdf.save(`${hotelName} ${startingDate} - ${endDate}.pdf`);
+
+            const element = document.querySelector("#pdfDownload");
+            html2pdf(element);
+            const opt = {
+                margin: 0.5, // Adjust margin as needed
+                filename: `${hotelName}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, logging: true, dpi: 192, letterRendering: true },
+                jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' },
+                pagebreak: { mode: ['avoid-all', 'css', 'legacy'] } // Avoids splitting content across pages
+            };
+            
+            // Generate the PDF
+            html2pdf().from(element).set(opt).save();
         } catch (error) {
             console.log(error);
         }
@@ -248,9 +263,9 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
                         </div>
 
                         <div className="flex flex-col gap-y-3 p-5 bg-white w-[35rem] rounded-xl
-                        " ref={salesDataDurationRef}>
+                        " ref={salesDataDurationRef} id="pdfDownload">
 
-                            <h1 className="text-[24px] font-[700] leading-[120%] text-center">Hotel {hotelName}</h1>
+                            <h1 className="text-[24px] font-[700] leading-[120%] text-center">{hotelName}</h1>
                             <h1 className="text-[16px] font-[700] leading-[120%] text-center -mt-2">{hotelAddress}</h1>
 
                             {/* <h1 className="text-[16px] font-[700] leading-[120%] text-center">Data between {startingDate} and {endDate}</h1> */}
@@ -269,12 +284,16 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
                             {Object.keys(salesDataDuration).map((date: string) => (
 
                                 <div className="flex flex-col">
-                                    {salesDataDuration[date].dateDescription  !== "no" && (<h1 className="underline">{date}</h1>)}
+                                    {salesDataDuration[date].dateDescription  !== "no" && (
+                                        <div className="overflow-visible break-inside-avoid">
+                                            <h1 className="underline">{date}</h1>
+                                        </div>
+                                        )}
                                     {salesDataDuration[date].info.map((item: any, index: number) => (
 
                                         <>
                                             <div className="flex items-center justify-between">
-                                                <div className="flex items-center justify-center gap-4">
+                                                <div className="flex items-center justify-center gap-4 overflow-visible	break-inside-avoid">
                                                     {item.cashPaid === "no" ? (
                                                         <>
                                                             <h1>{item.stockName}</h1>
@@ -303,7 +322,7 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
 
                                                     ) :
                                                         (
-                                                            <div className="bg-green-50 rounded-xl p-2">
+                                                            <div className="bg-green-50 rounded-xl p-2 overflow-visible	break-inside-avoid">
                                                                 <h1>{item.amountPaidDescription}</h1>
                                                                 {/* <div className="flex flex-row item-center justify-center gap-2">
                                                                     <h1 className="font-[700]"> Rs {item.previousAmount} - </h1>
@@ -314,7 +333,7 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
                                                         )}
                                                 </div>
                                                 {/* <div> = </div> */}
-                                                <div >
+                                                <div className="break-inside-avoid overflow-visible">
                                                     {item.cashPaid === "no" ? (
                                                         <>
                                                             {BF === 0 && index === 0 ? (
@@ -344,7 +363,7 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
                                     ))}
 
                                     <hr className="text-black-100 w-full mt-2" style={{ borderWidth: '3px' }} />
-                                    <div className="flex flex-row items-center justify-between -gap-4">
+                                    <div className="flex flex-row items-center justify-between -gap-4 break-inside-avoid overflow-visible">
                                         <h1> Balance Total Amount </h1>
                                         <h1>Rs {salesDataDuration[date].finalAmount}</h1>
                                     </div>
