@@ -10,7 +10,13 @@ const app = express();
 
 app.use(express.json());
 
-app.use(cors());
+const corsOptions ={
+  origin:'http://localhost:3001', 
+  credentials:true,            
+  optionSuccessStatus:200
+}
+
+app.use(cors(corsOptions));
 
 const port = parseInt(process.env.PORT || '4000');
 
