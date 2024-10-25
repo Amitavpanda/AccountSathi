@@ -164,7 +164,7 @@ export async function getInfoPerDayMonth(input : GetInfoPerDayMonthSchema){
   try{
       if(date != null){
       perDayData = await getInfoPerDay(date);
-      perDayDataPurchase = await getInfoPerDayPurchase(date);
+      // perDayDataPurchase = await getInfoPerDayPurchase(date);
       // perMonthData = await getInfoPerMonth(month);
       }
       // else if(month !=null){
@@ -188,10 +188,3 @@ export async function getInfoPerDayMonth(input : GetInfoPerDayMonthSchema){
       return {success : false, error : "failed to get sales details"};
   }
 }
-
-
-
-
-
-
-
