@@ -10,13 +10,11 @@ const app = express();
 
 app.use(express.json());
 
-const corsOptions ={
-  origin:'http://localhost:3001', 
-  credentials:true,            
-  optionSuccessStatus:200
-}
-
-app.use(cors(corsOptions));
+app.use(cors({
+  origin: 'http://localhost:3001', // Allow only your frontend origin
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Specify allowed HTTP methods
+  credentials: true // Set to true if the frontend uses cookies/auth headers
+}));
 
 const port = parseInt(process.env.PORT || '4000');
 
