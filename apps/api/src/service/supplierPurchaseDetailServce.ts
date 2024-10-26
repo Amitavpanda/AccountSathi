@@ -2,7 +2,7 @@ import { PrismaClient, SupplierPurchase, SupplierPurchaseDetail } from "@repo/db
 import { error, info } from "@repo/logs/logs";
 const prisma = new PrismaClient();
 import {AddSupplierPurchaseDetailSchema} from "@repo/validations/purchaseDetailSchema";
-import { count } from "console";
+import { count, log } from "console";
 import { format } from 'date-fns';
 import { enIN } from 'date-fns/locale';
 
@@ -10,11 +10,13 @@ import { enIN } from 'date-fns/locale';
 async function getTotalAmountDueOfTheSupplier(supplierPurchaseId: string): Promise<number | null> {
     try {
       // Fetch the SupplierPurchase record by id
+      console.log("supplierPurchaseId : ", supplierPurchaseId)
       const supplierPurchase = await prisma.supplierPurchase.findUnique({
         where: { id: supplierPurchaseId },
         select: { totalAmountDue: true },
       });
-  
+      
+      console.log("totalAmountDue : ", supplierPurchase?.totalAmountDue);
       // If the record is found, return the totalAmountDue, otherwise return null
       return supplierPurchase ? supplierPurchase.totalAmountDue : null;
     } catch (error) {
@@ -66,6 +68,7 @@ export async function addSupplierPurchaseDetail(input : AddSupplierPurchaseDetai
 
         if(!hasSupplierPurchaseDetails){
             const totalAmountDueValue = await getTotalAmountDueOfTheSupplier(supplierPurchaseId) || 0;
+            console.log("totalAmountDueValue inside addSupplierPurchaseDetail method: ", totalAmountDueValue);
             if(isPaymentDone === 'Yes'){
               totalAmountDue = totalAmountDueValue;
             }
