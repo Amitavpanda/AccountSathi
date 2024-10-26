@@ -8,13 +8,16 @@ import routes from "./routes.js";
 
 const app = express();
 
-app.use(express.json());
+console.log("cors enabled")
 
 app.use(cors({
   origin: 'http://localhost:3001', // Allow only your frontend origin
   methods: ['GET', 'POST', 'PUT', 'DELETE'], // Specify allowed HTTP methods
   credentials: true // Set to true if the frontend uses cookies/auth headers
 }));
+
+app.use(express.json());
+
 
 const port = parseInt(process.env.PORT || '4000');
 
