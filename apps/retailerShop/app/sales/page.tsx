@@ -17,10 +17,13 @@ function Sales() {
                         </Button>
                     </Link>
                 </div>
+
+
                 <div className="">
                     <SalesInfo />
                 </div>
 
+                
             </div>
         </>
     )

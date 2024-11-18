@@ -29,6 +29,7 @@ async function getTotalAmountDueOfTheSupplier(supplierPurchaseId: string): Promi
     const count = await prisma.supplierPurchaseDetail.count({
       where: { supplierPurchaseId },
     });
+    console.log("count :" ,count);
     return count > 0;
   }
 
@@ -65,8 +66,9 @@ export async function addSupplierPurchaseDetail(input : AddSupplierPurchaseDetai
     try{
         const amount : number =  price * quantity;
         let totalAmountDue : number ;
-
-        if(!hasSupplierPurchaseDetails){
+        const hasSupplierPurchaseDetailsValue = await hasSupplierPurchaseDetails(supplierPurchaseId);
+        console.log("hasSalesDetailsValue ",hasSupplierPurchaseDetailsValue);
+        if(!hasSupplierPurchaseDetailsValue){
             const totalAmountDueValue = await getTotalAmountDueOfTheSupplier(supplierPurchaseId) || 0;
             console.log("totalAmountDueValue inside addSupplierPurchaseDetail method: ", totalAmountDueValue);
             if(isPaymentDone === 'Yes'){
@@ -102,12 +104,15 @@ export async function addSupplierPurchaseDetail(input : AddSupplierPurchaseDetai
             nameOfTheSupplier : true
           }
         })
+        const originalDate = new Date(date);
+        const updatedDate = new Date(Date.UTC(originalDate.getUTCFullYear(), originalDate.getUTCMonth(), originalDate.getUTCDate(), 0, 0, 0));
+        
 
         const supplierPurchaseDetail = await prisma.supplierPurchaseDetail.create({
             data : {
                 stockName : stockName,
                 stockNameDetails : stockNameDetails,
-                date : date,
+                date : updatedDate,
                 quantity : quantity,
                 quantityType : quantityType,
                 quantityDetails : quantityDetails,
@@ -137,7 +142,8 @@ export async function addSupplierPurchaseDetail(input : AddSupplierPurchaseDetai
 
 export async function getSupplierPurchaseDetailBySupplierId(supplierId :string){
     try{
-        const details = await prisma.supplierPurchaseDetail.findMany({
+        console.log("inside getSupplierPurchaseDetailBySupplierId ")
+          const details = await prisma.supplierPurchaseDetail.findMany({
             where: { supplierPurchaseId : supplierId},
             orderBy: { date: 'asc' }, // Optional: Order by date ascending
           });
@@ -149,6 +155,9 @@ export async function getSupplierPurchaseDetailBySupplierId(supplierId :string){
             };
           });
 
+          formattedDetails.map((item : any) => {
+            console.log("date : ",item.date);
+          })
           return{success : true, data : formattedDetails}
     }
 

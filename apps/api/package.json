@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node --no-warnings=ExperimentalWarning --loader ts-node/esm build/apps/api/src/app.js",
     "build": "tsc",
-    "dev": "nodemon src/app.ts"
+    "dev": "nodemon src/app.ts",
+    "update-dates": "node --no-warnings=ExperimentalWarning --loader ts-node/esm build/apps/api/src/utils/scripts/updateDateFieldSalesDetails.js"
   },
   "keywords": [],
   "author": "",
