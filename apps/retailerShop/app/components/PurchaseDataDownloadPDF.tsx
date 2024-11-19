@@ -379,7 +379,15 @@ export function PurchaseDataDownloadPDF({ id }: PurchaseDataDownloadPDFProps) {
 
                                     <hr className="text-black-100 w-full mt-2" style={{ borderWidth: '3px' }} />
                                     <div className="flex flex-row items-center justify-between -gap-4 break-inside-avoid overflow-visible">
-                                        <h1> Balance Total Amount </h1>
+                                        {purchaseDataDuration[date].finalAmount < 0 ? (
+                                            <>
+                                                <h1 className="bg-yellow-200 rounded-xl p-2 break-inside-avoid overflow-visible">Pending Advanced Payment</h1>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <h1 className="">Balance Total Amount</h1>
+                                            </>
+                                        )}
                                         <h1>Rs {purchaseDataDuration[date].finalAmount}</h1>
                                     </div>
                                 </div>

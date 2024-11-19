@@ -56,7 +56,7 @@ export async function addSalesDetail(input : AddSalesDetailsSchema){
 
     const {stockName, date, price, priceDetails,quantity, amountPaid, amountPaidDescription, salesInfoId, dateDescription, stockNameDetails, quantityType, quantityDetails, additionalDetails1, additionalDetails2, supplierName, isPaymentDone} = input.body;
     
-
+  
     try{
         const amount : number =  price * quantity;
         let totalAmountDue : number;
@@ -99,12 +99,16 @@ export async function addSalesDetail(input : AddSalesDetailsSchema){
           })
           hotelName = hotelName?.name;
 
+          const originalDate = new Date(date);
+          const updatedDate = new Date(Date.UTC(originalDate.getUTCFullYear(), originalDate.getUTCMonth(), originalDate.getUTCDate(), 0, 0, 0));
+          
+
           console.log("hotelName", hotelName);
         const salesDetails = await prisma.salesInfoDetail.create({
             data : {
                 stockName : stockName,
                 stockNameDetails : stockNameDetails,
-                date : date,
+                date : updatedDate,
                 quantity : quantity,
                 quantityType : quantityType,
                 quantityDetails : quantityDetails,

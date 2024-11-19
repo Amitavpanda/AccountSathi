@@ -40,3 +40,4 @@ fillHotelName().then(() =>
 ).finally(
     () => prisma.$disconnect()
 );
+

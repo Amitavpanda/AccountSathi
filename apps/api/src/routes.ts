@@ -18,7 +18,7 @@ import { purchaseDataDurationHandler } from "./contollers/purchaseDataDuration.c
 
 function routes(app : Express){
     app.get('/healthcheck', (req : Request, res : Response)  => res.sendStatus(200));
-
+    
     app.use((req: Request, res: Response, next) => {
         console.log("CORS Headers:", res.getHeaders()); // Log headers for each route
         next();
@@ -45,6 +45,11 @@ function routes(app : Express){
     app.post('/register', validate(registerUserSchema), register );
     app.post('/login', validate(loginUserSchema), loginHandler);
     app.post('/otpVerification', validate(otpVerificationSchema), otpVerificationHandler);
+
+    // Routes for Hotel Management Software
+
+    // app.post('/register/store', validate())
+
 
 
 
