@@ -14,7 +14,7 @@ import { late } from "zod";
 
 async function getTotalAmountDueOfTheHotel(salesInfoId: string): Promise<number | null> {
     try {
-      // Fetch the SupplierPurchase record by id
+      // Fetch the SalesDetails record by id
       const salesInfo = await prisma.salesInfo.findUnique({
         where: { id: salesInfoId },
         select: { totalAmountDue: true },
@@ -54,7 +54,7 @@ async function getTotalAmountDueOfTheHotel(salesInfoId: string): Promise<number 
 
 export async function addSalesDetail(input : AddSalesDetailsSchema){
 
-    const {stockName, date, price, priceDetails,quantity, amountPaid, amountPaidDescription, salesInfoId, dateDescription, stockNameDetails, quantityType, quantityDetails, additionalDetails1, additionalDetails2, supplierName, isPaymentDone} = input.body;
+    const {stockName, date, price, priceDetails,quantity, amountPaid, amountPaidDescription, salesInfoId, dateDescription, stockNameDetails, quantityType, quantityDetails, additionalDetails1, additionalDetails2, supplierName, isPaymentDone, extraAmount, extraAmountDescription} = input.body;
     
   
     try{
@@ -69,7 +69,7 @@ export async function addSalesDetail(input : AddSalesDetailsSchema){
               totalAmountDue = totalAmountDueValue;
             }
             else {
-              totalAmountDue = (totalAmountDueValue + amount) - amountPaid;
+              totalAmountDue = (totalAmountDueValue + amount + extraAmount) - amountPaid;
             }
             console.log("totalAmountDue", totalAmountDue);
         }
@@ -79,7 +79,7 @@ export async function addSalesDetail(input : AddSalesDetailsSchema){
               totalAmountDue = latestTotalAmountDue;
             }
             else {
-              totalAmountDue = (latestTotalAmountDue + amount) - amountPaid;
+              totalAmountDue = (latestTotalAmountDue + amount + extraAmount) - amountPaid;
             }
             console.log("totalAmountDue else", totalAmountDue);
         }
@@ -118,6 +118,8 @@ export async function addSalesDetail(input : AddSalesDetailsSchema){
                 totalAmountDue : totalAmountDue,
                 amountPaid : amountPaid,
                 amountPaidDescription : amountPaidDescription, 
+                extraAmount : extraAmount,
+                extraAmountDescription : extraAmountDescription,
                 dateDescription : dateDescription,
                 salesInfoId : salesInfoId,
                 hotelName : hotelName,

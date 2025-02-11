@@ -4,8 +4,6 @@
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
-
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -50,13 +48,12 @@ model SupplierPurchaseDetail {
   totalAmountDue        Float
   amountPaid            Float
   amountPaidDescription String
-  additionalDetails1     String?
+  additionalDetails1    String?
   additionalDetails2    String?
   dateDescription       String?
   supplierPurchaseId    String
   isPaymentDone         String?
   supplierName          String?
-
 
   createdAt        DateTime         @default(now())
   updatedAt        DateTime         @updatedAt
@@ -67,43 +64,45 @@ model SupplierPurchaseDetail {
 }
 
 model SalesInfo {
-  id             String            @id @unique @default(uuid())
-  name           String
-  phoneNumber    String
-  address        String
-  propieder      String
-  totalAmountDue Float
-  accountDetails  String?
-  additionalDetails  String?
-  details        SalesInfoDetail[]
+  id                String            @id @unique @default(uuid())
+  name              String
+  phoneNumber       String
+  address           String
+  propieder         String
+  totalAmountDue    Float
+  accountDetails    String?
+  additionalDetails String?
+  details           SalesInfoDetail[]
 }
 
 model SalesInfoDetail {
-  id                    String    @id @unique @default(uuid())
-  stockName             String
-  stockNameDetails      String?
-  date                  DateTime
-  quantity              Int
-  quantityType          String?
-  quantityDetails       String?
-  price                 Float
-  priceDetails          String?
-  amount                Float
-  totalAmountDue        Float
-  amountPaid            Float
-  amountPaidDescription String
-  dateDescription       String?
-  salesInfoId           String
-  supplierName          String?
-  supplierId            String?
-  hotelName             String?
-  additonalDetails1     String?
-  additonalDetails2     String?
-  createdAt             DateTime  @default(now())
-  updatedAt             DateTime  @updatedAt
-  isPaymentDone         String?
+  id                     String    @id @unique @default(uuid())
+  stockName              String
+  stockNameDetails       String?
+  date                   DateTime
+  quantity               Int
+  quantityType           String?
+  quantityDetails        String?
+  price                  Float
+  priceDetails           String?
+  amount                 Float
+  totalAmountDue         Float
+  amountPaid             Float
+  amountPaidDescription  String
+  extraAmount            Float?  @default(0)
+  extraAmountDescription String?
+  dateDescription        String?
+  salesInfoId            String
+  supplierName           String?
+  supplierId             String?
+  hotelName              String?
+  additonalDetails1      String?
+  additonalDetails2      String?
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+  isPaymentDone          String?
   // Relation field
-  salesInfo             SalesInfo @relation(fields: [salesInfoId], references: [id])
+  salesInfo              SalesInfo @relation(fields: [salesInfoId], references: [id])
 
   @@index([salesInfoId])
 }

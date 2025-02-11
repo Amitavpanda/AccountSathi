@@ -114,6 +114,7 @@ export default function AddNewSalesDetailsComponent({ id }: AddNewSalesDetailsPr
             quantity: Number(values.quantity),
             price: Number(values.price),
             amountPaid: Number(values.amountPaid),
+            extraAmount: Number(values.extraAmount)
 
         };
         try {
@@ -522,6 +523,48 @@ export default function AddNewSalesDetailsComponent({ id }: AddNewSalesDetailsPr
                                 />
                             </div>
                         </div>
+                        
+                        <div className="flex flex-col gap-2 md:flex-row items-center justify-center">
+                        <div className="flex-1">
+                                <FormField
+                                    control={form.control}
+                                    name="extraAmount"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Extra Amount</FormLabel>
+                                            <FormControl>
+                                                <Input placeholder="Extra Amount" {...field} />
+                                            </FormControl>
+                                            <FormDescription>
+                                                Extra Amount
+                                            </FormDescription>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
+
+                            <div className="flex-1">
+                                <FormField
+                                    control={form.control}
+                                    name="extraAmountDescription"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Extra Amount Description</FormLabel>
+                                            <FormControl>
+                                                <Input placeholder="Extra Amount Description" {...field} />
+                                            </FormControl>
+                                            <FormDescription>
+                                                Extra Amount Description
+                                            </FormDescription>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
+
+                        </div>
+
 
                         <Button
                             className="w-40 h-15 rounded-md bg-blue-90 text-white rounded-xl"

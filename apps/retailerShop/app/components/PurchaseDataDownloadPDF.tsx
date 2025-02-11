@@ -281,7 +281,7 @@ export function PurchaseDataDownloadPDF({ id }: PurchaseDataDownloadPDFProps) {
                         " ref={purchaseDataDurationRef} id="pdfDownload">
 
                             <h1 className="text-[24px] font-[700] leading-[120%] text-center"> {supplierName}</h1>
-                            {/* <h1 className="text-[16px] font-[700] leading-[120%] text-center -mt-2">{supplierAddress}</h1> */}
+                            <h1 className="text-[16px] font-[700] leading-[120%] text-center -mt-2">{supplierAddress}</h1>
 
                             {/* <h1 className="text-[16px] font-[700] leading-[120%] text-center">Data between {startingDate} and {endDate}</h1> */}
                             <div className="flex flex-row items-center justify-end gap-2 mr-1">
@@ -381,7 +381,7 @@ export function PurchaseDataDownloadPDF({ id }: PurchaseDataDownloadPDFProps) {
                                     <div className="flex flex-row items-center justify-between -gap-4 break-inside-avoid overflow-visible">
                                         {purchaseDataDuration[date].finalAmount < 0 ? (
                                             <>
-                                                <h1 className="bg-yellow-200 rounded-xl p-2 break-inside-avoid overflow-visible">Pending Advanced Payment</h1>
+                                                <h1 className="bg-yellow-200 rounded-xl p-2 break-inside-avoid overflow-visible">Remaining Advanced Payment</h1>
                                             </>
                                         ) : (
                                             <>
