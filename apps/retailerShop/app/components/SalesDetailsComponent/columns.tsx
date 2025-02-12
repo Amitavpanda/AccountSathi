@@ -89,6 +89,14 @@ export const columns: ColumnDef<SalesDetailsType>[] = [
         header : "Supplier"
     },
     {
+        accessorKey : "extraAmount",
+        header : "Extra Amount"
+    },
+    {
+        accessorKey : "extraAmountDescription",
+        header : "Extra Amount Description"
+    },
+    {
         accessorKey: "additionalDetails1",
         header: "Additional Details 1",
     },

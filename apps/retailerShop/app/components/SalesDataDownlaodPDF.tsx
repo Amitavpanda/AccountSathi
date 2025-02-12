@@ -139,7 +139,7 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
                 jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' },
                 pagebreak: { mode: ['avoid-all', 'css', 'legacy'] } // Avoids splitting content across pages
             };
-            
+
             // Generate the PDF
             html2pdf().from(element).set(opt).save();
         } catch (error) {
@@ -273,6 +273,7 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
 
                                 {BF !== 0 && (
                                     <>
+
                                         <h1>BF Total Balance</h1>
                                         <h1>=</h1>
                                         <h1>Rs {BF}</h1>
@@ -284,17 +285,28 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
                             {Object.keys(salesDataDuration).map((date: string) => (
 
                                 <div className="flex flex-col">
-                                    {salesDataDuration[date].dateDescription  !== "no" && (
+                                    {salesDataDuration[date].dateDescription !== "no" && (
                                         <div className="overflow-visible break-inside-avoid">
                                             <h1 className="underline">{date}</h1>
                                         </div>
-                                        )}
+                                    )}
                                     {salesDataDuration[date].info.map((item: any, index: number) => (
 
                                         <>
                                             <div className="flex items-center justify-between">
                                                 <div className="flex items-center justify-center gap-4 overflow-visible	break-inside-avoid">
-                                                    {item.cashPaid === "no" ? (
+
+
+                                                    {item.extraAmount > 0 ? (
+
+                                                        <>
+                                                            <div className="bg-yellow-50 rounded-xl p-2">
+                                                                <h1>{item.extraAmountDescription}</h1>
+                                                                
+                                                            </div>
+
+                                                        </>
+                                                    ) : item.cashPaid === "no" ? (
                                                         <>
                                                             <h1>{item.stockName}</h1>
                                                             <div className="flex flex-row item-center justify-center gap-2">
@@ -303,15 +315,15 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
                                                             </div>
                                                             {item.isPaymentDone === "Yes" && <>
                                                                 <div className="bg-green-50 rounded-xl p-2">
-                                                                <h1>Payment Done</h1>
-                                                                {/* <div className="flex flex-row item-center justify-center gap-2">
+                                                                    <h1>Payment Done</h1>
+                                                                    {/* <div className="flex flex-row item-center justify-center gap-2">
                                                                     <h1 className="font-[700]"> Rs {item.previousAmount} - </h1>
                                                                     <h1>Rs {item.amountPaid}</h1>
                                                                 </div> */}
 
-                                                            </div>
+                                                                </div>
                                                             </>}
-                                                            
+
                                                             {/* <div>=</div>
                                                             <div className="flex flex-row item-center justify-center gap-2">
                                                                 <h1> Rs {item.amount} + </h1>
@@ -320,9 +332,11 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
 
                                                         </>
 
-                                                    ) :
-                                                        (
-                                                            <div className="bg-green-50 rounded-xl p-2 overflow-visible	break-inside-avoid">
+                                                    ):
+                                                    
+                                                    (
+
+                                                        <div className="bg-green-50 rounded-xl p-2 overflow-visible	break-inside-avoid">
                                                                 <h1>{item.amountPaidDescription}</h1>
                                                                 {/* <div className="flex flex-row item-center justify-center gap-2">
                                                                     <h1 className="font-[700]"> Rs {item.previousAmount} - </h1>
@@ -330,7 +344,11 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
                                                                 </div> */}
 
                                                             </div>
-                                                        )}
+                                                    )
+                                                
+                                                }
+
+                                                   
                                                 </div>
                                                 {/* <div> = </div> */}
                                                 <div className="break-inside-avoid overflow-visible">
@@ -343,19 +361,28 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
                                                                 </>
                                                             ) : (
                                                                 <>
-                                                                    <h1> { item.isPaymentDone !== "Yes" && <span className="font-[700] text-[20px]"> + </span>} Rs {item.amount}</h1>
+                                                                    <h1> {item.isPaymentDone !== "Yes" && <span className="font-[700] text-[20px]"> + </span>} Rs {item.amount}</h1>
 
                                                                 </>
                                                             )}
 
                                                         </>
-                                                    ) : (
+                                                    ) : item.extraAmount > 0 ? (
+
+
                                                         <>
-                                                            <h1><span className="font-[700] text-[20px]"> - </span> Rs {item.amountPaid}</h1>
+                                                            <h1><span className="font-[700] text-[20px]"> + </span> Rs {item.extraAmount}</h1>
 
                                                         </>
+                                                    )
 
-                                                    )}
+                                                        : (
+                                                            <>
+                                                                <h1><span className="font-[700] text-[20px]"> - </span> Rs {item.amountPaid}</h1>
+
+                                                            </>
+
+                                                        )}
                                                 </div>
                                             </div>
                                         </>
@@ -364,7 +391,17 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
 
                                     <hr className="text-black-100 w-full mt-2" style={{ borderWidth: '3px' }} />
                                     <div className="flex flex-row items-center justify-between -gap-4 break-inside-avoid overflow-visible">
-                                        <h1> Balance Total Amount </h1>
+                                        {salesDataDuration[date].finalAmount < 0 ? (
+                                            <>
+                                                <h1 className="bg-yellow-200 rounded-xl p-2 break-inside-avoid overflow-visible">Remaining Advanced Payment</h1>
+
+                                            </>
+                                        ) : (
+                                            <>
+                                                <h1> Balance Total Amount </h1>
+
+                                            </>
+                                        )}
                                         <h1>Rs {salesDataDuration[date].finalAmount}</h1>
                                     </div>
                                 </div>

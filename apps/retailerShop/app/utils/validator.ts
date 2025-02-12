@@ -58,8 +58,9 @@ export const addSupplierPurchaseSchema = z.object({
     additionalDetails1 : z.string().optional(),
     additionalDetails2 : z.string().optional(),
     supplierName : z.string().optional(),
-    isPaymentDone : z.string().optional()
-
+    isPaymentDone : z.string().optional(),
+    extraAmount : z.string().optional(),
+    extraAmountDescription : z.string().optional()
   })
 
   export const salesDataDurationSchema = z.object({
