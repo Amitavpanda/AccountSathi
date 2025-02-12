@@ -17,6 +17,8 @@ export type PurchaseDetailsType = {
     priceDetails : string,
     amount : string,
     totalAmountDue : string,
+    extraAmount : string,
+    extraAmountDescription : string,
     amountPaid : string,
     amountPaidDescription : string,
     dateDescription : string
@@ -62,6 +64,14 @@ export const columns: ColumnDef<PurchaseDetailsType>[] = [
     {
         accessorKey: "amount",
         header: "Amount",
+    },
+    {
+        accessorKey: "extraAmount",
+        header: "extraAmoint",
+    },
+    {
+        accessorKey: "extraAmountDescription",
+        header: "Extra Amount Description",
     },
 
     {

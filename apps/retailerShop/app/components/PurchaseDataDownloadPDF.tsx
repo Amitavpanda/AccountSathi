@@ -154,7 +154,7 @@ export function PurchaseDataDownloadPDF({ id }: PurchaseDataDownloadPDFProps) {
                 jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' },
                 pagebreak: { mode: ['avoid-all', 'css', 'legacy'] } // Avoids splitting content across pages
             };
-            
+
             // Generate the PDF
             html2pdf().from(element).set(opt).save();
         } catch (error) {
@@ -303,74 +303,96 @@ export function PurchaseDataDownloadPDF({ id }: PurchaseDataDownloadPDFProps) {
                                         <div className="break-inside-avoid overflow-visible">
                                             <h1 className="underline ">{date}</h1>
                                         </div>
-                                        )}
+                                    )}
                                     {purchaseDataDuration[date].info.map((item: any, index: number) => (
 
                                         <>
                                             <div className="flex items-center justify-between">
                                                 <div className="flex items-center justify-center gap-4 overflow-visible	break-inside-avoid">
-                                                    {item.cashPaid === "no" ? (
+
+                                                    {item.extraAmount > 0 ? (
+
                                                         <>
-                                                            <h1>{item.stockName}</h1>
-                                                            <div className="flex flex-row item-center justify-center gap-2">
-                                                                <h1>{item.quantity} X</h1>
-                                                                <h1> Rs {item.price} </h1>
+                                                            <div className="bg-yellow-50 rounded-xl p-2">
+                                                                <h1>{item.extraAmountDescription}</h1>
+
                                                             </div>
 
-                                                            {item.isPaymentDone === "Yes" && <>
-                                                                <div className="bg-green-50 rounded-xl p-2">
-                                                                    <h1>Payment Done</h1>
+                                                        </>
+                                                    ) :
+
+                                                        item.cashPaid === "no" ? (
+                                                            <>
+                                                                <h1>{item.stockName}</h1>
+                                                                <div className="flex flex-row item-center justify-center gap-2">
+                                                                    <h1>{item.quantity} X</h1>
+                                                                    <h1> Rs {item.price} </h1>
+                                                                </div>
+
+                                                                {item.isPaymentDone === "Yes" && <>
+                                                                    <div className="bg-green-50 rounded-xl p-2">
+                                                                        <h1>Payment Done</h1>
+                                                                        {/* <div className="flex flex-row item-center justify-center gap-2">
+                                                                    <h1 className="font-[700]"> Rs {item.previousAmount} - </h1>
+                                                                    <h1>Rs {item.amountPaid}</h1>
+                                                                </div> */}
+
+                                                                    </div>
+                                                                </>}
+                                                                {/* <div>=</div>
+                                                            <div className="flex flex-row item-center justify-center gap-2">
+                                                                <h1> Rs {item.amount} + </h1>
+                                                                <h1 className="font-[700]"> Rs {item.previousAmount}</h1>
+                                                            </div> */}
+
+                                                            </>
+
+                                                        ) :
+                                                            (
+                                                                <div className="bg-green-50 rounded-xl p-2 break-inside-avoid overflow-visible">
+                                                                    <h1>{item.amountPaidDescription}</h1>
                                                                     {/* <div className="flex flex-row item-center justify-center gap-2">
                                                                     <h1 className="font-[700]"> Rs {item.previousAmount} - </h1>
                                                                     <h1>Rs {item.amountPaid}</h1>
                                                                 </div> */}
 
                                                                 </div>
-                                                            </>}
-                                                            {/* <div>=</div>
-                                                            <div className="flex flex-row item-center justify-center gap-2">
-                                                                <h1> Rs {item.amount} + </h1>
-                                                                <h1 className="font-[700]"> Rs {item.previousAmount}</h1>
-                                                            </div> */}
-
-                                                        </>
-
-                                                    ) :
-                                                        (
-                                                            <div className="bg-green-50 rounded-xl p-2 break-inside-avoid overflow-visible">
-                                                                <h1>{item.amountPaidDescription}</h1>
-                                                                {/* <div className="flex flex-row item-center justify-center gap-2">
-                                                                    <h1 className="font-[700]"> Rs {item.previousAmount} - </h1>
-                                                                    <h1>Rs {item.amountPaid}</h1>
-                                                                </div> */}
-
-                                                            </div>
-                                                        )}
+                                                            )}
                                                 </div>
                                                 {/* <div> = </div> */}
                                                 <div className="break-inside-avoid overflow-visible">
-                                                    {item.cashPaid === "no" ? (
+
+                                                    {item.extraAmount > 0 ? (
+
+
                                                         <>
-                                                            {BF === 0 && index === 0 ? (
-                                                                <>
-                                                                    <h1>Rs {item.amount}</h1>
-
-                                                                </>
-                                                            ) : (
-                                                                <>
-                                                                    <h1> {item.isPaymentDone !== "Yes" && <span className="font-[700] text-[20px]"> + </span>}  Rs {item.amount}</h1>
-
-                                                                </>
-                                                            )}
+                                                            <h1><span className="font-[700] text-[20px]"> + </span> Rs {item.extraAmount}</h1>
 
                                                         </>
-                                                    ) : (
-                                                        <>
-                                                            <h1><span className="font-[700] text-[20px]"> - </span> Rs {item.amountPaid}</h1>
+                                                    ) :
 
-                                                        </>
+                                                        item.cashPaid === "no" ? (
+                                                            <>
+                                                                {BF === 0 && index === 0 ? (
+                                                                    <>
+                                                                        <h1>Rs {item.amount}</h1>
 
-                                                    )}
+                                                                    </>
+                                                                ) : (
+                                                                    <>
+                                                                        <h1> {item.isPaymentDone !== "Yes" && <span className="font-[700] text-[20px]"> + </span>}  Rs {item.amount}</h1>
+
+                                                                    </>
+                                                                )}
+
+                                                            </>
+                                                        ) : (
+                                                            <>
+                                                                <h1><span className="font-[700] text-[20px]"> - </span> Rs {item.amountPaid}</h1>
+
+                                                            </>
+
+                                                        )}
                                                 </div>
                                             </div>
                                         </>

@@ -24,7 +24,7 @@ import {
     SelectItem,
     SelectTrigger,
     SelectValue,
-  } from "@repo/ui/select"
+} from "@repo/ui/select"
 
 
 import {
@@ -72,10 +72,12 @@ export default function AddNewPurchaseDetailsComponent({ id }: AddNewPurchaseDet
             priceDetails: "",
             amountPaid: "",
             amountPaidDescription: "",
+            extraAmount : "",
+            extraAmountDescription : "",
             supplierPurchaseId: id,
             additionalDetails1: "",
             additionalDetails2: "",
-            isPaymentDone : ""
+            isPaymentDone: ""
         },
     })
     // 2. Define a submit handler.
@@ -88,6 +90,7 @@ export default function AddNewPurchaseDetailsComponent({ id }: AddNewPurchaseDet
             quantity: Number(values.quantity),
             price: Number(values.price),
             amountPaid: Number(values.amountPaid),
+            extraAmount : Number(values.extraAmount)
 
         };
         try {
@@ -375,6 +378,45 @@ export default function AddNewPurchaseDetailsComponent({ id }: AddNewPurchaseDet
                             <div className="flex-1">
                                 <FormField
                                     control={form.control}
+                                    name="extraAmount"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Extra Amount</FormLabel>
+                                            <FormControl>
+                                                <Input placeholder="Extra Amount" {...field} />
+                                            </FormControl>
+                                            <FormDescription>
+                                                Extra Amount
+                                            </FormDescription>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
+
+
+                            <div className="flex-1">
+                                <FormField
+                                    control={form.control}
+                                    name="extraAmountDescription"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Extra Amount Description</FormLabel>
+                                            <FormControl>
+                                                <Input placeholder="Extra Amount Description" {...field} />
+                                            </FormControl>
+                                            <FormDescription>
+                                                Extra Amount Description
+                                            </FormDescription>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
+
+                            <div className="flex-1">
+                                <FormField
+                                    control={form.control}
                                     name="dateDescription"
                                     render={({ field }) => (
                                         <FormItem>
@@ -434,13 +476,13 @@ export default function AddNewPurchaseDetailsComponent({ id }: AddNewPurchaseDet
                         </div>
 
                         <div className="flex-1">
-                                <FormField
-                                    control={form.control}
-                                    name="isPaymentDone"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Payment Done</FormLabel>
-                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormField
+                                control={form.control}
+                                name="isPaymentDone"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Payment Done</FormLabel>
+                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
                                             <FormControl>
                                                 <SelectTrigger>
                                                     <SelectValue placeholder="Select if Payment is Done or not" />
@@ -451,18 +493,18 @@ export default function AddNewPurchaseDetailsComponent({ id }: AddNewPurchaseDet
                                                     <>
                                                         <SelectItem className="text-white focus:bg-white focus:rounded-xl" value={isPaymentDoneOption}>{isPaymentDoneOption}</SelectItem>
                                                     </>
-                                                
-                                            ))}
+
+                                                ))}
                                             </SelectContent>
                                         </Select>
-                                            
-                                            <FormDescription>
-                                                Payment Done or not                                        </FormDescription>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                            </div>
+
+                                        <FormDescription>
+                                            Payment Done or not                                        </FormDescription>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
                         <Button
                             className="w-40 h-15 rounded-md bg-blue-90 text-white rounded-xl"
                             type="submit">Submit</Button>

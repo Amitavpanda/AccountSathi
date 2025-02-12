@@ -54,7 +54,7 @@ export async function addSupplierPurchaseDetail(input : AddSupplierPurchaseDetai
     console.log("the input inside service is ", input);
     const requestData = input.body;
     console.log("the requestData", requestData);
-    const {stockName, stockNameDetails, date, price, priceDetails, quantity, quantityDetails, quantityType, supplierPurchaseId, amountPaid, amountPaidDescription, dateDescription, additionalDetails1, additionalDetails2, isPaymentDone} = requestData
+    const {stockName, stockNameDetails, date, price, priceDetails, quantity, quantityDetails, quantityType, supplierPurchaseId, amountPaid, amountPaidDescription, dateDescription, additionalDetails1, additionalDetails2, isPaymentDone, extraAmount, extraAmountDescription} = requestData
 
 
 
@@ -75,7 +75,7 @@ export async function addSupplierPurchaseDetail(input : AddSupplierPurchaseDetai
               totalAmountDue = totalAmountDueValue;
             }
             else {
-              totalAmountDue = (totalAmountDueValue + amount) - amountPaid;
+              totalAmountDue = (totalAmountDueValue + amount + (extraAmount || 0)) - amountPaid;
             }
             console.log("totalAmountDue", totalAmountDue);
         }
@@ -85,7 +85,7 @@ export async function addSupplierPurchaseDetail(input : AddSupplierPurchaseDetai
               totalAmountDue = latestTotalAmountDue;
             }
             else {
-              totalAmountDue = (latestTotalAmountDue + amount) - amountPaid;
+              totalAmountDue = (latestTotalAmountDue + amount + (extraAmount || 0)) - amountPaid;
             }
             console.log("totalAmountDue", totalAmountDue);
         }
@@ -122,6 +122,8 @@ export async function addSupplierPurchaseDetail(input : AddSupplierPurchaseDetai
                 totalAmountDue : totalAmountDue,
                 amountPaid : amountPaid,
                 amountPaidDescription : amountPaidDescription,
+                extraAmount : extraAmount,
+                extraAmountDescription : extraAmountDescription,
                 dateDescription : dateDescription,
                 supplierPurchaseId : supplierPurchaseId,
                 additionalDetails1 : additionalDetails1,
