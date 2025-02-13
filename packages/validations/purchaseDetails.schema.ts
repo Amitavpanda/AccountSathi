@@ -19,7 +19,9 @@ const payload = {
     supplierPurchaseId : z.string(),
     additionalDetails1 : z.string().optional(),
     additionalDetails2 : z.string().optional(),
-    isPaymentDone : z.string().optional()
+    isPaymentDone : z.string().optional(),
+    extraAmount : z.number().optional(),
+    extraAmountDescription : z.string().optional()
   }),
 };
 

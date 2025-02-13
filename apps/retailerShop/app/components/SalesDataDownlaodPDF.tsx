@@ -302,7 +302,7 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
                                                         <>
                                                             <div className="bg-yellow-50 rounded-xl p-2">
                                                                 <h1>{item.extraAmountDescription}</h1>
-                                                                
+
                                                             </div>
 
                                                         </>
@@ -332,11 +332,11 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
 
                                                         </>
 
-                                                    ):
-                                                    
-                                                    (
+                                                    ) :
 
-                                                        <div className="bg-green-50 rounded-xl p-2 overflow-visible	break-inside-avoid">
+                                                        (
+
+                                                            <div className="bg-green-50 rounded-xl p-2 overflow-visible	break-inside-avoid">
                                                                 <h1>{item.amountPaidDescription}</h1>
                                                                 {/* <div className="flex flex-row item-center justify-center gap-2">
                                                                     <h1 className="font-[700]"> Rs {item.previousAmount} - </h1>
@@ -344,45 +344,47 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
                                                                 </div> */}
 
                                                             </div>
-                                                    )
-                                                
-                                                }
+                                                        )
 
-                                                   
+                                                    }
+
+
                                                 </div>
                                                 {/* <div> = </div> */}
                                                 <div className="break-inside-avoid overflow-visible">
-                                                    {item.cashPaid === "no" ? (
-                                                        <>
-                                                            {BF === 0 && index === 0 ? (
-                                                                <>
-                                                                    <h1>Rs {item.amount}</h1>
 
-                                                                </>
-                                                            ) : (
-                                                                <>
-                                                                    <h1> {item.isPaymentDone !== "Yes" && <span className="font-[700] text-[20px]"> + </span>} Rs {item.amount}</h1>
-
-                                                                </>
-                                                            )}
-
-                                                        </>
-                                                    ) : item.extraAmount > 0 ? (
+                                                    {item.extraAmount > 0 ? (
 
 
                                                         <>
                                                             <h1><span className="font-[700] text-[20px]"> + </span> Rs {item.extraAmount}</h1>
 
                                                         </>
-                                                    )
-
-                                                        : (
+                                                    ) :
+                                                        item.cashPaid === "no" ? (
                                                             <>
-                                                                <h1><span className="font-[700] text-[20px]"> - </span> Rs {item.amountPaid}</h1>
+                                                                {BF === 0 && index === 0 ? (
+                                                                    <>
+                                                                        <h1>Rs {item.amount}</h1>
+
+                                                                    </>
+                                                                ) : (
+                                                                    <>
+                                                                        <h1> {item.isPaymentDone !== "Yes" && <span className="font-[700] text-[20px]"> + </span>} Rs {item.amount}</h1>
+
+                                                                    </>
+                                                                )}
 
                                                             </>
+                                                        )
 
-                                                        )}
+                                                            : (
+                                                                <>
+                                                                    <h1><span className="font-[700] text-[20px]"> - </span> Rs {item.amountPaid}</h1>
+
+                                                                </>
+
+                                                            )}
                                                 </div>
                                             </div>
                                         </>

@@ -35,25 +35,27 @@ model SupplierPurchase {
 }
 
 model SupplierPurchaseDetail {
-  id                    String   @id @unique @default(uuid())
-  stockName             String
-  stockNameDetails      String?
-  date                  DateTime
-  quantity              Int
-  quantityType          String?
-  quantityDetails       String?
-  price                 Float
-  priceDetails          String?
-  amount                Float
-  totalAmountDue        Float
-  amountPaid            Float
-  amountPaidDescription String
-  additionalDetails1    String?
-  additionalDetails2    String?
-  dateDescription       String?
-  supplierPurchaseId    String
-  isPaymentDone         String?
-  supplierName          String?
+  id                     String   @id @unique @default(uuid())
+  stockName              String
+  stockNameDetails       String?
+  date                   DateTime
+  quantity               Int
+  quantityType           String?
+  quantityDetails        String?
+  price                  Float
+  priceDetails           String?
+  amount                 Float
+  totalAmountDue         Float
+  extraAmount            Float?   @default(0)
+  extraAmountDescription String?
+  amountPaid             Float
+  amountPaidDescription  String
+  additionalDetails1     String?
+  additionalDetails2     String?
+  dateDescription        String?
+  supplierPurchaseId     String
+  isPaymentDone          String?
+  supplierName           String?
 
   createdAt        DateTime         @default(now())
   updatedAt        DateTime         @updatedAt
@@ -89,7 +91,7 @@ model SalesInfoDetail {
   totalAmountDue         Float
   amountPaid             Float
   amountPaidDescription  String
-  extraAmount            Float?  @default(0)
+  extraAmount            Float?    @default(0)
   extraAmountDescription String?
   dateDescription        String?
   salesInfoId            String

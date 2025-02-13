@@ -34,10 +34,17 @@ interface CashPaid {
 }
 
 
+interface ExtraAmount {
+    extraAmount : number,
+    extraAmountDescription : string | null,
+    presentAmount : number,
+    previousAmount : number
+    totalAmountDue : number,
+}
 
 interface ObjectType {
     date : string,
-    info : (CashPaid | NotCashPaid)[];
+    info : (CashPaid | NotCashPaid | ExtraAmount)[];
     finalAmount : number 
 }
 export async function purchaseDataDurationService(input : GetPurchaseDetaDurationSchema) {
@@ -90,8 +97,23 @@ export async function purchaseDataDurationService(input : GetPurchaseDetaDuratio
         info("i am in");
         if(previousDate !== d.date){
             previousDate = d.date;
-            let infoList : (CashPaid | NotCashPaid)[] = [];
-            if(d.amountPaid === 0 && d.amountPaidDescription === ""){
+            let infoList : (CashPaid | NotCashPaid | ExtraAmount)[] = [];
+
+            if(d.extraAmount && d.extraAmount > 0 && d.extraAmountDescription !== ""){
+                presentAmount += d.extraAmount;
+                previousAmount = presentAmount - d.extraAmount;
+                const item : ExtraAmount = {
+                    extraAmount : d.extraAmount,
+                    extraAmountDescription : d.extraAmountDescription,
+                    presentAmount : presentAmount,
+                    previousAmount : previousAmount,
+                    totalAmountDue : d.totalAmountDue
+                }
+                infoList.push(item);
+                console.log("info list", infoList);
+
+            }
+            else if(d.amountPaid === 0 && d.amountPaidDescription === ""){
                
 
                 if(d.isPaymentDone === 'Yes'){
@@ -143,7 +165,25 @@ export async function purchaseDataDurationService(input : GetPurchaseDetaDuratio
         else{
             let existingData : ObjectType | undefined  = response.get(d.date)  ;
             console.log("existing data", existingData);
-            if(d.amountPaid === 0 && d.amountPaidDescription === ""){
+
+
+            if(d.extraAmount && d.extraAmount > 0 && d.extraAmountDescription !== ""){
+                presentAmount += d.extraAmount;
+                previousAmount = presentAmount - d.extraAmount;
+                const item : ExtraAmount = {
+                    extraAmount : d.extraAmount,
+                    extraAmountDescription : d.extraAmountDescription,
+                    presentAmount : presentAmount,
+                    previousAmount : previousAmount,
+                    totalAmountDue : d.totalAmountDue
+                }
+                existingData?.info.push(item);
+                console.log("response inside extraAmount,", response);
+                if (existingData) {
+                    existingData.finalAmount = presentAmount;
+                  }
+            }
+            else if(d.amountPaid === 0 && d.amountPaidDescription === ""){
                 if(d.isPaymentDone === 'Yes'){
                     presentAmount = presentAmount;
                     previousAmount = presentAmount;
