@@ -1,7 +1,7 @@
-import { PrismaClient, SupplierPurchase } from "@repo/db/client";
+import { PrismaClient, Prisma } from "@repo/db/client";
 import { error, info } from "@repo/logs/logs";
 const prisma = new PrismaClient();
-export async function addSupplierPurchase(input : SupplierPurchase){
+export async function addSupplierPurchase(input : Prisma.SupplierPurchaseCreateInput){
     try{
         const supplierPurchase = await prisma.supplierPurchase.create({
             data : {

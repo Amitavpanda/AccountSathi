@@ -1,4 +1,4 @@
-import { PrismaClient, SupplierPurchase, SupplierPurchaseDetail } from "@repo/db/client";
+import { PrismaClient, Prisma } from "@repo/db/client";
 import { error, info } from "@repo/logs/logs";
 const prisma = new PrismaClient();
 import { format } from 'date-fns';
@@ -146,7 +146,7 @@ export async function getSalesDetailsBySalesInfoId(salesInfoId :string){
             orderBy: { date: 'asc' }, // Optional: Order by date ascending
           });
 
-          const formattedDetails = details.map((detail) => {
+          const formattedDetails = details.map((detail: any) => {
             return {
               ...detail,
               date: format(new Date(detail.date), 'MMMM do yyyy', { locale: enIN }),

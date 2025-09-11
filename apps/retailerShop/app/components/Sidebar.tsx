@@ -1,7 +1,7 @@
 "use client"
 
 import { Button } from "@repo/ui/button";
-import { BadgePlus, LayoutDashboard, Mail } from "lucide-react"
+import { BadgePlus, DiamondPlusIcon, LayoutDashboard, Mail } from "lucide-react"
 
 
 
@@ -13,6 +13,7 @@ import { useEffect, useState } from "react";
 
 import { error, info } from "@repo/logs/logs";
 import Link from "next/link";
+import validate from "api/src/middleware/validateResource";
 
 export interface Category {
     id: number;
@@ -40,3 +41,8 @@ export default function Sidebar() {
         </>
     )
 }
+
+
+
+
+

@@ -9,15 +9,13 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "@prisma/client": "^5.12.1"
-  },
   "exports": {
     "./client": "./index.ts"
-
   },
   "type": "module",
   "devDependencies": {
+    "@prisma/client": "^6.15.0",
+    "prisma": "^6.15.0",
     "supabase": "^1.178.2"
   }
 }
