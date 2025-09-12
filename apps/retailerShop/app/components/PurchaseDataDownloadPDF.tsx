@@ -56,7 +56,7 @@ interface PurchaseDataDownloadPDFProps {
 
 export function PurchaseDataDownloadPDF({ id }: PurchaseDataDownloadPDFProps) {
     let finalAmount = 0;
-    const [purchaseDataDuration, setPurchaseDataDuration] = useState<PurchaseDetailsType[]>([]);
+    const [purchaseDataDuration, setPurchaseDataDuration] = useState<{ [date: string]: { info: PurchaseDetailsType[], dateDescription: string, finalAmount: number } }>({});
     const [endDate, setEndDate] = useState<String>("");
     const [startingDate, setStartingDate] = useState<String>("");
     const [supplierName, setSupplierName] = useState<String>();
@@ -144,19 +144,21 @@ export function PurchaseDataDownloadPDF({ id }: PurchaseDataDownloadPDFProps) {
 
             // // Save the PDF with a filename
             // pdf.save(`${supplierName} ${startingDate} - ${endDate}.pdf`);
-            const element = document.querySelector("#pdfDownload");
-            html2pdf(element);
-            const opt = {
-                margin: 0.5, // Adjust margin as needed
-                filename: `${supplierName}.pdf`,
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2, logging: true, dpi: 192, letterRendering: true },
-                jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' },
-                pagebreak: { mode: ['avoid-all', 'css', 'legacy'] } // Avoids splitting content across pages
-            };
+            const element = document.querySelector("#pdfDownload") as HTMLElement;
+            if (element) {
+                html2pdf(element);
+                const opt = {
+                    margin: 0.5, // Adjust margin as needed
+                    filename: `${supplierName}.pdf`,
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { scale: 2, logging: true, dpi: 192, letterRendering: true },
+                    jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' },
+                    pagebreak: { mode: ['avoid-all', 'css', 'legacy'] } // Avoids splitting content across pages
+                };
 
-            // Generate the PDF
-            html2pdf().from(element).set(opt).save();
+                // Generate the PDF
+                html2pdf().from(element).set(opt).save();
+            }
         } catch (error) {
             console.log("Error generating PDF:", error);
         }
@@ -264,7 +266,7 @@ export function PurchaseDataDownloadPDF({ id }: PurchaseDataDownloadPDFProps) {
                                     )}
                                 />
                             </div>
-                            <Button type="submit" className="w-40 h-15 rounded-md bg-blue-90 text-white rounded-xl">Submit</Button>
+                            <Button type="submit" className="w-40 h-15 bg-blue-90 text-white rounded-xl">Submit</Button>
                         </div>
                     </form>
                 </Form>
@@ -274,7 +276,7 @@ export function PurchaseDataDownloadPDF({ id }: PurchaseDataDownloadPDFProps) {
                     <>
 
                         <div className="">
-                            <DataTable columns={columns} data={purchaseDataDuration} id={id} />
+                            <DataTable columns={columns} data={Object.values(purchaseDataDuration).flatMap(item => item.info)} />
                         </div>
 
                         <div className="flex flex-col gap-y-3 p-5 bg-white w-[35rem] rounded-xl
@@ -299,12 +301,12 @@ export function PurchaseDataDownloadPDF({ id }: PurchaseDataDownloadPDFProps) {
                             {Object.keys(purchaseDataDuration).map((date: string) => (
 
                                 <div className="flex flex-col">
-                                    {purchaseDataDuration[date].dateDescription !== "no" && (
+                                    {purchaseDataDuration[date]?.dateDescription !== "no" && (
                                         <div className="break-inside-avoid overflow-visible">
                                             <h1 className="underline ">{date}</h1>
                                         </div>
                                     )}
-                                    {purchaseDataDuration[date].info.map((item: any, index: number) => (
+                                    {purchaseDataDuration[date]?.info?.map((item: any, index: number) => (
 
                                         <>
                                             <div className="flex items-center justify-between">
@@ -401,7 +403,7 @@ export function PurchaseDataDownloadPDF({ id }: PurchaseDataDownloadPDFProps) {
 
                                     <hr className="text-black-100 w-full mt-2" style={{ borderWidth: '3px' }} />
                                     <div className="flex flex-row items-center justify-between -gap-4 break-inside-avoid overflow-visible">
-                                        {purchaseDataDuration[date].finalAmount < 0 ? (
+                                        {(purchaseDataDuration[date]?.finalAmount ?? 0) < 0 ? (
                                             <>
                                                 <h1 className="bg-yellow-200 rounded-xl p-2 break-inside-avoid overflow-visible">Remaining Advanced Payment</h1>
                                             </>
@@ -410,12 +412,12 @@ export function PurchaseDataDownloadPDF({ id }: PurchaseDataDownloadPDFProps) {
                                                 <h1 className="">Balance Total Amount</h1>
                                             </>
                                         )}
-                                        <h1>Rs {purchaseDataDuration[date].finalAmount}</h1>
+                                        <h1>Rs {purchaseDataDuration[date]?.finalAmount}</h1>
                                     </div>
                                 </div>
                             ))}
                         </div>
-                        <Button onClick={() => handleGeneratePDF()} className="w-40 h-15 rounded-md bg-blue-90 text-white rounded-xl">Download PDF</Button>
+                        <Button onClick={() => handleGeneratePDF()} className="w-40 h-15 bg-blue-90 text-white rounded-xl">Download PDF</Button>
                     </>
                 )}
             </div>
