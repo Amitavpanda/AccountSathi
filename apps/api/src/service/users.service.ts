@@ -12,7 +12,7 @@ function generatePassword() {
     return crypto.randomUUID();
 }
 
-export async function registerService(input: Prisma.UserCreateInput) {
+export async function registerService(input: any) {
     const { loginId, phoneNumber, name } = input;
 
     const password = generatePassword();
@@ -41,7 +41,7 @@ export async function registerService(input: Prisma.UserCreateInput) {
 }
 
 
-export async function loginService(input: Prisma.UserWhereUniqueInput & { password: string }) {
+export async function loginService(input: any) {
     const { loginId, password } = input;
 
     const user = await prisma.user.findUnique({
