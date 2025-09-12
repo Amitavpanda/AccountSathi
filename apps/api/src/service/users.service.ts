@@ -1,5 +1,5 @@
 
-import { Prisma, PrismaClient, User } from "@repo/db/client";
+import { Prisma, PrismaClient } from "@repo/db/client";
 import bcrypt from "bcrypt";
 import { error } from "@repo/logs/logs";
 import twilio from "twilio"
@@ -12,7 +12,7 @@ function generatePassword() {
     return crypto.randomUUID();
 }
 
-export async function registerService(input: User) {
+export async function registerService(input: Prisma.UserCreateInput) {
     const { loginId, phoneNumber, name } = input;
 
     const password = generatePassword();
@@ -41,7 +41,7 @@ export async function registerService(input: User) {
 }
 
 
-export async function loginService(input: User) {
+export async function loginService(input: Prisma.UserWhereUniqueInput & { password: string }) {
     const { loginId, password } = input;
 
     const user = await prisma.user.findUnique({

@@ -1,4 +1,4 @@
-import { Prisma, PrismaClient , SalesInfoDetail, SupplierPurchaseDetail} from "@repo/db/client";
+import { Prisma, PrismaClient } from "@repo/db/client";
 const prisma = new PrismaClient();
 import { startOfDay } from 'date-fns';
 

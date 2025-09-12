@@ -67,7 +67,7 @@ export async function salesDataDurationService(input : GetSalesDetaDurationSchem
             date : 'asc'
         }
     })
-    const formattedSalesDataDuration = salesDataDuration.map((detail) => {
+    const formattedSalesDataDuration = salesDataDuration.map((detail: any) => {
         return {
             ...detail,
             date : format(new Date(detail.date), 'dd/MM/yyyy', { locale: enIN }),
