@@ -19,15 +19,14 @@ import {
     FormLabel,
     FormMessage,
 } from "@repo/ui/form"
-
 import { Popover, PopoverContent, PopoverTrigger } from "@repo/ui/popover"
 import { CalendarIcon } from "lucide-react"
 import { Calendar } from "@repo/ui/calendar"
 import { Button } from "@repo/ui/button";
 import { columns } from "../components/SalesDetailsComponent/geInfoPerDayMonthComponent/columns";
-import { columnsCollection}  from "../components/SalesDetailsComponent/getCollectionPerDayMonthComponent/columns";
-
+import { columnsCollection } from "../components/SalesDetailsComponent/getCollectionPerDayMonthComponent/columns";
 import { DataTable } from "../components/SalesDetailsComponent/geInfoPerDayMonthComponent/data-table";
+import { DataTable as DataTableCollection } from "../components/SalesDetailsComponent/getCollectionPerDayMonthComponent/data-table";
 
 
 
@@ -121,7 +120,7 @@ function GetInfoPerDay() {
                                     )}
                                 />
                             </div>
-                            <Button type="submit" className="w-40 h-15 rounded-md bg-blue-90 text-white rounded-xl">Submit</Button>
+                            <Button type="submit" className="w-40 h-15 bg-blue-90 text-white rounded-xl">Submit</Button>
                         </div>
                     </form>
                 </Form>
@@ -141,11 +140,11 @@ function GetInfoPerDay() {
                             <>
                                 {/* <h1>length of info {infoDetails[salesInfoId].info.length}</h1>
                                 <h1>lenght of collection {infoDetails[salesInfoId].collectionInfo.length}</h1> */}
-                                <h1 className="flex items-center justify-center bold-18">{infoDetails[salesInfoId].info.length > 0 && ` ${infoDetails[salesInfoId].hotelName}`}</h1>
-                                {infoDetails[salesInfoId].info.length > 0 ? (
+                                <h1 className="flex items-center justify-center bold-18">{(infoDetails as any)[salesInfoId].info.length > 0 && ` ${(infoDetails as any)[salesInfoId].hotelName}`}</h1>
+                                {(infoDetails as any)[salesInfoId].info.length > 0 ? (
                                     <>
                                         <div className="container mx-auto py-3">
-                                            <DataTable columns={columns} data={infoDetails[salesInfoId].info} id={salesInfoId} />
+                                            <DataTable columns={columns} data={(infoDetails as any)[salesInfoId].info} id={salesInfoId} />
                                         </div>
                                     </>
                                 ) :
@@ -166,11 +165,11 @@ function GetInfoPerDay() {
                             <>
                                 {/* <h1>length of info {infoDetails[salesInfoId].info.length}</h1>
                                 <h1>lenght of collection {infoDetails[salesInfoId].collectionInfo.length}</h1> */}
-                                <h1 className="flex items-center justify-center bold-18">{infoDetails[salesInfoId].collectionInfo.length > 0 && `${infoDetails[salesInfoId].hotelName}`}</h1>
-                                {infoDetails[salesInfoId].collectionInfo.length > 0 ? (
+                                <h1 className="flex items-center justify-center bold-18">{(infoDetails as any)[salesInfoId].collectionInfo.length > 0 && `${(infoDetails as any)[salesInfoId].hotelName}`}</h1>
+                                {(infoDetails as any)[salesInfoId].collectionInfo.length > 0 ? (
                                     <>
                                           <div className="container mx-auto py-3">
-                                            <DataTable columns={columnsCollection} data={infoDetails[salesInfoId].collectionInfo} id={salesInfoId} />
+                                            <DataTable columns={columnsCollection} data={(infoDetails as any)[salesInfoId].collectionInfo} id={salesInfoId} />
                                         </div>
                                     </>
                                 ) :

@@ -130,7 +130,9 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
             // pdf.save(`${hotelName} ${startingDate} - ${endDate}.pdf`);
 
             const element = document.querySelector("#pdfDownload");
-            html2pdf(element);
+            if (element) {
+                html2pdf(element as HTMLElement);
+            }
             const opt = {
                 margin: 0.5, // Adjust margin as needed
                 filename: `${hotelName}.pdf`,
@@ -141,7 +143,9 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
             };
 
             // Generate the PDF
-            html2pdf().from(element).set(opt).save();
+            if (element) {
+                html2pdf().from(element as HTMLElement).set(opt).save();
+            }
         } catch (error) {
             console.log(error);
         }
@@ -249,7 +253,7 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
                                     )}
                                 />
                             </div>
-                            <Button type="submit" className="w-40 h-15 rounded-md bg-blue-90 text-white rounded-xl">Submit</Button>
+                            <Button type="submit" className="w-40 h-15 bg-blue-90 text-white rounded-xl">Submit</Button>
                         </div>
                     </form>
                 </Form>
@@ -285,12 +289,12 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
                             {Object.keys(salesDataDuration).map((date: string) => (
 
                                 <div className="flex flex-col">
-                                    {salesDataDuration[date].dateDescription !== "no" && (
+                                    {date in salesDataDuration && (salesDataDuration as any)[date]?.dateDescription !== "no" && (
                                         <div className="overflow-visible break-inside-avoid">
                                             <h1 className="underline">{date}</h1>
                                         </div>
                                     )}
-                                    {salesDataDuration[date].info.map((item: any, index: number) => (
+                                    {date in salesDataDuration && (salesDataDuration as any)[date]?.info?.map((item: any, index: number) => (
 
                                         <>
                                             <div className="flex items-center justify-between">
@@ -393,7 +397,7 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
 
                                     <hr className="text-black-100 w-full mt-2" style={{ borderWidth: '3px' }} />
                                     <div className="flex flex-row items-center justify-between -gap-4 break-inside-avoid overflow-visible">
-                                        {salesDataDuration[date].finalAmount < 0 ? (
+                                        {date in salesDataDuration && ((salesDataDuration as any)[date]?.finalAmount ?? 0) < 0 ? (
                                             <>
                                                 <h1 className="bg-yellow-200 rounded-xl p-2 break-inside-avoid overflow-visible">Remaining Advanced Payment</h1>
 
@@ -404,12 +408,12 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
 
                                             </>
                                         )}
-                                        <h1>Rs {salesDataDuration[date].finalAmount}</h1>
+                                        <h1>Rs {(salesDataDuration as any)[date]?.finalAmount ?? 0}</h1>
                                     </div>
                                 </div>
                             ))}
                         </div>
-                        <Button onClick={() => handleGeneratePDF()} className="w-40 h-15 rounded-md bg-blue-90 text-white rounded-xl">Download PDF</Button>
+                        <Button onClick={() => handleGeneratePDF()} className="w-40 h-15 bg-blue-90 text-white rounded-xl">Download PDF</Button>
                     </>
                 )}
             </div>
