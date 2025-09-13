@@ -15,6 +15,9 @@ const nextConfig = {
     unoptimized: true,
   },
 
+  // Disable styled-jsx to prevent SSR context issues
+  styledJsx: false,
+
   // Add proper headers for CORS if needed
   async headers() {
     return [
@@ -54,6 +57,30 @@ const nextConfig = {
         net: false,
         tls: false,
       };
+    }
+
+    // Fix styled-jsx SSR issues
+    if (isServer) {
+      config.module.rules.push({
+        test: /styled-jsx/,
+        use: [
+          {
+            loader: 'babel-loader',
+            options: {
+              presets: ['next/babel'],
+              plugins: [
+                [
+                  'styled-jsx/babel',
+                  {
+                    optimizeForSpeed: false,
+                    sourceMaps: false,
+                  },
+                ],
+              ],
+            },
+          },
+        ],
+      });
     }
 
     return config;

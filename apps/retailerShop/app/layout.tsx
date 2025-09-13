@@ -20,9 +20,19 @@ export default function RootLayout({
 
     <html lang="en">
       
-        <body className="flex flex-row ">
+        <body style={{
+          display: 'flex',
+          flexDirection: 'row',
+          margin: 0,
+          padding: 0,
+          minHeight: '100vh'
+        }}>
           <Sidebar />
-          <main className="flex-1 bg-gray-10 min-h-screen">
+          <main style={{
+            flex: 1,
+            backgroundColor: '#f9fafb',
+            minHeight: '100vh'
+          }}>
 
             {children}
             
