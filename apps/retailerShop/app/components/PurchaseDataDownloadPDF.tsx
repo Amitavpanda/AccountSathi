@@ -170,8 +170,7 @@ export function PurchaseDataDownloadPDF({ id }: PurchaseDataDownloadPDFProps) {
 
                 <h1>Download the data between a specified duration</h1>
 
-                <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)}>
+                <Form {...form} onSubmit={form.handleSubmit(onSubmit)}>
                         <div className="grid gap-4 py-4">
 
                             <div className="grid grid-cols-4 items-center gap-4 mb-4">
@@ -268,7 +267,6 @@ export function PurchaseDataDownloadPDF({ id }: PurchaseDataDownloadPDFProps) {
                             </div>
                             <Button type="submit" className="w-40 h-15 bg-blue-90 text-white rounded-xl">Submit</Button>
                         </div>
-                    </form>
                 </Form>
 
 

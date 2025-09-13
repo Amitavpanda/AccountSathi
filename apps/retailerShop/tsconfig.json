@@ -6,7 +6,7 @@
         "name": "next"
       }
     ],
-    "jsx": "preserve", // or "preserve",
+    "jsx": "react-jsx", // or "preserve",
     "allowJs": false
   },
   "include": [

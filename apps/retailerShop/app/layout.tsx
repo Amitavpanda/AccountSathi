@@ -1,10 +1,8 @@
 
-
-
 import Sidebar from "./components/Sidebar";
 import "./globals.css";
 import type { Metadata } from "next";
-
+import { Providers } from "./providers";
 
 export const metadata: Metadata = {
   title: "Admin Dashboard",
@@ -17,21 +15,29 @@ export default function RootLayout({
   children: React.ReactNode;
 }): JSX.Element {
   return (
-
     <html lang="en">
-      
-        <body className="flex flex-row ">
-          <Sidebar />
-          <main className="flex-1 bg-gray-10 min-h-screen">
-
-            {children}
-            
-          </main>
-        </body>
-      
-
+      <body style={{
+        margin: 0,
+        padding: 0,
+        minHeight: '100vh'
+      }}>
+        <Providers>
+          <div style={{
+            display: 'flex',
+            flexDirection: 'row',
+            minHeight: '100vh'
+          }}>
+            <Sidebar />
+            <main style={{
+              flex: 1,
+              backgroundColor: '#f9fafb',
+              minHeight: '100vh'
+            }}>
+              {children}
+            </main>
+          </div>
+        </Providers>
+      </body>
     </html>
-
-
   );
 }

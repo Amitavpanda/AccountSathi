@@ -27,12 +27,32 @@ export default function Sidebar() {
 
     return (
         <>
-            <div className="bg-white p-10 flex flex-col gap-y-4">
-                <div className="flex flex-col items-center gap-y-2">
+            <div style={{
+                backgroundColor: 'white',
+                padding: '2.5rem',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '1rem'
+            }}>
+                <div style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: '0.5rem'
+                }}>
                     {NAV_LINKS.map((link) => (
                         <Link key={link.name} href={link.href}>
-                            <Button className="w-40 h-15 rounded-md bg-white text-black items-center">
-                                <link.logo className="mr-1 h-4 w-5 " />  {link.name}
+                            <Button style={{
+                                width: '10rem',
+                                height: '3.75rem',
+                                borderRadius: '0.375rem',
+                                backgroundColor: 'white',
+                                color: 'black',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center'
+                            }}>
+                                <link.logo style={{ marginRight: '0.25rem', height: '1rem', width: '1.25rem' }} />  {link.name}
                             </Button>
                         </Link>
                     ))}

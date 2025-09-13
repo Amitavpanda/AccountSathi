@@ -146,8 +146,7 @@ export default function AddNewSalesDetailsComponent({ id }: AddNewSalesDetailsPr
         <div className="flex flex-col p-20 bg-gray-10 min-h-screen">
             <h2 className="bold-24 mb-5">Add New Data</h2>
             <div>
-                <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col bg-white rounded-xl p-10 space-y-8">
+                <Form {...form} onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col bg-white rounded-xl p-10 space-y-8">
 
                         <div className="flex flex-col gap-2 md:flex-row items-center justify-center">
                             <div className="flex-1">
@@ -567,9 +566,8 @@ export default function AddNewSalesDetailsComponent({ id }: AddNewSalesDetailsPr
 
 
                         <Button
-                            className="w-40 h-15 rounded-md bg-blue-90 text-white rounded-xl"
+                            className="w-40 h-15 bg-blue-90 text-white rounded-xl"
                             type="submit">Submit</Button>
-                    </form>
                 </Form>
             </div>
         </div>
