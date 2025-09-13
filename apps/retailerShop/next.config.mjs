@@ -1,5 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Force server-side rendering to avoid static export issues
+  output: 'standalone',
+  
   // Enable React Strict Mode
   reactStrictMode: true,
   
