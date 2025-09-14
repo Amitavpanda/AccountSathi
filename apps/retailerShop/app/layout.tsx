@@ -3,7 +3,6 @@ import Sidebar from "./components/Sidebar";
 import "./globals.css";
 import type { Metadata } from "next";
 import { Providers } from "./providers";
-import StyledJsxRegistry from "./registry";
 
 export const metadata: Metadata = {
   title: "Admin Dashboard",
@@ -23,22 +22,20 @@ export default function RootLayout({
         minHeight: '100vh'
       }}>
         <Providers>
-          <StyledJsxRegistry>
-            <div style={{
-              display: 'flex',
-              flexDirection: 'row',
+          <div style={{
+            display: 'flex',
+            flexDirection: 'row',
+            minHeight: '100vh'
+          }}>
+            <Sidebar />
+            <main style={{
+              flex: 1,
+              backgroundColor: '#f9fafb',
               minHeight: '100vh'
             }}>
-              <Sidebar />
-              <main style={{
-                flex: 1,
-                backgroundColor: '#f9fafb',
-                minHeight: '100vh'
-              }}>
-                {children}
-              </main>
-            </div>
-          </StyledJsxRegistry>
+              {children}
+            </main>
+          </div>
         </Providers>
       </body>
     </html>
