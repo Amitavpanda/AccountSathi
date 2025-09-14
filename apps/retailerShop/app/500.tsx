@@ -1,4 +1,16 @@
-// Mark this page as static to avoid SSR context issues
+// Mark this page as staimport styles from './error.module.css'
+
+export const dynamic = 'force-dynamic'
+
+export default function Custom500() {
+  return (
+    <div className={styles.errorPage}>
+      <h1 className={styles.title500}>500 - Server Error</h1>
+      <p className={styles.message}>Something went wrong on our end.</p>
+      <a href="/" className={styles.link}>Go Home</a>
+    </div>
+  )
+}
 export const dynamic = 'error'
 
 const styles = {
@@ -22,9 +34,17 @@ const styles = {
 
 export default function Custom500() {
   return (
-    <div style={styles.container}>
-      <h1 style={styles.heading}>500 - Server Error</h1>
-      <p style={styles.text}>Something went wrong on our end. Please try again later.</p>
+    import styles from './styles/error.module.css'
+export const dynamic = 'force-dynamic';
+
+export default function Custom500() {
+  return (
+    <div className={styles.error}>
+      <h1 className={styles.title500}>500 - Internal Server Error</h1>
+      <p className={styles.message}>Something went wrong on our end. Please try again later.</p>
+      <a href="/" className={styles.button}>Go Home</a>
     </div>
+  )
+}
   );
 }
