@@ -12,6 +12,11 @@ const nextConfig = {
   trailingSlash: true,
   poweredByHeader: false,
 
+  // Disable styled-jsx
+  compiler: {
+    styledComponents: true // We're using CSS modules instead
+  },
+
   // Disable image optimization for now to avoid potential issues
   images: {
     unoptimized: true,
