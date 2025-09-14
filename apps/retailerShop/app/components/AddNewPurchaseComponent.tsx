@@ -78,10 +78,20 @@ export default function AddNewPurchaseComponent() {
 
     return (
 
-        <div className="flex flex-col p-20 bg-gray-10 min-h-screen">
-            <h2 className="bold-24 mb-5">Add New Supplier</h2>
-            <div>
-                <Form {...form} onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col bg-white rounded-xl p-10 space-y-8">
+        <div className="flex flex-col p-3 sm:p-4 md:p-6 lg:p-8 xl:p-20 min-h-screen">
+            {/* Header Section */}
+            <div className="mb-6 sm:mb-8">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-800 leading-tight mb-2">
+                    Add New Supplier
+                </h2>
+                <p className="text-sm sm:text-base text-slate-600">
+                    Fill in the details to add a new supplier to your purchase records
+                </p>
+            </div>
+
+            {/* Form Container */}
+            <div className="max-w-4xl mx-auto">
+                <Form {...form} onSubmit={form.handleSubmit(onSubmit)} className="bg-white rounded-xl shadow-lg border border-slate-200 p-4 sm:p-6 md:p-8 space-y-6 sm:space-y-8">
 
                         <div className="flex flex-col gap-2 md:flex-row items-center justify-center">
                             <div className="flex-1">
@@ -92,7 +102,11 @@ export default function AddNewPurchaseComponent() {
                                         <FormItem>
                                             <FormLabel>Name of the Supplier</FormLabel>
                                             <FormControl>
-                                                <Input placeholder="Enter name of the Supplier" {...field} />
+                                                <Input
+                                                    placeholder="Enter name of the Supplier"
+                                                    {...field}
+                                                    className="h-12 rounded-lg border-slate-300 focus:border-emerald-500 focus:ring-emerald-500 text-base"
+                                                />
                                             </FormControl>
                                             <FormDescription>
                                                 This is your public display name.
@@ -112,7 +126,12 @@ export default function AddNewPurchaseComponent() {
                                         <FormItem>
                                             <FormLabel>Phone Number</FormLabel>
                                             <FormControl>
-                                                <Input placeholder="Enter Phone Number" {...field} />
+                                                <Input
+                                                    type="tel"
+                                                    placeholder="Enter Phone Number"
+                                                    {...field}
+                                                    className="h-12 rounded-lg border-slate-300 focus:border-emerald-500 focus:ring-emerald-500 text-base"
+                                                />
                                             </FormControl>
                                             <FormDescription>
                                                 Enter Phone Number
@@ -134,7 +153,11 @@ export default function AddNewPurchaseComponent() {
                                         <FormItem>
                                             <FormLabel>Address</FormLabel>
                                             <FormControl>
-                                                <Input placeholder="Enter Address" {...field} />
+                                                <Input
+                                                    placeholder="Enter Address"
+                                                    {...field}
+                                                    className="h-12 rounded-lg border-slate-300 focus:border-emerald-500 focus:ring-emerald-500 text-base"
+                                                />
                                             </FormControl>
                                             <FormDescription>
                                                 Address
@@ -154,7 +177,12 @@ export default function AddNewPurchaseComponent() {
                                         <FormItem>
                                             <FormLabel>Total Amount Due</FormLabel>
                                             <FormControl>
-                                                <Input placeholder="Enter Total Amount Due" {...field} />
+                                                <Input
+                                                    type="number"
+                                                    placeholder="Enter Total Amount Due"
+                                                    {...field}
+                                                    className="h-12 rounded-lg border-slate-300 focus:border-emerald-500 focus:ring-emerald-500 text-base"
+                                                />
                                             </FormControl>
                                             <FormDescription>
                                                 Enter Total Amount Due
@@ -216,7 +244,11 @@ export default function AddNewPurchaseComponent() {
                                         <FormItem>
                                             <FormLabel>List Of Items</FormLabel>
                                             <FormControl>
-                                                <Input placeholder="List Of Items" {...field} />
+                                                <Input
+                                                    placeholder="List Of Items (comma separated)"
+                                                    {...field}
+                                                    className="h-12 rounded-lg border-slate-300 focus:border-emerald-500 focus:ring-emerald-500 text-base"
+                                                />
                                             </FormControl>
                                             <FormDescription>
                                                 List Of Items
@@ -227,8 +259,12 @@ export default function AddNewPurchaseComponent() {
                                 />
                             </div>
                         <Button
-                            className="w-40 h-15 bg-blue-90 text-white rounded-xl"
-                            type="submit">Submit</Button>
+                            type="submit"
+                            className="w-full sm:w-48 h-12 sm:h-11 md:h-12 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white transition-all duration-300 flex items-center justify-center gap-2 text-sm sm:text-sm font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 mobile-button touch-target border-0"
+                        >
+                            <BadgePlus className="h-4 w-4 sm:h-4 sm:w-4" />
+                            <span>Add Supplier</span>
+                        </Button>
                 </Form>
             </div>
         </div>
