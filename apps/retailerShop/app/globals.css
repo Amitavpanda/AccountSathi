@@ -95,3 +95,46 @@
     overflow: visible !important;
   }
 }
+
+/* Mobile-specific optimizations */
+@layer utilities {
+  /* Ensure proper touch targets */
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Better mobile scrolling */
+  .mobile-scroll {
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+  }
+
+  /* Hide scrollbars on mobile but keep functionality */
+  .mobile-scroll::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Better mobile table scrolling */
+  .table-mobile-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .table-mobile-scroll table {
+    min-width: 600px;
+  }
+
+  /* Mobile-friendly text selection */
+  .mobile-text {
+    -webkit-touch-callout: none;
+    -webkit-user-select: text;
+    user-select: text;
+  }
+
+  /* Better mobile button interactions */
+  .mobile-button {
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+    -webkit-touch-callout: none;
+  }
+}
