@@ -143,15 +143,14 @@ export default function AddNewSalesDetailsComponent({ id }: AddNewSalesDetailsPr
 
     return (
 
-        <div className="flex flex-col p-20 bg-gray-10 min-h-screen">
-            <h2 className="bold-24 mb-5">Add New Data</h2>
+        <div className="p-4 sm:p-6 lg:p-8">
             <div>
-                <Form {...form} onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col bg-white rounded-xl p-10 space-y-8">
+                <Form {...form} onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col bg-white rounded-xl p-4 sm:p-6 lg:p-8 space-y-6 sm:space-y-8">
 
-                        <div className="flex flex-col gap-2 md:flex-row items-center justify-center">
-                            <div className="flex-1">
-                                <div className="flex flex-row items-center gap-2 justify-center">
-                                    <div className="flex-1 w-50">
+                        <div className="flex flex-col gap-4 sm:gap-6 md:flex-row items-start md:items-center justify-center">
+                            <div className="flex-1 w-full">
+                                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 justify-center">
+                                    <div className="flex-1 w-full">
                                         <FormField
                                             control={form.control}
                                             name="stockName"
@@ -159,7 +158,7 @@ export default function AddNewSalesDetailsComponent({ id }: AddNewSalesDetailsPr
                                                 <FormItem>
                                                     <FormLabel>Name of the Stock </FormLabel>
                                                     <FormControl>
-                                                        <Input placeholder="Enter name of the stock" {...field} />
+                                                        <Input placeholder="Enter name of the stock" {...field} className="h-11 rounded-xl" />
                                                     </FormControl>
                                                     <FormDescription>
                                                         This is your public display name.
@@ -170,7 +169,7 @@ export default function AddNewSalesDetailsComponent({ id }: AddNewSalesDetailsPr
                                         />
                                     </div>
 
-                                    <div className="flex-1 w-50">
+                                    <div className="flex-1 w-full">
                                         <FormField
                                             control={form.control}
                                             name="stockNameDetails"
@@ -178,7 +177,7 @@ export default function AddNewSalesDetailsComponent({ id }: AddNewSalesDetailsPr
                                                 <FormItem>
                                                     <FormLabel>Stock Name Details</FormLabel>
                                                     <FormControl>
-                                                        <Input placeholder="Enter Stock Name Details" {...field} />
+                                                        <Input placeholder="Enter Stock Name Details" {...field} className="h-11 rounded-xl" />
                                                     </FormControl>
                                                     <FormDescription>
                                                         Stock Name Details.
@@ -196,7 +195,7 @@ export default function AddNewSalesDetailsComponent({ id }: AddNewSalesDetailsPr
 
                             </div>
 
-                            <div className="flex-1">
+                            <div className="flex-1 w-full">
                                 <FormField
                                     control={form.control}
                                     name="date"
@@ -209,7 +208,7 @@ export default function AddNewSalesDetailsComponent({ id }: AddNewSalesDetailsPr
                                                         <Button
                                                             variant={"outline"}
                                                             className={cn(
-                                                                "w-[240px] pl-3 text-left font-normal",
+                                                                "w-full h-11 pl-3 text-left font-normal rounded-xl border-gray-300 hover:bg-gray-50",
                                                                 !field.value && "text-muted-foreground"
                                                             )}
                                                         >
@@ -223,7 +222,7 @@ export default function AddNewSalesDetailsComponent({ id }: AddNewSalesDetailsPr
                                                     </FormControl>
                                                 </PopoverTrigger>
                                                 <PopoverContent className="w-auto p-0" align="start">
-                                                    <Calendar className="bg-blue-90 text-white rounded-xl"
+                                                    <Calendar className="bg-white text-gray-900 rounded-xl border"
                                                         mode="single"
                                                         selected={field.value}
                                                         onSelect={field.onChange}
@@ -247,12 +246,12 @@ export default function AddNewSalesDetailsComponent({ id }: AddNewSalesDetailsPr
                         </div>
 
 
-                        <div className="flex flex-col gap-2 md:flex-row items-center justify-center">
-                            <div className="flex-1">
+                        <div className="flex flex-col gap-4 sm:gap-6 md:flex-row items-start md:items-center justify-center">
+                            <div className="flex-1 w-full">
 
 
-                                <div className="flex flex-row gap-2 items-center justify-center">
-                                    <div className="flex-1 w-40">
+                                <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-center">
+                                    <div className="flex-1 w-full">
                                         <FormField
                                             control={form.control}
                                             name="quantity"
@@ -260,7 +259,7 @@ export default function AddNewSalesDetailsComponent({ id }: AddNewSalesDetailsPr
                                                 <FormItem>
                                                     <FormLabel>Quantity</FormLabel>
                                                     <FormControl>
-                                                        <Input placeholder="Enter Quantity" {...field} />
+                                                        <Input placeholder="Enter Quantity" {...field} className="h-11 rounded-xl" />
                                                     </FormControl>
                                                     <FormDescription>
                                                         Quantity
@@ -270,7 +269,7 @@ export default function AddNewSalesDetailsComponent({ id }: AddNewSalesDetailsPr
                                             )}
                                         />
                                     </div>
-                                    <div className="w-20">
+                                    <div className="flex-1 w-full">
                                         <FormField
                                             control={form.control}
                                             name="quantityType"
@@ -278,7 +277,7 @@ export default function AddNewSalesDetailsComponent({ id }: AddNewSalesDetailsPr
                                                 <FormItem>
                                                     <FormLabel>Type</FormLabel>
                                                     <FormControl>
-                                                        <Input placeholder="Enter Type" {...field} />
+                                                        <Input placeholder="Enter Type" {...field} className="h-11 rounded-xl" />
                                                     </FormControl>
                                                     <FormDescription>
                                                         Type
@@ -288,7 +287,7 @@ export default function AddNewSalesDetailsComponent({ id }: AddNewSalesDetailsPr
                                             )}
                                         />
                                     </div>
-                                    <div className=" w-40">
+                                    <div className="flex-1 w-full">
                                         <FormField
                                             control={form.control}
                                             name="quantityDetails"
@@ -296,7 +295,7 @@ export default function AddNewSalesDetailsComponent({ id }: AddNewSalesDetailsPr
                                                 <FormItem>
                                                     <FormLabel>Quantity Details</FormLabel>
                                                     <FormControl>
-                                                        <Input placeholder="Enter Quantity Details" {...field} />
+                                                        <Input placeholder="Enter Quantity Details" {...field} className="h-11 rounded-xl" />
                                                     </FormControl>
                                                     <FormDescription>
                                                         Quantity Details
@@ -312,11 +311,11 @@ export default function AddNewSalesDetailsComponent({ id }: AddNewSalesDetailsPr
 
                             </div>
 
-                            <div className="flex-1">
+                            <div className="flex-1 w-full">
 
 
-                                <div className="flex flex-row gap-2 items-center justify-center">
-                                    <div className="flex-1">
+                                <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-center">
+                                    <div className="flex-1 w-full">
                                         <FormField
                                             control={form.control}
                                             name="price"
@@ -324,7 +323,7 @@ export default function AddNewSalesDetailsComponent({ id }: AddNewSalesDetailsPr
                                                 <FormItem>
                                                     <FormLabel>Price</FormLabel>
                                                     <FormControl>
-                                                        <Input placeholder="Enter Price" {...field} />
+                                                        <Input placeholder="Enter Price" {...field} className="h-11 rounded-xl" />
                                                     </FormControl>
                                                     <FormDescription>
                                                         Price
@@ -334,7 +333,7 @@ export default function AddNewSalesDetailsComponent({ id }: AddNewSalesDetailsPr
                                             )}
                                         />
                                     </div>
-                                    <div className="flex-1">
+                                    <div className="flex-1 w-full">
                                         <FormField
                                             control={form.control}
                                             name="priceDetails"
@@ -342,7 +341,7 @@ export default function AddNewSalesDetailsComponent({ id }: AddNewSalesDetailsPr
                                                 <FormItem>
                                                     <FormLabel>Price Details</FormLabel>
                                                     <FormControl>
-                                                        <Input placeholder="Enter Price Details" {...field} />
+                                                        <Input placeholder="Enter Price Details" {...field} className="h-11 rounded-xl" />
                                                     </FormControl>
                                                     <FormDescription>
                                                         Price Details
@@ -360,8 +359,8 @@ export default function AddNewSalesDetailsComponent({ id }: AddNewSalesDetailsPr
                             </div>
                         </div>
 
-                        <div className="flex flex-col gap-2 md:flex-row items-center justify-center">
-                            <div className="flex-1">
+                        <div className="flex flex-col gap-4 sm:gap-6 md:flex-row items-start md:items-center justify-center">
+                            <div className="flex-1 w-full">
                                 <FormField
                                     control={form.control}
                                     name="amountPaid"
@@ -369,7 +368,7 @@ export default function AddNewSalesDetailsComponent({ id }: AddNewSalesDetailsPr
                                         <FormItem>
                                             <FormLabel>Amount Paid</FormLabel>
                                             <FormControl>
-                                                <Input placeholder="Amount Paid" {...field} />
+                                                <Input placeholder="Amount Paid" {...field} className="h-11 rounded-xl" />
                                             </FormControl>
                                             <FormDescription>
                                                 Amount Paid
@@ -381,7 +380,7 @@ export default function AddNewSalesDetailsComponent({ id }: AddNewSalesDetailsPr
 
                             </div>
 
-                            <div className="flex-1">
+                            <div className="flex-1 w-full">
                                 <FormField
                                     control={form.control}
                                     name="amountPaidDescription"
@@ -389,7 +388,7 @@ export default function AddNewSalesDetailsComponent({ id }: AddNewSalesDetailsPr
                                         <FormItem>
                                             <FormLabel>Amount Paid Description</FormLabel>
                                             <FormControl>
-                                                <Input placeholder="Amount Paid Description" {...field} />
+                                                <Input placeholder="Amount Paid Description" {...field} className="h-11 rounded-xl" />
                                             </FormControl>
                                             <FormDescription>
                                                 Amount Paid Description                                            </FormDescription>
@@ -398,7 +397,7 @@ export default function AddNewSalesDetailsComponent({ id }: AddNewSalesDetailsPr
                                     )}
                                 />
                             </div>
-                            <div className="flex-1">
+                            <div className="flex-1 w-full">
                                 <FormField
                                     control={form.control}
                                     name="dateDescription"
@@ -406,7 +405,7 @@ export default function AddNewSalesDetailsComponent({ id }: AddNewSalesDetailsPr
                                         <FormItem>
                                             <FormLabel>Date Description</FormLabel>
                                             <FormControl>
-                                                <Input placeholder="Amount Paid Description" {...field} />
+                                                <Input placeholder="Date Description" {...field} className="h-11 rounded-xl" />
                                             </FormControl>
                                             <FormDescription>
                                                 Date Description                                        </FormDescription>
@@ -416,8 +415,8 @@ export default function AddNewSalesDetailsComponent({ id }: AddNewSalesDetailsPr
                                 />
                             </div>
                         </div>
-                        <div className="flex flex-col gap-2 md:flex-row items-center justify-center">
-                            <div className="flex-1">
+                        <div className="flex flex-col gap-4 sm:gap-6 md:flex-row items-start md:items-center justify-center">
+                            <div className="flex-1 w-full">
                                 <FormField
                                     control={form.control}
                                     name="additionalDetails1"
@@ -425,7 +424,7 @@ export default function AddNewSalesDetailsComponent({ id }: AddNewSalesDetailsPr
                                         <FormItem>
                                             <FormLabel>Additional Details 1</FormLabel>
                                             <FormControl>
-                                                <Input placeholder="Additional Details 1" {...field} />
+                                                <Input placeholder="Additional Details 1" {...field} className="h-11 rounded-xl" />
                                             </FormControl>
                                             <FormDescription>
                                                 Additional Details 1
@@ -437,7 +436,7 @@ export default function AddNewSalesDetailsComponent({ id }: AddNewSalesDetailsPr
 
                             </div>
 
-                            <div className="flex-1">
+                            <div className="flex-1 w-full">
                                 <FormField
                                     control={form.control}
                                     name="additionalDetails2"
@@ -445,7 +444,7 @@ export default function AddNewSalesDetailsComponent({ id }: AddNewSalesDetailsPr
                                         <FormItem>
                                             <FormLabel>Additional Details 2</FormLabel>
                                             <FormControl>
-                                                <Input placeholder="Additional Details 2" {...field} />
+                                                <Input placeholder="Additional Details 2" {...field} className="h-11 rounded-xl" />
                                             </FormControl>
                                             <FormDescription>
                                                 Additional Details 2                                          </FormDescription>
@@ -458,8 +457,8 @@ export default function AddNewSalesDetailsComponent({ id }: AddNewSalesDetailsPr
                         </div>
 
 
-                        <div className="flex flex-col gap-2 md:flex-row items-center justify-center">
-                            <div className="flex-1">
+                        <div className="flex flex-col gap-4 sm:gap-6 md:flex-row items-start md:items-center justify-center">
+                            <div className="flex-1 w-full">
                                 <FormField
                                     control={form.control}
                                     name="supplierName"
@@ -468,14 +467,14 @@ export default function AddNewSalesDetailsComponent({ id }: AddNewSalesDetailsPr
                                             <FormLabel>Supplier</FormLabel>
                                             <Select onValueChange={field.onChange} defaultValue={field.value}>
                                                 <FormControl>
-                                                    <SelectTrigger>
+                                                    <SelectTrigger className="h-11 rounded-xl">
                                                         <SelectValue placeholder="Select a Supplier" />
                                                     </SelectTrigger>
                                                 </FormControl>
-                                                <SelectContent className="bg-blue-90 rounded-xl">
+                                                <SelectContent className="bg-white rounded-xl border">
                                                     {suppliers.map((supplier: SupplierType) => (
                                                         <>
-                                                            <SelectItem className="text-white focus:bg-white focus:rounded-xl" value={supplier.nameOfTheSupplier}>{supplier.nameOfTheSupplier}</SelectItem>
+                                                            <SelectItem className="text-gray-900 focus:bg-blue-50 focus:rounded-lg" value={supplier.nameOfTheSupplier}>{supplier.nameOfTheSupplier}</SelectItem>
                                                         </>
                                                     ))}
 
@@ -491,7 +490,7 @@ export default function AddNewSalesDetailsComponent({ id }: AddNewSalesDetailsPr
 
                             </div>
 
-                            <div className="flex-1">
+                            <div className="flex-1 w-full">
                                 <FormField
                                     control={form.control}
                                     name="isPaymentDone"
@@ -500,14 +499,14 @@ export default function AddNewSalesDetailsComponent({ id }: AddNewSalesDetailsPr
                                             <FormLabel>Payment Done</FormLabel>
                                             <Select onValueChange={field.onChange} defaultValue={field.value}>
                                                 <FormControl>
-                                                    <SelectTrigger>
+                                                    <SelectTrigger className="h-11 rounded-xl">
                                                         <SelectValue placeholder="Select if Payment is Done or not" />
                                                     </SelectTrigger>
                                                 </FormControl>
-                                                <SelectContent className="bg-blue-90 rounded-xl">
+                                                <SelectContent className="bg-white rounded-xl border">
                                                     {isPaymentDoneOptions.map((isPaymentDoneOption) => (
                                                         <>
-                                                            <SelectItem className="text-white focus:bg-white focus:rounded-xl" value={isPaymentDoneOption}>{isPaymentDoneOption}</SelectItem>
+                                                            <SelectItem className="text-gray-900 focus:bg-blue-50 focus:rounded-lg" value={isPaymentDoneOption}>{isPaymentDoneOption}</SelectItem>
                                                         </>
 
                                                     ))}
@@ -522,9 +521,9 @@ export default function AddNewSalesDetailsComponent({ id }: AddNewSalesDetailsPr
                                 />
                             </div>
                         </div>
-                        
-                        <div className="flex flex-col gap-2 md:flex-row items-center justify-center">
-                        <div className="flex-1">
+
+                        <div className="flex flex-col gap-4 sm:gap-6 md:flex-row items-start md:items-center justify-center">
+                        <div className="flex-1 w-full">
                                 <FormField
                                     control={form.control}
                                     name="extraAmount"
@@ -532,7 +531,7 @@ export default function AddNewSalesDetailsComponent({ id }: AddNewSalesDetailsPr
                                         <FormItem>
                                             <FormLabel>Extra Amount</FormLabel>
                                             <FormControl>
-                                                <Input placeholder="Extra Amount" {...field} />
+                                                <Input placeholder="Extra Amount" {...field} className="h-11 rounded-xl" />
                                             </FormControl>
                                             <FormDescription>
                                                 Extra Amount
@@ -543,7 +542,7 @@ export default function AddNewSalesDetailsComponent({ id }: AddNewSalesDetailsPr
                                 />
                             </div>
 
-                            <div className="flex-1">
+                            <div className="flex-1 w-full">
                                 <FormField
                                     control={form.control}
                                     name="extraAmountDescription"
@@ -551,7 +550,7 @@ export default function AddNewSalesDetailsComponent({ id }: AddNewSalesDetailsPr
                                         <FormItem>
                                             <FormLabel>Extra Amount Description</FormLabel>
                                             <FormControl>
-                                                <Input placeholder="Extra Amount Description" {...field} />
+                                                <Input placeholder="Extra Amount Description" {...field} className="h-11 rounded-xl" />
                                             </FormControl>
                                             <FormDescription>
                                                 Extra Amount Description
@@ -565,9 +564,14 @@ export default function AddNewSalesDetailsComponent({ id }: AddNewSalesDetailsPr
                         </div>
 
 
+                        <div className="flex justify-center pt-4">
                         <Button
-                            className="w-40 h-15 bg-blue-90 text-white rounded-xl"
-                            type="submit">Submit</Button>
+                            className="w-full sm:w-48 h-12 sm:h-11 md:h-12 rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white transition-all duration-300 flex items-center justify-center gap-2 text-sm sm:text-sm font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 mobile-button touch-target border-0"
+                            type="submit">
+                            <BadgePlus className="h-4 w-4" />
+                            <span>Add Data</span>
+                        </Button>
+                        </div>
                 </Form>
             </div>
         </div>

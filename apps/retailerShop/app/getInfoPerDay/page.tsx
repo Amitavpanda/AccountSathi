@@ -65,125 +65,157 @@ function GetInfoPerDay() {
     }
 
     return (
-        <>
+        <div className="flex flex-col p-3 sm:p-4 md:p-6 lg:p-8 xl:p-20 min-h-screen">
+            {/* Header Section */}
+            <div className="mb-6 sm:mb-8">
+                <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-800 leading-tight mb-2">
+                    Info Per Day Month
+                </h1>
+                <p className="text-sm sm:text-base text-slate-600">
+                    View daily information and collections for selected dates
+                </p>
+            </div>
 
-            <div className="flex flex-col gap-3 p-20">
-                <h1 className="text-black bold-24">Info Per Day Month</h1>
+            {/* Form Section */}
+            <div className="mb-6 sm:mb-8">
+                <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 md:p-8 shadow-sm">
+                    <h2 className="text-lg sm:text-xl font-semibold text-slate-800 mb-4 sm:mb-6">
+                        Select Date
+                    </h2>
 
-                <Form {...form} onSubmit={form.handleSubmit(onSubmit)}>
-                        <div className="grid gap-4 py-4">
-                            <div className="grid grid-cols-4 items-center gap-4 mb-4">
-                                <FormField
-                                    control={form.control}
-                                    name="date"
-                                    render={({ field }) => (
-                                        <FormItem className="flex flex-col">
-                                            <FormLabel>Date</FormLabel>
-                                            <Popover>
-                                                <PopoverTrigger asChild>
-                                                    <FormControl>
-                                                        <Button
-                                                            variant={"outline"}
-                                                            className={cn(
-                                                                "w-[240px] pl-3 text-left font-normal",
-                                                                !field.value && "text-muted-foreground"
-                                                            )}
-                                                        >
-                                                            {field.value ? (
-                                                                format(field.value, "PPP")
-                                                            ) : (
-                                                                <span>Pick a date</span>
-                                                            )}
-                                                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50 " />
-                                                        </Button>
-                                                    </FormControl>
-                                                </PopoverTrigger>
-                                                <PopoverContent className="w-auto p-0" align="start">
-                                                    <Calendar className="bg-blue-90 text-white rounded-xl"
-                                                        mode="single"
-                                                        selected={field.value}
-                                                        onSelect={field.onChange}
-                                                        disabled={(date) =>
-                                                            date > new Date() || date < new Date("1900-01-01")
-                                                        }
-                                                        initialFocus
+                    <Form {...form} onSubmit={form.handleSubmit(onSubmit)}>
+                        <div className="space-y-4">
+                            <FormField
+                                control={form.control}
+                                name="date"
+                                render={({ field }) => (
+                                    <FormItem className="flex flex-col">
+                                        <FormLabel className="text-sm font-medium text-slate-700">Date</FormLabel>
+                                        <Popover>
+                                            <PopoverTrigger asChild>
+                                                <FormControl>
+                                                    <Button
+                                                        variant={"outline"}
+                                                        className={cn(
+                                                            "h-11 pl-3 text-left font-normal rounded-lg border-gray-300 hover:border-emerald-500 transition-colors bg-white",
+                                                            !field.value && "text-muted-foreground"
+                                                        )}
+                                                    >
+                                                        {field.value ? (
+                                                            format(field.value, "PPP")
+                                                        ) : (
+                                                            <span>Pick a date</span>
+                                                        )}
+                                                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                                    </Button>
+                                                </FormControl>
+                                            </PopoverTrigger>
+                                            <PopoverContent className="w-auto p-0 bg-white border border-gray-200 rounded-lg shadow-lg" align="start">
+                                                <Calendar
+                                                    mode="single"
+                                                    selected={field.value}
+                                                    onSelect={field.onChange}
+                                                    disabled={(date) =>
+                                                        date > new Date() || date < new Date("1900-01-01")
+                                                    }
+                                                    initialFocus
+                                                    className="rounded-lg border border-gray-200 bg-white"
+                                                />
+                                            </PopoverContent>
+                                        </Popover>
+                                        <FormDescription className="text-xs text-slate-500">
+                                            Select a date to view daily information
+                                        </FormDescription>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
 
-
-
-                                                    />
-                                                </PopoverContent>
-                                            </Popover>
-
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
+                            <div className="flex justify-center pt-4">
+                                <Button
+                                    type="submit"
+                                    className="w-full sm:w-48 h-12 sm:h-11 md:h-12 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white transition-all duration-300 flex items-center justify-center gap-2 text-sm sm:text-sm font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 mobile-button touch-target border-0"
+                                >
+                                    Get Info
+                                </Button>
                             </div>
-                            <Button type="submit" className="w-40 h-15 bg-blue-90 text-white rounded-xl">Submit</Button>
                         </div>
-                </Form>
-
-                {/* purchase */}
-                <div>
-                    <h1 className="text-black bold-20 text-center items-center">Purchase</h1>
-                </div>
-                {/* sales */}
-                <div>
-                    <h1 className="text-black bold-20 text-center items-center">Sales</h1>
-
-                    {/* info */}
-                    <div className="flex flex-col">
-                        <h1>Info</h1>
-                        {Object.keys(infoDetails).map((salesInfoId) => (
-                            <>
-                                {/* <h1>length of info {infoDetails[salesInfoId].info.length}</h1>
-                                <h1>lenght of collection {infoDetails[salesInfoId].collectionInfo.length}</h1> */}
-                                <h1 className="flex items-center justify-center bold-18">{(infoDetails as any)[salesInfoId].info.length > 0 && ` ${(infoDetails as any)[salesInfoId].hotelName}`}</h1>
-                                {(infoDetails as any)[salesInfoId].info.length > 0 ? (
-                                    <>
-                                        <div className="container mx-auto py-3">
-                                            <DataTable columns={columns} data={(infoDetails as any)[salesInfoId].info} id={salesInfoId} />
-                                        </div>
-                                    </>
-                                ) :
-                                    (
-                                        <>
-                                        </>
-                                    )}
-
-                            </>
-                        ))}
-
-                    </div>
-
-                    {/* collection */}
-                    <div className="flex flex-col">
-                        <h1>Collection</h1>
-                        {Object.keys(infoDetails).map((salesInfoId) => (
-                            <>
-                                {/* <h1>length of info {infoDetails[salesInfoId].info.length}</h1>
-                                <h1>lenght of collection {infoDetails[salesInfoId].collectionInfo.length}</h1> */}
-                                <h1 className="flex items-center justify-center bold-18">{(infoDetails as any)[salesInfoId].collectionInfo.length > 0 && `${(infoDetails as any)[salesInfoId].hotelName}`}</h1>
-                                {(infoDetails as any)[salesInfoId].collectionInfo.length > 0 ? (
-                                    <>
-                                          <div className="container mx-auto py-3">
-                                            <DataTable columns={columnsCollection} data={(infoDetails as any)[salesInfoId].collectionInfo} id={salesInfoId} />
-                                        </div>
-                                    </>
-                                ) :
-                                    (
-                                        <>
-                                        </>
-                                    )}
-                            </>
-                        ))}
-
-                    </div>
-
+                    </Form>
                 </div>
             </div>
-        </>
 
+            {/* Data Display Sections */}
+            {infoDetails && Object.keys(infoDetails).length > 0 && (
+                <div className="space-y-6 sm:space-y-8">
+                    {/* Purchase Section */}
+                    <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 md:p-8 shadow-sm">
+                        <h2 className="text-lg sm:text-xl font-semibold text-slate-800 mb-4 sm:mb-6 text-center">
+                            Purchase Information
+                        </h2>
+                        <p className="text-sm text-slate-600 text-center mb-4">
+                            Purchase details for the selected date
+                        </p>
+                    </div>
+
+                    {/* Sales Section */}
+                    <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 md:p-8 shadow-sm">
+                        <h2 className="text-lg sm:text-xl font-semibold text-slate-800 mb-4 sm:mb-6 text-center">
+                            Sales Information
+                        </h2>
+
+                        {/* Info Subsection */}
+                        <div className="mb-6 sm:mb-8">
+                            <h3 className="text-base sm:text-lg font-medium text-slate-700 mb-4">
+                                Sales Info
+                            </h3>
+                            <div className="space-y-4">
+                                {Object.keys(infoDetails).map((salesInfoId) => (
+                                    <div key={salesInfoId} className="space-y-3">
+                                        {(infoDetails as any)[salesInfoId].info.length > 0 && (
+                                            <h4 className="text-sm sm:text-base font-medium text-slate-800 text-center">
+                                                {(infoDetails as any)[salesInfoId].hotelName}
+                                            </h4>
+                                        )}
+                                        {(infoDetails as any)[salesInfoId].info.length > 0 ? (
+                                            <div className="overflow-x-auto">
+                                                <div className="min-w-full">
+                                                    <DataTable columns={columns} data={(infoDetails as any)[salesInfoId].info} id={salesInfoId} />
+                                                </div>
+                                            </div>
+                                        ) : null}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Collection Subsection */}
+                        <div>
+                            <h3 className="text-base sm:text-lg font-medium text-slate-700 mb-4">
+                                Collections
+                            </h3>
+                            <div className="space-y-4">
+                                {Object.keys(infoDetails).map((salesInfoId) => (
+                                    <div key={salesInfoId} className="space-y-3">
+                                        {(infoDetails as any)[salesInfoId].collectionInfo.length > 0 && (
+                                            <h4 className="text-sm sm:text-base font-medium text-slate-800 text-center">
+                                                {(infoDetails as any)[salesInfoId].hotelName}
+                                            </h4>
+                                        )}
+                                        {(infoDetails as any)[salesInfoId].collectionInfo.length > 0 ? (
+                                            <div className="overflow-x-auto">
+                                                <div className="min-w-full">
+                                                    <DataTable columns={columnsCollection} data={(infoDetails as any)[salesInfoId].collectionInfo} id={salesInfoId} />
+                                                </div>
+                                            </div>
+                                        ) : null}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </div>
     )
 }
 
