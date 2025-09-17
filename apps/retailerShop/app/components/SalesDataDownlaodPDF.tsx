@@ -110,62 +110,83 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
     }
     console.log("the salesDataDuration", salesDataDuration);
     const handleGeneratePDF = async () => {
-        const inputData = salesDataDurationRef.current;
-        try {
-            // const canvas = await html2canvas(inputData);
-            // const imgWidth = 400;
-            // const pageHeight = 400;
-            // const imgHeight = (canvas.height * imgWidth) / canvas.width;
-            // let heightLeft = imgHeight;
-            // let position = 0;
-            // heightLeft -= pageHeight;
-            // const pdf = new jsPDF({ orientation: "landscape", unit: "px", format: "a4", });
-            // pdf.addImage(canvas, "PNG", 0, position, imgWidth, imgHeight);
-            // while (heightLeft > 0) {
-            //     position = heightLeft - imgHeight;
-            //     pdf.addPage();
-            //     pdf.addImage(canvas, "PNG", 0, position, imgWidth, imgHeight);
-            //     heightLeft -= pageHeight;
-            // }
-            // pdf.save(`${hotelName} ${startingDate} - ${endDate}.pdf`);
+        const element = document.querySelector("#pdfDownload") as HTMLElement;
+        if (!element) return;
 
-            const element = document.querySelector("#pdfDownload");
-            if (element) {
-                html2pdf(element as HTMLElement);
-            }
+        try {
+            // Temporarily modify styles for PDF generation
+            const originalStyles = element.style.cssText;
+            element.style.cssText += `
+                width: 800px !important;
+                min-width: 800px !important;
+                max-width: 800px !important;
+                white-space: nowrap !important;
+                word-wrap: break-word !important;
+                overflow-wrap: break-word !important;
+            `;
+
+            // Force layout recalculation
+            element.offsetHeight;
+
             const opt = {
-                margin: 0.5, // Adjust margin as needed
-                filename: `${hotelName}.pdf`,
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2, logging: true, dpi: 192, letterRendering: true },
-                jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' },
-                pagebreak: { mode: ['avoid-all', 'css', 'legacy'] } // Avoids splitting content across pages
+                margin: [0.5, 0.5, 0.5, 0.5] as [number, number, number, number], // top, right, bottom, left margins
+                filename: `${hotelName || 'Sales_Report'}.pdf`,
+                image: {
+                    type: 'jpeg',
+                    quality: 0.98
+                },
+                html2canvas: {
+                    scale: 2,
+                    useCORS: true,
+                    allowTaint: true,
+                    logging: false,
+                    dpi: 192,
+                    letterRendering: true,
+                    width: 800,
+                    height: element.scrollHeight,
+                    windowWidth: 1200,
+                    windowHeight: element.scrollHeight + 200
+                },
+                jsPDF: {
+                    unit: 'in',
+                    format: 'a4',
+                    orientation: 'portrait',
+                    compress: true
+                },
+                pagebreak: {
+                    mode: ['avoid-all', 'css', 'legacy'],
+                    before: '.page-break-before',
+                    after: '.page-break-after',
+                    avoid: '.page-break-avoid'
+                }
             };
 
             // Generate the PDF
-            if (element) {
-                html2pdf().from(element as HTMLElement).set(opt).save();
-            }
+            await html2pdf().from(element).set(opt).save();
+
+            // Restore original styles
+            element.style.cssText = originalStyles;
+
         } catch (error) {
-            console.log(error);
+            console.error("Error generating PDF:", error);
         }
     }
     return (
         <>
 
-            <div className="flex flex-col gap-y-4 p-20">
+            <div className="p-4 sm:p-6 lg:p-8">
 
-                <h1>Download the data between a specified duration</h1>
+                <h1 className="text-xl sm:text-2xl font-bold text-slate-800 mb-6">Download the data between a specified duration</h1>
 
                 <Form {...form} onSubmit={form.handleSubmit(onSubmit)}>
-                        <div className="grid gap-4 py-4">
+                        <div className="space-y-6">
 
-                            <div className="grid grid-cols-4 items-center gap-4 mb-4">
+                            <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
                                 <FormField
                                     control={form.control}
                                     name="startingDate"
                                     render={({ field }) => (
-                                        <FormItem className="flex flex-col">
+                                        <FormItem className="flex flex-col w-full">
                                             <FormLabel>Starting Date</FormLabel>
                                             <Popover>
                                                 <PopoverTrigger asChild>
@@ -173,7 +194,7 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
                                                         <Button
                                                             variant={"outline"}
                                                             className={cn(
-                                                                "w-[240px] pl-3 text-left font-normal",
+                                                                "w-full h-11 pl-3 text-left font-normal rounded-xl border-gray-300 hover:bg-gray-50",
                                                                 !field.value && "text-muted-foreground"
                                                             )}
                                                         >
@@ -187,7 +208,7 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
                                                     </FormControl>
                                                 </PopoverTrigger>
                                                 <PopoverContent className="w-auto p-0" align="start">
-                                                    <Calendar className="bg-blue-90 text-white rounded-xl"
+                                                    <Calendar className="bg-white text-gray-900 rounded-xl border"
                                                         mode="single"
                                                         selected={field.value}
                                                         onSelect={field.onChange}
@@ -207,12 +228,12 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
                                     )}
                                 />
                             </div>
-                            <div className="grid grid-cols-4 items-center gap-4">
+                            <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
                                 <FormField
                                     control={form.control}
                                     name="endDate"
                                     render={({ field }) => (
-                                        <FormItem className="flex flex-col">
+                                        <FormItem className="flex flex-col w-full">
                                             <FormLabel>End Date</FormLabel>
                                             <Popover>
                                                 <PopoverTrigger asChild>
@@ -220,7 +241,7 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
                                                         <Button
                                                             variant={"outline"}
                                                             className={cn(
-                                                                "w-[240px] pl-3 text-left font-normal",
+                                                                "w-full h-11 pl-3 text-left font-normal rounded-xl border-gray-300 hover:bg-gray-50",
                                                                 !field.value && "text-muted-foreground"
                                                             )}
                                                         >
@@ -234,7 +255,7 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
                                                     </FormControl>
                                                 </PopoverTrigger>
                                                 <PopoverContent className="w-auto p-0" align="start">
-                                                    <Calendar className="bg-blue-90 text-white rounded-xl"
+                                                    <Calendar className="bg-white text-gray-900 rounded-xl border"
                                                         mode="single"
                                                         selected={field.value}
                                                         onSelect={field.onChange}
@@ -252,7 +273,11 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
                                     )}
                                 />
                             </div>
-                            <Button type="submit" className="w-40 h-15 bg-blue-90 text-white rounded-xl">Submit</Button>
+                            <div className="flex justify-center pt-4">
+                                <Button type="submit" className="w-full sm:w-48 h-12 sm:h-11 md:h-12 rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white transition-all duration-300 flex items-center justify-center gap-2 text-sm sm:text-sm font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 mobile-button touch-target border-0">
+                                    Get Data
+                                </Button>
+                            </div>
                         </div>
                 </Form>
 
@@ -260,25 +285,24 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
                 {salesDataDuration && (
                     <>
 
-                        <div className="">
+                        <div className="mt-8">
                             <DataTable columns={columns} data={salesDataDuration} id={id} />
                         </div>
 
-                        <div className="flex flex-col gap-y-3 p-5 bg-white w-[35rem] rounded-xl
-                        " ref={salesDataDurationRef} id="pdfDownload">
+                        <div className="mt-8">
+                            <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 sm:p-6 overflow-x-auto pdf-content" ref={salesDataDurationRef} id="pdfDownload">
 
-                            <h1 className="text-[24px] font-[700] leading-[120%] text-center">{hotelName}</h1>
-                            <h1 className="text-[16px] font-[700] leading-[120%] text-center -mt-2">{hotelAddress}</h1>
+                            <h1 className="text-xl sm:text-2xl font-bold leading-tight text-center">{hotelName}</h1>
+                            <h1 className="text-sm sm:text-base font-semibold leading-tight text-center -mt-1">{hotelAddress}</h1>
 
-                            {/* <h1 className="text-[16px] font-[700] leading-[120%] text-center">Data between {startingDate} and {endDate}</h1> */}
-                            <div className="flex flex-row items-center justify-end gap-2 mr-1">
+                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-end gap-2 sm:mr-1 mt-4">
 
                                 {BF !== 0 && (
                                     <>
 
-                                        <h1>BF Total Balance</h1>
-                                        <h1>=</h1>
-                                        <h1>Rs {BF}</h1>
+                                        <h1 className="text-sm font-medium">BF Total Balance</h1>
+                                        <h1 className="text-lg font-bold">=</h1>
+                                        <h1 className="text-lg font-bold">Rs {BF}</h1>
 
                                     </>
                                 )}
@@ -288,49 +312,38 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
 
                                 <div className="flex flex-col">
                                     {date in salesDataDuration && (salesDataDuration as any)[date]?.dateDescription !== "no" && (
-                                        <div className="overflow-visible break-inside-avoid">
-                                            <h1 className="underline">{date}</h1>
+                                        <div className="overflow-visible break-inside-avoid mb-2">
+                                            <h1 className="underline text-base sm:text-lg font-semibold">{date}</h1>
                                         </div>
                                     )}
                                     {date in salesDataDuration && (salesDataDuration as any)[date]?.info?.map((item: any, index: number) => (
 
                                         <>
-                                            <div className="flex items-center justify-between">
-                                                <div className="flex items-center justify-center gap-4 overflow-visible	break-inside-avoid">
+                                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-4">
+                                                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4 overflow-visible break-inside-avoid w-full sm:w-auto">
 
 
                                                     {item.extraAmount > 0 ? (
 
                                                         <>
-                                                            <div className="bg-yellow-50 rounded-xl p-2">
-                                                                <h1>{item.extraAmountDescription}</h1>
+                                                            <div className="bg-yellow-50 rounded-lg p-2 w-full sm:w-auto">
+                                                                <h1 className="text-sm font-medium">{item.extraAmountDescription}</h1>
 
                                                             </div>
 
                                                         </>
                                                     ) : item.cashPaid === "no" ? (
                                                         <>
-                                                            <h1>{item.stockName}</h1>
-                                                            <div className="flex flex-row item-center justify-center gap-2">
-                                                                <h1>{item.quantity} X</h1>
-                                                                <h1> Rs {item.price} </h1>
+                                                            <h1 className="text-sm font-medium">{item.stockName}</h1>
+                                                            <div className="flex flex-row items-center justify-center gap-2">
+                                                                <h1 className="text-sm">{item.quantity} X</h1>
+                                                                <h1 className="text-sm"> Rs {item.price} </h1>
                                                             </div>
                                                             {item.isPaymentDone === "Yes" && <>
-                                                                <div className="bg-green-50 rounded-xl p-2">
-                                                                    <h1>Payment Done</h1>
-                                                                    {/* <div className="flex flex-row item-center justify-center gap-2">
-                                                                    <h1 className="font-[700]"> Rs {item.previousAmount} - </h1>
-                                                                    <h1>Rs {item.amountPaid}</h1>
-                                                                </div> */}
-
+                                                                <div className="bg-green-50 rounded-lg p-2 w-full sm:w-auto">
+                                                                    <h1 className="text-sm font-medium">Payment Done</h1>
                                                                 </div>
                                                             </>}
-
-                                                            {/* <div>=</div>
-                                                            <div className="flex flex-row item-center justify-center gap-2">
-                                                                <h1> Rs {item.amount} + </h1>
-                                                                <h1 className="font-[700]"> Rs {item.previousAmount}</h1>
-                                                            </div> */}
 
                                                         </>
 
@@ -338,8 +351,8 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
 
                                                         (
 
-                                                            <div className="bg-green-50 rounded-xl p-2 overflow-visible	break-inside-avoid">
-                                                                <h1>{item.amountPaidDescription}</h1>
+                                                            <div className="bg-green-50 rounded-lg p-2 overflow-visible break-inside-avoid w-full sm:w-auto">
+                                                                <h1 className="text-sm font-medium">{item.amountPaidDescription}</h1>
                                                                 {/* <div className="flex flex-row item-center justify-center gap-2">
                                                                     <h1 className="font-[700]"> Rs {item.previousAmount} - </h1>
                                                                     <h1>Rs {item.amountPaid}</h1>
@@ -352,27 +365,23 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
 
 
                                                 </div>
-                                                {/* <div> = </div> */}
-                                                <div className="break-inside-avoid overflow-visible">
+                                                <div className="break-inside-avoid overflow-visible text-right sm:text-left">
 
                                                     {item.extraAmount > 0 ? (
-
-
                                                         <>
-                                                            <h1><span className="font-[700] text-[20px]"> + </span> Rs {item.extraAmount}</h1>
-
+                                                            <h1 className="text-base sm:text-lg font-bold"><span className="text-lg sm:text-xl"> + </span> Rs {item.extraAmount}</h1>
                                                         </>
                                                     ) :
                                                         item.cashPaid === "no" ? (
                                                             <>
                                                                 {BF === 0 && index === 0 ? (
                                                                     <>
-                                                                        <h1>Rs {item.amount}</h1>
+                                                                        <h1 className="text-base sm:text-lg font-semibold">Rs {item.amount}</h1>
 
                                                                     </>
                                                                 ) : (
                                                                     <>
-                                                                        <h1> {item.isPaymentDone !== "Yes" && <span className="font-[700] text-[20px]"> + </span>} Rs {item.amount}</h1>
+                                                                        <h1 className="text-base sm:text-lg font-semibold"> {item.isPaymentDone !== "Yes" && <span className="text-lg sm:text-xl"> + </span>} Rs {item.amount}</h1>
 
                                                                     </>
                                                                 )}
@@ -382,7 +391,7 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
 
                                                             : (
                                                                 <>
-                                                                    <h1><span className="font-[700] text-[20px]"> - </span> Rs {item.amountPaid}</h1>
+                                                                    <h1 className="text-base sm:text-lg font-semibold"><span className="text-lg sm:text-xl"> - </span> Rs {item.amountPaid}</h1>
 
                                                                 </>
 
@@ -393,25 +402,30 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
 
                                     ))}
 
-                                    <hr className="text-black-100 w-full mt-2" style={{ borderWidth: '3px' }} />
-                                    <div className="flex flex-row items-center justify-between -gap-4 break-inside-avoid overflow-visible">
+                                    <hr className="border-gray-300 w-full mt-3 mb-2" style={{ borderWidth: '2px' }} />
+                                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-4 break-inside-avoid overflow-visible mt-2 pt-2 border-t border-gray-200">
                                         {date in salesDataDuration && ((salesDataDuration as any)[date]?.finalAmount ?? 0) < 0 ? (
                                             <>
-                                                <h1 className="bg-yellow-200 rounded-xl p-2 break-inside-avoid overflow-visible">Remaining Advanced Payment</h1>
+                                                <h1 className="bg-yellow-200 rounded-lg p-2 break-inside-avoid overflow-visible text-sm font-medium w-full sm:w-auto">Remaining Advanced Payment</h1>
 
                                             </>
                                         ) : (
                                             <>
-                                                <h1> Balance Total Amount </h1>
+                                                <h1 className="text-sm font-medium"> Balance Total Amount </h1>
 
                                             </>
                                         )}
-                                        <h1>Rs {(salesDataDuration as any)[date]?.finalAmount ?? 0}</h1>
+                                        <h1 className="text-base sm:text-lg font-bold">Rs {(salesDataDuration as any)[date]?.finalAmount ?? 0}</h1>
                                     </div>
                                 </div>
                             ))}
                         </div>
-                        <Button onClick={() => handleGeneratePDF()} className="w-40 h-15 bg-blue-90 text-white rounded-xl">Download PDF</Button>
+                        </div>
+                        <div className="flex justify-center mt-6">
+                            <Button onClick={() => handleGeneratePDF()} className="w-full sm:w-48 h-12 sm:h-11 md:h-12 rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white transition-all duration-300 flex items-center justify-center gap-2 text-sm sm:text-sm font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 mobile-button touch-target border-0">
+                                Download PDF
+                            </Button>
+                        </div>
                     </>
                 )}
             </div>

@@ -109,317 +109,304 @@ export function PurchaseDataDownloadPDF({ id }: PurchaseDataDownloadPDFProps) {
     }
     console.log("the purchaseDataDuration", purchaseDataDuration);
     const handleGeneratePDF = async () => {
-        // const inputData = purchaseDataDurationRef.current;
+        const element = document.querySelector("#pdfDownload") as HTMLElement;
+        if (!element) return;
 
         try {
-            // // Capture the content as a canvas
-            // const canvas = await html2canvas(inputData);
+            // Temporarily modify styles for PDF generation
+            const originalStyles = element.style.cssText;
+            element.style.cssText += `
+                width: 800px !important;
+                min-width: 800px !important;
+                max-width: 800px !important;
+                white-space: nowrap !important;
+                word-wrap: break-word !important;
+                overflow-wrap: break-word !important;
+            `;
 
-            // // Set image and page dimensions
-            // const imgWidth = 300; // A4 page width in landscape mode (px)
-            // const pageHeight = 300; // A4 page height in landscape mode (px)
-            // const imgHeight = (canvas.height * imgWidth) / canvas.width; // Scale height based on width
+            // Force layout recalculation
+            element.offsetHeight;
 
-            // let heightLeft = imgHeight;
-            // let position = 0;
+            const opt = {
+                margin: [0.5, 0.5, 0.5, 0.5] as [number, number, number, number], // top, right, bottom, left margins
+                filename: `${supplierName || 'Purchase_Report'}.pdf`,
+                image: {
+                    type: 'jpeg',
+                    quality: 0.98
+                },
+                html2canvas: {
+                    scale: 2,
+                    useCORS: true,
+                    allowTaint: true,
+                    logging: false,
+                    dpi: 192,
+                    letterRendering: true,
+                    width: 800,
+                    height: element.scrollHeight,
+                    windowWidth: 1200,
+                    windowHeight: element.scrollHeight + 200
+                },
+                jsPDF: {
+                    unit: 'in',
+                    format: 'a4',
+                    orientation: 'portrait',
+                    compress: true
+                },
+                pagebreak: {
+                    mode: ['avoid-all', 'css', 'legacy'],
+                    before: '.page-break-before',
+                    after: '.page-break-after',
+                    avoid: '.page-break-avoid'
+                }
+            };
 
-            // // Initialize jsPDF document (landscape, A4 format)
-            // const pdf = new jsPDF({
-            //     orientation: "landscape",
-            //     unit: "px",
-            //     format: "a4"
-            // });
+            // Generate the PDF
+            await html2pdf().from(element).set(opt).save();
 
-            // // Add the first page with content
-            // pdf.addImage(canvas, "PNG", 0, position, imgWidth, imgHeight);
-            // heightLeft -= pageHeight;
+            // Restore original styles
+            element.style.cssText = originalStyles;
 
-            // // Add new pages as needed if content exceeds one page
-            // while (heightLeft > 0) {
-            //     position = heightLeft - imgHeight;
-            //     pdf.addPage();
-            //     pdf.addImage(canvas, "PNG", 0, position, imgWidth, imgHeight);
-            //     heightLeft -= pageHeight;
-            // }
-
-            // // Save the PDF with a filename
-            // pdf.save(`${supplierName} ${startingDate} - ${endDate}.pdf`);
-            const element = document.querySelector("#pdfDownload") as HTMLElement;
-            if (element) {
-                html2pdf(element);
-                const opt = {
-                    margin: 0.5, // Adjust margin as needed
-                    filename: `${supplierName}.pdf`,
-                    image: { type: 'jpeg', quality: 0.98 },
-                    html2canvas: { scale: 2, logging: true, dpi: 192, letterRendering: true },
-                    jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' },
-                    pagebreak: { mode: ['avoid-all', 'css', 'legacy'] } // Avoids splitting content across pages
-                };
-
-                // Generate the PDF
-                html2pdf().from(element).set(opt).save();
-            }
         } catch (error) {
-            console.log("Error generating PDF:", error);
+            console.error("Error generating PDF:", error);
         }
     }
     return (
-        <>
+        <div className="p-4 sm:p-6 md:p-8">
+            <div className="max-w-6xl mx-auto">
+                <div className="mb-6 sm:mb-8">
+                    <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-slate-800 leading-tight mb-2">
+                        Download Purchase Data PDF
+                    </h1>
+                    <p className="text-sm sm:text-base text-slate-600">
+                        Select a date range to generate and download your purchase data PDF report
+                    </p>
+                </div>
 
-            <div className="flex flex-col gap-y-4 p-20">
+                <Form {...form} onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 sm:space-y-8">
+                    {/* Date Selection Section */}
+                    <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 md:p-8 shadow-sm">
+                        <h2 className="text-lg sm:text-xl font-semibold text-slate-800 mb-4 sm:mb-6">
+                            Select Date Range
+                        </h2>
 
-                <h1>Download the data between a specified duration</h1>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                            <FormField
+                                control={form.control}
+                                name="startingDate"
+                                render={({ field }) => (
+                                    <FormItem className="flex flex-col">
+                                        <FormLabel className="text-sm font-medium text-slate-700">Starting Date</FormLabel>
+                                        <Popover>
+                                            <PopoverTrigger asChild>
+                                                <FormControl>
+                                                    <Button
+                                                        variant={"outline"}
+                                                        className={cn(
+                                                            "h-11 pl-3 text-left font-normal rounded-lg border-gray-300 hover:border-emerald-500 transition-colors bg-white",
+                                                            !field.value && "text-muted-foreground"
+                                                        )}
+                                                    >
+                                                        {field.value ? (
+                                                            format(field.value, "PPP")
+                                                        ) : (
+                                                            <span>Pick a date</span>
+                                                        )}
+                                                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                                    </Button>
+                                                </FormControl>
+                                            </PopoverTrigger>
+                                            <PopoverContent className="w-auto p-0 bg-white border border-gray-200 rounded-lg shadow-lg" align="start">
+                                                <Calendar
+                                                    mode="single"
+                                                    selected={field.value}
+                                                    onSelect={field.onChange}
+                                                    disabled={(date) =>
+                                                        date > new Date() || date < new Date("1900-01-01")
+                                                    }
+                                                    initialFocus
+                                                    className="rounded-lg border border-gray-200 bg-white"
+                                                />
+                                            </PopoverContent>
+                                        </Popover>
+                                        <FormDescription className="text-xs text-slate-500">
+                                            Select the start date for the report
+                                        </FormDescription>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
 
-                <Form {...form} onSubmit={form.handleSubmit(onSubmit)}>
-                        <div className="grid gap-4 py-4">
-
-                            <div className="grid grid-cols-4 items-center gap-4 mb-4">
-                                <FormField
-                                    control={form.control}
-                                    name="startingDate"
-                                    render={({ field }) => (
-                                        <FormItem className="flex flex-col">
-                                            <FormLabel>Starting Date</FormLabel>
-                                            <Popover>
-                                                <PopoverTrigger asChild>
-                                                    <FormControl>
-                                                        <Button
-                                                            variant={"outline"}
-                                                            className={cn(
-                                                                "w-[240px] pl-3 text-left font-normal",
-                                                                !field.value && "text-muted-foreground"
-                                                            )}
-                                                        >
-                                                            {field.value ? (
-                                                                format(field.value, "PPP")
-                                                            ) : (
-                                                                <span>Pick a date</span>
-                                                            )}
-                                                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50 " />
-                                                        </Button>
-                                                    </FormControl>
-                                                </PopoverTrigger>
-                                                <PopoverContent className="w-auto p-0" align="start">
-                                                    <Calendar className="bg-blue-90 text-white rounded-xl"
-                                                        mode="single"
-                                                        selected={field.value}
-                                                        onSelect={field.onChange}
-                                                        disabled={(date) =>
-                                                            date > new Date() || date < new Date("1900-01-01")
-                                                        }
-                                                        initialFocus
-
-
-
-                                                    />
-                                                </PopoverContent>
-                                            </Popover>
-
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                            </div>
-                            <div className="grid grid-cols-4 items-center gap-4">
-                                <FormField
-                                    control={form.control}
-                                    name="endDate"
-                                    render={({ field }) => (
-                                        <FormItem className="flex flex-col">
-                                            <FormLabel>End Date</FormLabel>
-                                            <Popover>
-                                                <PopoverTrigger asChild>
-                                                    <FormControl>
-                                                        <Button
-                                                            variant={"outline"}
-                                                            className={cn(
-                                                                "w-[240px] pl-3 text-left font-normal",
-                                                                !field.value && "text-muted-foreground"
-                                                            )}
-                                                        >
-                                                            {field.value ? (
-                                                                format(field.value, "PPP")
-                                                            ) : (
-                                                                <span>Pick a date</span>
-                                                            )}
-                                                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50 " />
-                                                        </Button>
-                                                    </FormControl>
-                                                </PopoverTrigger>
-                                                <PopoverContent className="w-auto p-0" align="start">
-                                                    <Calendar className="bg-blue-90 text-white rounded-xl"
-                                                        mode="single"
-                                                        selected={field.value}
-                                                        onSelect={field.onChange}
-                                                        disabled={(date) =>
-                                                            date > new Date() || date < new Date("1900-01-01")
-                                                        }
-                                                        initialFocus
-
-                                                    />
-                                                </PopoverContent>
-                                            </Popover>
-
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                            </div>
-                            <Button type="submit" className="w-40 h-15 bg-blue-90 text-white rounded-xl">Submit</Button>
+                            <FormField
+                                control={form.control}
+                                name="endDate"
+                                render={({ field }) => (
+                                    <FormItem className="flex flex-col">
+                                        <FormLabel className="text-sm font-medium text-slate-700">End Date</FormLabel>
+                                        <Popover>
+                                            <PopoverTrigger asChild>
+                                                <FormControl>
+                                                    <Button
+                                                        variant={"outline"}
+                                                        className={cn(
+                                                            "h-11 pl-3 text-left font-normal rounded-lg border-gray-300 hover:border-emerald-500 transition-colors bg-white",
+                                                            !field.value && "text-muted-foreground"
+                                                        )}
+                                                    >
+                                                        {field.value ? (
+                                                            format(field.value, "PPP")
+                                                        ) : (
+                                                            <span>Pick a date</span>
+                                                        )}
+                                                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                                    </Button>
+                                                </FormControl>
+                                            </PopoverTrigger>
+                                            <PopoverContent className="w-auto p-0 bg-white border border-gray-200 rounded-lg shadow-lg" align="start">
+                                                <Calendar
+                                                    mode="single"
+                                                    selected={field.value}
+                                                    onSelect={field.onChange}
+                                                    disabled={(date) =>
+                                                        date > new Date() || date < new Date("1900-01-01")
+                                                    }
+                                                    initialFocus
+                                                    className="rounded-lg border border-gray-200 bg-white"
+                                                />
+                                            </PopoverContent>
+                                        </Popover>
+                                        <FormDescription className="text-xs text-slate-500">
+                                            Select the end date for the report
+                                        </FormDescription>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
                         </div>
+
+                        <div className="flex justify-center mt-6">
+                            <Button
+                                type="submit"
+                                className="w-full sm:w-48 h-12 sm:h-11 md:h-12 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white transition-all duration-300 flex items-center justify-center gap-2 text-sm sm:text-sm font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 mobile-button touch-target border-0"
+                            >
+                                Generate Report
+                            </Button>
+                        </div>
+                    </div>
                 </Form>
 
 
                 {purchaseDataDuration && (
                     <>
-
-                        <div className="">
-                            <DataTable columns={columns} data={Object.values(purchaseDataDuration).flatMap(item => item.info)} />
+                        {/* Data Table Section */}
+                        <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 md:p-8 shadow-sm">
+                            <h2 className="text-lg sm:text-xl font-semibold text-slate-800 mb-4 sm:mb-6">
+                                Purchase Data Preview
+                            </h2>
+                            <div className="overflow-x-auto">
+                                <DataTable columns={columns} data={Object.values(purchaseDataDuration).flatMap(item => item.info)} />
+                            </div>
                         </div>
 
-                        <div className="flex flex-col gap-y-3 p-5 bg-white w-[35rem] rounded-xl
-                        " ref={purchaseDataDurationRef} id="pdfDownload">
+                        {/* PDF Preview Section */}
+                        <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 md:p-8 shadow-sm">
+                            <h2 className="text-lg sm:text-xl font-semibold text-slate-800 mb-4 sm:mb-6">
+                                PDF Preview
+                            </h2>
 
-                            <h1 className="text-[24px] font-[700] leading-[120%] text-center"> {supplierName}</h1>
-                            <h1 className="text-[16px] font-[700] leading-[120%] text-center -mt-2">{supplierAddress}</h1>
+                            <div className="overflow-x-auto">
+                                <div className="min-w-[35rem] p-5 bg-white border rounded-xl pdf-content" ref={purchaseDataDurationRef} id="pdfDownload">
+                                    <h1 className="text-[24px] font-[700] leading-[120%] text-center">{supplierName}</h1>
+                                    <h1 className="text-[16px] font-[700] leading-[120%] text-center -mt-2">{supplierAddress}</h1>
 
-                            {/* <h1 className="text-[16px] font-[700] leading-[120%] text-center">Data between {startingDate} and {endDate}</h1> */}
-                            <div className="flex flex-row items-center justify-end gap-2 mr-1">
-
-                                {BF !== 0 && (
-                                    <>
-                                        <h1>BF Total Balance</h1>
-                                        <h1>=</h1>
-                                        <h1>Rs {BF}</h1>
-
-                                    </>
-                                )}
-                            </div>
-
-                            {Object.keys(purchaseDataDuration).map((date: string) => (
-
-                                <div className="flex flex-col">
-                                    {purchaseDataDuration[date]?.dateDescription !== "no" && (
-                                        <div className="break-inside-avoid overflow-visible">
-                                            <h1 className="underline ">{date}</h1>
-                                        </div>
-                                    )}
-                                    {purchaseDataDuration[date]?.info?.map((item: any, index: number) => (
-
-                                        <>
-                                            <div className="flex items-center justify-between">
-                                                <div className="flex items-center justify-center gap-4 overflow-visible	break-inside-avoid">
-
-                                                    {item.extraAmount > 0 ? (
-
-                                                        <>
-                                                            <div className="bg-yellow-50 rounded-xl p-2">
-                                                                <h1>{item.extraAmountDescription}</h1>
-
-                                                            </div>
-
-                                                        </>
-                                                    ) :
-
-                                                        item.cashPaid === "no" ? (
-                                                            <>
-                                                                <h1>{item.stockName}</h1>
-                                                                <div className="flex flex-row item-center justify-center gap-2">
-                                                                    <h1>{item.quantity} X</h1>
-                                                                    <h1> Rs {item.price} </h1>
-                                                                </div>
-
-                                                                {item.isPaymentDone === "Yes" && <>
-                                                                    <div className="bg-green-50 rounded-xl p-2">
-                                                                        <h1>Payment Done</h1>
-                                                                        {/* <div className="flex flex-row item-center justify-center gap-2">
-                                                                    <h1 className="font-[700]"> Rs {item.previousAmount} - </h1>
-                                                                    <h1>Rs {item.amountPaid}</h1>
-                                                                </div> */}
-
-                                                                    </div>
-                                                                </>}
-                                                                {/* <div>=</div>
-                                                            <div className="flex flex-row item-center justify-center gap-2">
-                                                                <h1> Rs {item.amount} + </h1>
-                                                                <h1 className="font-[700]"> Rs {item.previousAmount}</h1>
-                                                            </div> */}
-
-                                                            </>
-
-                                                        ) :
-                                                            (
-                                                                <div className="bg-green-50 rounded-xl p-2 break-inside-avoid overflow-visible">
-                                                                    <h1>{item.amountPaidDescription}</h1>
-                                                                    {/* <div className="flex flex-row item-center justify-center gap-2">
-                                                                    <h1 className="font-[700]"> Rs {item.previousAmount} - </h1>
-                                                                    <h1>Rs {item.amountPaid}</h1>
-                                                                </div> */}
-
-                                                                </div>
-                                                            )}
-                                                </div>
-                                                {/* <div> = </div> */}
-                                                <div className="break-inside-avoid overflow-visible">
-
-                                                    {item.extraAmount > 0 ? (
-
-
-                                                        <>
-                                                            <h1><span className="font-[700] text-[20px]"> + </span> Rs {item.extraAmount}</h1>
-
-                                                        </>
-                                                    ) :
-
-                                                        item.cashPaid === "no" ? (
-                                                            <>
-                                                                {BF === 0 && index === 0 ? (
-                                                                    <>
-                                                                        <h1>Rs {item.amount}</h1>
-
-                                                                    </>
-                                                                ) : (
-                                                                    <>
-                                                                        <h1> {item.isPaymentDone !== "Yes" && <span className="font-[700] text-[20px]"> + </span>}  Rs {item.amount}</h1>
-
-                                                                    </>
-                                                                )}
-
-                                                            </>
-                                                        ) : (
-                                                            <>
-                                                                <h1><span className="font-[700] text-[20px]"> - </span> Rs {item.amountPaid}</h1>
-
-                                                            </>
-
-                                                        )}
-                                                </div>
-                                            </div>
-                                        </>
-
-                                    ))}
-
-                                    <hr className="text-black-100 w-full mt-2" style={{ borderWidth: '3px' }} />
-                                    <div className="flex flex-row items-center justify-between -gap-4 break-inside-avoid overflow-visible">
-                                        {(purchaseDataDuration[date]?.finalAmount ?? 0) < 0 ? (
+                                    <div className="flex flex-row items-center justify-end gap-2 mr-1">
+                                        {BF !== 0 && (
                                             <>
-                                                <h1 className="bg-yellow-200 rounded-xl p-2 break-inside-avoid overflow-visible">Remaining Advanced Payment</h1>
-                                            </>
-                                        ) : (
-                                            <>
-                                                <h1 className="">Balance Total Amount</h1>
+                                                <h1>BF Total Balance</h1>
+                                                <h1>=</h1>
+                                                <h1>Rs {BF}</h1>
                                             </>
                                         )}
-                                        <h1>Rs {purchaseDataDuration[date]?.finalAmount}</h1>
                                     </div>
+
+                                    {Object.keys(purchaseDataDuration).map((date: string) => (
+                                        <div className="flex flex-col" key={date}>
+                                            {purchaseDataDuration[date]?.dateDescription !== "no" && (
+                                                <div className="break-inside-avoid overflow-visible">
+                                                    <h1 className="underline">{date}</h1>
+                                                </div>
+                                            )}
+                                            {purchaseDataDuration[date]?.info?.map((item: any, index: number) => (
+                                                <div key={index} className="flex items-center justify-between mb-2">
+                                                    <div className="flex items-center justify-center gap-4 overflow-visible break-inside-avoid">
+                                                        {item.extraAmount > 0 ? (
+                                                            <div className="bg-yellow-50 rounded-xl p-2">
+                                                                <h1>{item.extraAmountDescription}</h1>
+                                                            </div>
+                                                        ) : item.cashPaid === "no" ? (
+                                                            <>
+                                                                <h1>{item.stockName}</h1>
+                                                                <div className="flex flex-row items-center justify-center gap-2">
+                                                                    <h1>{item.quantity} X</h1>
+                                                                    <h1>Rs {item.price}</h1>
+                                                                </div>
+                                                                {item.isPaymentDone === "Yes" && (
+                                                                    <div className="bg-green-50 rounded-xl p-2">
+                                                                        <h1>Payment Done</h1>
+                                                                    </div>
+                                                                )}
+                                                            </>
+                                                        ) : (
+                                                            <div className="bg-green-50 rounded-xl p-2 break-inside-avoid overflow-visible">
+                                                                <h1>{item.amountPaidDescription}</h1>
+                                                            </div>
+                                                        )}
+                                                    </div>
+
+                                                    <div className="break-inside-avoid overflow-visible">
+                                                        {item.extraAmount > 0 ? (
+                                                            <h1><span className="font-[700] text-[20px]"> + </span> Rs {item.extraAmount}</h1>
+                                                        ) : item.cashPaid === "no" ? (
+                                                            <>
+                                                                {BF === 0 && index === 0 ? (
+                                                                    <h1>Rs {item.amount}</h1>
+                                                                ) : (
+                                                                    <h1>{item.isPaymentDone !== "Yes" && <span className="font-[700] text-[20px]"> + </span>} Rs {item.amount}</h1>
+                                                                )}
+                                                            </>
+                                                        ) : (
+                                                            <h1><span className="font-[700] text-[20px]"> - </span> Rs {item.amountPaid}</h1>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            ))}
+
+                                            <hr className="text-black-100 w-full mt-2" style={{ borderWidth: '3px' }} />
+                                            <div className="flex flex-row items-center justify-between -gap-4 break-inside-avoid overflow-visible">
+                                                {(purchaseDataDuration[date]?.finalAmount ?? 0) < 0 ? (
+                                                    <h1 className="bg-yellow-200 rounded-xl p-2 break-inside-avoid overflow-visible">Remaining Advanced Payment</h1>
+                                                ) : (
+                                                    <h1 className="">Balance Total Amount</h1>
+                                                )}
+                                                <h1>Rs {purchaseDataDuration[date]?.finalAmount}</h1>
+                                            </div>
+                                        </div>
+                                    ))}
                                 </div>
-                            ))}
+                            </div>
                         </div>
-                        <Button onClick={() => handleGeneratePDF()} className="w-40 h-15 bg-blue-90 text-white rounded-xl">Download PDF</Button>
+
+                        <div className="flex justify-center mt-6">
+                            <Button
+                                onClick={() => handleGeneratePDF()}
+                                className="w-full sm:w-48 h-12 sm:h-11 md:h-12 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white transition-all duration-300 flex items-center justify-center gap-2 text-sm sm:text-sm font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 mobile-button touch-target border-0"
+                            >
+                                Download PDF
+                            </Button>
+                        </div>
                     </>
                 )}
             </div>
-        </>
+        </div>
     )
 }
 
