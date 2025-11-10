@@ -119,7 +119,7 @@ export function PurchaseDataDownloadPDF({ id }: PurchaseDataDownloadPDFProps) {
                 width: 800px !important;
                 min-width: 800px !important;
                 max-width: 800px !important;
-                white-space: nowrap !important;
+                white-space: normal !important;
                 word-wrap: break-word !important;
                 overflow-wrap: break-word !important;
             `;
@@ -127,41 +127,135 @@ export function PurchaseDataDownloadPDF({ id }: PurchaseDataDownloadPDFProps) {
             // Force layout recalculation
             element.offsetHeight;
 
-            const opt = {
-                margin: [0.5, 0.5, 0.5, 0.5] as [number, number, number, number], // top, right, bottom, left margins
-                filename: `${supplierName || 'Purchase_Report'}.pdf`,
-                image: {
-                    type: 'jpeg',
-                    quality: 0.98
-                },
-                html2canvas: {
+            // Use html2pdf (which wraps html2canvas + jsPDF) with pagebreak support
+            // Programmatic pagination with proper margins: create page clones that include
+            // left/right/top/bottom padding (margins) so each rendered canvas already contains
+            // the visual margins and pages align consistently.
+
+            const MARGINS_IN = { top: 0.5, bottom: 0.5, left: 0.5, right: 0.5 };
+            const A4_IN_HEIGHT = 11.69; // inches
+            const A4_IN_WIDTH = 8.27; // inches
+
+            // compute CSS px per inch accurately
+            const testDiv = document.createElement('div');
+            testDiv.style.width = '1in';
+            testDiv.style.position = 'absolute';
+            testDiv.style.left = '-9999px';
+            document.body.appendChild(testDiv);
+            const CSS_PX_PER_IN = testDiv.offsetWidth || 96;
+            document.body.removeChild(testDiv);
+
+            const A4_PX_HEIGHT = A4_IN_HEIGHT * CSS_PX_PER_IN;
+            const A4_PX_WIDTH = A4_IN_WIDTH * CSS_PX_PER_IN;
+            const marginsPx = {
+                top: MARGINS_IN.top * CSS_PX_PER_IN,
+                bottom: MARGINS_IN.bottom * CSS_PX_PER_IN,
+                left: MARGINS_IN.left * CSS_PX_PER_IN,
+                right: MARGINS_IN.right * CSS_PX_PER_IN,
+            };
+
+            const pageMaxHeightPx = A4_PX_HEIGHT;
+
+            // select top-level groups to paginate
+            const allChildren = Array.from(element.children) as HTMLElement[];
+            const pageContainers: HTMLElement[] = [];
+
+            function createPageContainer() {
+                const page = document.createElement('div');
+                page.style.width = A4_PX_WIDTH + 'px';
+                page.style.boxSizing = 'border-box';
+                page.style.paddingTop = `${marginsPx.top}px`;
+                page.style.paddingBottom = `${marginsPx.bottom}px`;
+                page.style.paddingLeft = `${marginsPx.left}px`;
+                page.style.paddingRight = `${marginsPx.right}px`;
+                page.style.background = '#ffffff';
+                page.style.font = getComputedStyle(element).font || '';
+                return page;
+            }
+
+            let currentPage = createPageContainer();
+            let started = false;
+
+            for (const child of allChildren) {
+                // treat elements with 'page-break-avoid' as atomic groups
+                const isGroup = child.classList && child.classList.contains('page-break-avoid');
+
+                if (!started && !isGroup) {
+                    // header before first group: include in first page
+                    currentPage.appendChild(child.cloneNode(true));
+                    continue;
+                }
+
+                started = true;
+
+                if (isGroup) {
+                    const clone = child.cloneNode(true) as HTMLElement;
+                    currentPage.appendChild(clone);
+
+                    // measure
+                    currentPage.style.position = 'absolute';
+                    currentPage.style.left = '-9999px';
+                    document.body.appendChild(currentPage);
+                    const h = currentPage.scrollHeight;
+                    document.body.removeChild(currentPage);
+
+                    if (h > pageMaxHeightPx) {
+                        // remove the clone and finalize the page
+                        currentPage.removeChild(clone);
+                        pageContainers.push(currentPage);
+                        // start new page and add the clone
+                        currentPage = createPageContainer();
+                        currentPage.appendChild(clone);
+
+                        // if clone alone still too big, push it as its own page
+                        currentPage.style.position = 'absolute';
+                        currentPage.style.left = '-9999px';
+                        document.body.appendChild(currentPage);
+                        const h2 = currentPage.scrollHeight;
+                        document.body.removeChild(currentPage);
+                        if (h2 > pageMaxHeightPx) {
+                            pageContainers.push(currentPage);
+                            currentPage = createPageContainer();
+                        }
+                    }
+                } else {
+                    // if non-group after start, just append (rare)
+                    currentPage.appendChild(child.cloneNode(true));
+                }
+            }
+
+            if (currentPage.childElementCount > 0) pageContainers.push(currentPage);
+
+            // Render pages and add to PDF
+            const pdf = new jsPDF({ unit: 'in', format: 'a4', orientation: 'portrait' });
+            const pageWidthIn = pdf.internal.pageSize.getWidth();
+
+            for (let i = 0; i < pageContainers.length; i++) {
+                const pageEl = pageContainers[i]!;
+                pageEl.style.position = 'absolute';
+                pageEl.style.left = '-9999px';
+                document.body.appendChild(pageEl);
+
+                const canvas = await html2canvas(pageEl, {
                     scale: 2,
                     useCORS: true,
                     allowTaint: true,
                     logging: false,
-                    dpi: 192,
-                    letterRendering: true,
-                    width: 800,
-                    height: element.scrollHeight,
-                    windowWidth: 1200,
-                    windowHeight: element.scrollHeight + 200
-                },
-                jsPDF: {
-                    unit: 'in',
-                    format: 'a4',
-                    orientation: 'portrait',
-                    compress: true
-                },
-                pagebreak: {
-                    mode: ['avoid-all', 'css', 'legacy'],
-                    before: '.page-break-before',
-                    after: '.page-break-after',
-                    avoid: '.page-break-avoid'
-                }
-            };
+                    width: pageEl.offsetWidth,
+                    height: pageEl.scrollHeight,
+                });
 
-            // Generate the PDF
-            await html2pdf().from(element).set(opt).save();
+                const imgData = canvas.toDataURL('image/jpeg', 0.98);
+                const imgProps = pdf.getImageProperties(imgData);
+                const imgWidthIn = pageWidthIn;
+                const imgHeightIn = (imgProps.height * imgWidthIn) / imgProps.width;
+
+                pdf.addImage(imgData, 'JPEG', 0, 0, imgWidthIn, imgHeightIn);
+                if (i < pageContainers.length - 1) pdf.addPage();
+                document.body.removeChild(pageEl);
+            }
+
+            pdf.save(`${supplierName || 'Purchase_Report'}.pdf`);
 
             // Restore original styles
             element.style.cssText = originalStyles;
@@ -329,7 +423,7 @@ export function PurchaseDataDownloadPDF({ id }: PurchaseDataDownloadPDFProps) {
                                     </div>
 
                                     {Object.keys(purchaseDataDuration).map((date: string) => (
-                                        <div className="flex flex-col" key={date}>
+                                        <div className="flex flex-col page-break-avoid" key={date}>
                                             {purchaseDataDuration[date]?.dateDescription !== "no" && (
                                                 <div className="break-inside-avoid overflow-visible">
                                                     <h1 className="underline">{date}</h1>

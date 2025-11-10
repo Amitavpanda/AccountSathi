@@ -128,41 +128,125 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
             // Force layout recalculation
             element.offsetHeight;
 
-            const opt = {
-                margin: [0.5, 0.5, 0.5, 0.5] as [number, number, number, number], // top, right, bottom, left margins
-                filename: `${hotelName || 'Sales_Report'}.pdf`,
-                image: {
-                    type: 'jpeg',
-                    quality: 0.98
-                },
-                html2canvas: {
+            // Programmatic pagination similar to Purchase PDF: create page-sized clones with
+            // proper margins (left/right/top/bottom) and render each page separately with html2canvas
+            // then append to jsPDF. This keeps layout consistent and avoids html2pdf pagebreak issues.
+
+            const MARGINS_IN = { top: 0.5, bottom: 0.5, left: 0.5, right: 0.5 };
+            const A4_IN_HEIGHT = 11.69; // inches
+            const A4_IN_WIDTH = 8.27; // inches
+
+            // compute CSS px per inch accurately
+            const testDiv = document.createElement('div');
+            testDiv.style.width = '1in';
+            testDiv.style.position = 'absolute';
+            testDiv.style.left = '-9999px';
+            document.body.appendChild(testDiv);
+            const CSS_PX_PER_IN = testDiv.offsetWidth || 96;
+            document.body.removeChild(testDiv);
+
+            const A4_PX_HEIGHT = A4_IN_HEIGHT * CSS_PX_PER_IN;
+            const A4_PX_WIDTH = A4_IN_WIDTH * CSS_PX_PER_IN;
+            const marginsPx = {
+                top: MARGINS_IN.top * CSS_PX_PER_IN,
+                bottom: MARGINS_IN.bottom * CSS_PX_PER_IN,
+                left: MARGINS_IN.left * CSS_PX_PER_IN,
+                right: MARGINS_IN.right * CSS_PX_PER_IN,
+            };
+
+            const pageMaxHeightPx = A4_PX_HEIGHT;
+
+            const allChildren = Array.from(element.children) as HTMLElement[];
+            const pageContainers: HTMLElement[] = [];
+
+            function createPageContainer() {
+                const page = document.createElement('div');
+                page.style.width = A4_PX_WIDTH + 'px';
+                page.style.boxSizing = 'border-box';
+                page.style.paddingTop = `${marginsPx.top}px`;
+                page.style.paddingBottom = `${marginsPx.bottom}px`;
+                page.style.paddingLeft = `${marginsPx.left}px`;
+                page.style.paddingRight = `${marginsPx.right}px`;
+                page.style.background = '#ffffff';
+                page.style.font = getComputedStyle(element).font || '';
+                return page;
+            }
+
+            let currentPage = createPageContainer();
+            let started = false;
+
+            for (const child of allChildren) {
+                const isGroup = child.classList && child.classList.contains('page-break-avoid');
+
+                if (!started && !isGroup) {
+                    currentPage.appendChild(child.cloneNode(true));
+                    continue;
+                }
+
+                started = true;
+
+                if (isGroup) {
+                    const clone = child.cloneNode(true) as HTMLElement;
+                    currentPage.appendChild(clone);
+
+                    currentPage.style.position = 'absolute';
+                    currentPage.style.left = '-9999px';
+                    document.body.appendChild(currentPage);
+                    const h = currentPage.scrollHeight;
+                    document.body.removeChild(currentPage);
+
+                    if (h > pageMaxHeightPx) {
+                        currentPage.removeChild(clone);
+                        pageContainers.push(currentPage);
+                        currentPage = createPageContainer();
+                        currentPage.appendChild(clone);
+
+                        currentPage.style.position = 'absolute';
+                        currentPage.style.left = '-9999px';
+                        document.body.appendChild(currentPage);
+                        const h2 = currentPage.scrollHeight;
+                        document.body.removeChild(currentPage);
+                        if (h2 > pageMaxHeightPx) {
+                            pageContainers.push(currentPage);
+                            currentPage = createPageContainer();
+                        }
+                    }
+                } else {
+                    currentPage.appendChild(child.cloneNode(true));
+                }
+            }
+
+            if (currentPage.childElementCount > 0) pageContainers.push(currentPage);
+
+            const pdf = new jsPDF({ unit: 'in', format: 'a4', orientation: 'portrait' });
+            const pageWidthIn = pdf.internal.pageSize.getWidth();
+
+            for (let i = 0; i < pageContainers.length; i++) {
+                const pageEl = pageContainers[i]!;
+                pageEl.style.position = 'absolute';
+                pageEl.style.left = '-9999px';
+                document.body.appendChild(pageEl);
+
+                const canvas = await html2canvas(pageEl, {
                     scale: 2,
                     useCORS: true,
                     allowTaint: true,
                     logging: false,
-                    dpi: 192,
-                    letterRendering: true,
-                    width: 800,
-                    height: element.scrollHeight,
-                    windowWidth: 1200,
-                    windowHeight: element.scrollHeight + 200
-                },
-                jsPDF: {
-                    unit: 'in',
-                    format: 'a4',
-                    orientation: 'portrait',
-                    compress: true
-                },
-                pagebreak: {
-                    mode: ['avoid-all', 'css', 'legacy'],
-                    before: '.page-break-before',
-                    after: '.page-break-after',
-                    avoid: '.page-break-avoid'
-                }
-            };
+                    width: pageEl.offsetWidth,
+                    height: pageEl.scrollHeight,
+                });
 
-            // Generate the PDF
-            await html2pdf().from(element).set(opt).save();
+                const imgData = canvas.toDataURL('image/jpeg', 0.98);
+                const imgProps = pdf.getImageProperties(imgData);
+                const imgWidthIn = pageWidthIn;
+                const imgHeightIn = (imgProps.height * imgWidthIn) / imgProps.width;
+
+                pdf.addImage(imgData, 'JPEG', 0, 0, imgWidthIn, imgHeightIn);
+                if (i < pageContainers.length - 1) pdf.addPage();
+                document.body.removeChild(pageEl);
+            }
+
+            pdf.save(`${hotelName || 'Sales_Report'}.pdf`);
 
             // Restore original styles
             element.style.cssText = originalStyles;
@@ -310,7 +394,7 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
 
                             {Object.keys(salesDataDuration).map((date: string) => (
 
-                                <div className="flex flex-col">
+                                <div className="flex flex-col page-break-avoid" key={date}>
                                     {date in salesDataDuration && (salesDataDuration as any)[date]?.dateDescription !== "no" && (
                                         <div className="overflow-visible break-inside-avoid mb-2">
                                             <h1 className="underline text-base sm:text-lg font-semibold">{date}</h1>
