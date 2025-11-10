@@ -146,6 +146,7 @@
     min-width: 800px !important;
     width: 800px !important;
     max-width: 800px !important;
+  /* spacing should be controlled via html2pdf margins to avoid pushing content out of printable area */
   }
 
   .pdf-content * {
