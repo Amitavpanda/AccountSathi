@@ -4,8 +4,8 @@ import { addSupplierPurchaseSchema } from "../../../packages/validations/purchas
 import { addSupplierPurchaseHandler, getAllSuppliersHandler, getSupplierPurchaseHandler } from "./contollers/supplierPurchase.contoller.js";
 import { addSupplierPurchaseDetailSchema } from "@repo/validations/purchaseDetailSchema";
 import { addSupplierPurchaseDetailHandler, getSupplierPurchaseDetailHandler } from "./contollers/supplierPurchaseDetail.controller.js";
-import { addSalesInfoSchema } from "@repo/validations/salesInfoSchema";
-import { addSalesInfoHandler, getSalesInfoHandler } from "./contollers/salesInfo.controller.js";
+import { addSalesInfoSchema, updateSalesInfoSchema } from "@repo/validations/salesInfoSchema";
+import { addSalesInfoHandler, getSalesInfoHandler, updateSalesInfoHandler, getSalesOverviewHandler } from "./contollers/salesInfo.controller.js";
 import { getAllSalesInfo } from "./service/salesInfoService.js";
 import { addSalesDetailsSchema, getInfoPerDayMonthSchema } from "../../../packages/validations/salesDetail.schema.js";
 import { addSalesDetailsHandler, getInfoPerDayMonthHandler, getSalesDetailsHandler } from "./contollers/salesDetails.controller.js";
@@ -31,6 +31,8 @@ function routes(app : Express){
 
     app.post('/addSalesInfo', validate(addSalesInfoSchema), addSalesInfoHandler);
     app.get('/getSalesInfo', getSalesInfoHandler);
+    app.get('/getSalesOverview', getSalesOverviewHandler);
+    app.put('/updateSalesInfo', validate(updateSalesInfoSchema), updateSalesInfoHandler);
 
     app.post('/addSupplierPurchaseDetails', validate(addSupplierPurchaseDetailSchema), addSupplierPurchaseDetailHandler);
     app.get('/getSupplierPurchaseDetails/:supplierId',  getSupplierPurchaseDetailHandler);

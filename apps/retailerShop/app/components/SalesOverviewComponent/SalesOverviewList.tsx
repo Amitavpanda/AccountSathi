@@ -1,0 +1,398 @@
+"use client"
+
+import { useEffect, useState, useMemo, useCallback } from "react";
+import axios from "axios";
+import { error, info } from "@repo/logs/logs";
+import { SalesOverviewType, createColumns } from "./columns";
+import { DataTable } from "./data-table";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "@repo/ui/dialog"
+import { Button } from "@repo/ui/button"
+import { Input } from "@repo/ui/input"
+import { Label } from "@repo/ui/label"
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@repo/ui/select"
+import jsPDF from "jspdf"
+
+
+function SalesOverviewList() {
+    const [salesOverview, setSalesOverview] = useState<SalesOverviewType[]>([]);
+    const [totalAmountDueSum, setTotalAmountDueSum] = useState<number | undefined>();
+    const [loading, setLoading] = useState(true);
+    
+    // Edit dialog state
+    const [editingItem, setEditingItem] = useState<SalesOverviewType | null>(null);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [hotelExpiryValue, setHotelExpiryValue] = useState<string>("");
+    const [statusValue, setStatusValue] = useState<string>("");
+    const [cityValue, setCityValue] = useState<string>("");
+    const [isUpdating, setIsUpdating] = useState(false);
+    
+    // Hidden rows state for PDF export
+    const [hiddenRows, setHiddenRows] = useState<Set<string>>(new Set());
+    
+    // Filter state (lifted from DataTable for PDF export access)
+    const [cityFilter, setCityFilter] = useState<string>("all");
+    const [hotelExpiryFilter, setHotelExpiryFilter] = useState<string[]>([]);
+
+    const fetchSalesOverview = async () => {
+        const baseUri = process.env.NEXT_PUBLIC_UI_BASE_URI;
+        try {
+            setLoading(true);
+            const response = await axios.get(`${baseUri}/getSalesOverview`);
+            info("the response of salesOverview is", response);
+            if (response.status == 200) {
+                console.log("the response.data is ", response.data.data);
+                setSalesOverview(response.data.data);
+                setTotalAmountDueSum(response.data.totalAmountDueSum);
+            }
+        }
+        catch (err: any) {
+            error("Error in getting the SalesOverview", err);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    useEffect(() => {
+        fetchSalesOverview();
+    }, [])
+
+    const handleEdit = (item: SalesOverviewType) => {
+        setEditingItem(item);
+        setHotelExpiryValue(item.hotelExpiry || "");
+        setStatusValue(item.status || "");
+        setCityValue(item.city || "");
+        setIsDialogOpen(true);
+    };
+
+    const handleSave = async () => {
+        if (!editingItem) return;
+
+        const baseUri = process.env.NEXT_PUBLIC_UI_BASE_URI;
+        try {
+            setIsUpdating(true);
+            const response = await axios.put(`${baseUri}/updateSalesInfo`, {
+                id: editingItem.id,
+                hotelExpiry: hotelExpiryValue || undefined,
+                status: statusValue || undefined,
+                city: cityValue || undefined,
+            });
+            info("Update response:", response);
+            if (response.status === 200) {
+                // Update local state
+                setSalesOverview(prev => prev.map(item => 
+                    item.id === editingItem.id 
+                        ? { ...item, hotelExpiry: hotelExpiryValue || null, status: statusValue || null, city: cityValue || null }
+                        : item
+                ));
+                setIsDialogOpen(false);
+                setEditingItem(null);
+            }
+        } catch (err: any) {
+            error("Error updating SalesInfo:", err);
+        } finally {
+            setIsUpdating(false);
+        }
+    };
+
+    // Toggle hide/show row for PDF export
+    const handleToggleHide = useCallback((id: string) => {
+        setHiddenRows(prev => {
+            const newSet = new Set(prev);
+            if (newSet.has(id)) {
+                newSet.delete(id);
+            } else {
+                newSet.add(id);
+            }
+            return newSet;
+        });
+    }, []);
+
+    // Download PDF with visible and filtered rows only
+    const handleDownloadPDF = useCallback(() => {
+        // First apply city and hotelExpiry filters
+        let filteredRows = salesOverview.filter(item => {
+            const matchesCity = cityFilter === "all" || item.city === cityFilter;
+            const matchesHotelExpiry = hotelExpiryFilter.length === 0 || hotelExpiryFilter.includes(item.hotelExpiry || "");
+            return matchesCity && matchesHotelExpiry;
+        });
+        
+        // Then exclude hidden rows
+        const visibleRows = filteredRows.filter(item => !hiddenRows.has(item.id));
+        
+        if (visibleRows.length === 0) {
+            alert("No visible rows to export. Please adjust filters or uncheck some rows.");
+            return;
+        }
+
+        const doc = new jsPDF();
+        const pageWidth = doc.internal.pageSize.getWidth();
+        
+        // Title
+        doc.setFontSize(18);
+        doc.setFont("helvetica", "bold");
+        doc.text("Sales Overview Report", pageWidth / 2, 20, { align: "center" });
+        
+        // Date
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "normal");
+        const today = new Date().toLocaleDateString("en-IN", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric"
+        });
+        doc.text("Generated on: " + today, pageWidth / 2, 28, { align: "center" });
+        
+        // Filter info
+        let filterInfoY = 28;
+        if (cityFilter !== "all" || hotelExpiryFilter.length > 0) {
+            doc.setFontSize(9);
+            doc.setTextColor(100, 100, 100);
+            let filterText = "Filters: ";
+            if (cityFilter !== "all") filterText += "City: " + cityFilter + " ";
+            if (hotelExpiryFilter.length > 0) filterText += "Status: " + hotelExpiryFilter.join(", ");
+            doc.text(filterText, pageWidth / 2, 34, { align: "center" });
+            filterInfoY = 34;
+        }
+
+        // Table header
+        const startY = filterInfoY + 10;
+        const colWidths = { name: 100, amount: 50 };
+        const leftMargin = 30;
+        
+        doc.setFontSize(12);
+        doc.setFont("helvetica", "bold");
+        doc.setFillColor(66, 133, 244);
+        doc.rect(leftMargin, startY - 6, colWidths.name + colWidths.amount, 10, "F");
+        doc.setTextColor(255, 255, 255);
+        doc.text("Hotel Name", leftMargin + 5, startY);
+        doc.text("Amount", leftMargin + colWidths.name + 5, startY);
+        
+        // Table rows
+        doc.setFont("helvetica", "normal");
+        doc.setTextColor(0, 0, 0);
+        let currentY = startY + 12;
+        let totalAmount = 0;
+        
+        visibleRows.forEach((item, index) => {
+            // Check if we need a new page
+            if (currentY > 270) {
+                doc.addPage();
+                currentY = 20;
+            }
+            
+            // Alternate row background
+            if (index % 2 === 0) {
+                doc.setFillColor(245, 247, 250);
+                doc.rect(leftMargin, currentY - 6, colWidths.name + colWidths.amount, 10, "F");
+            }
+            
+            doc.setFontSize(10);
+            const hotelName = item.name.length > 35 ? item.name.substring(0, 35) + "..." : item.name;
+            doc.text(hotelName, leftMargin + 5, currentY);
+            
+            // Use "Rs." instead of rupee symbol for PDF compatibility
+            const amountValue = Math.abs(item.totalAmountDue).toLocaleString("en-IN");
+            const amountPrefix = item.totalAmountDue < 0 ? "(Adv) Rs." : item.totalAmountDue === 0 ? "(Paid) Rs." : "Rs.";
+            doc.text(amountPrefix + amountValue, leftMargin + colWidths.name + 5, currentY);
+            
+            totalAmount += item.totalAmountDue;
+            currentY += 10;
+        });
+        
+        // Total row
+        currentY += 5;
+        doc.setFont("helvetica", "bold");
+        doc.setFillColor(66, 133, 244);
+        doc.rect(leftMargin, currentY - 6, colWidths.name + colWidths.amount, 10, "F");
+        doc.setTextColor(255, 255, 255);
+        doc.text("Total", leftMargin + 5, currentY);
+        doc.text("Rs." + totalAmount.toLocaleString("en-IN"), leftMargin + colWidths.name + 5, currentY);
+        
+        // Footer
+        doc.setTextColor(128, 128, 128);
+        doc.setFontSize(8);
+        doc.setFont("helvetica", "normal");
+        doc.text("Total Hotels: " + visibleRows.length, leftMargin, currentY + 15);
+        
+        // Save
+        doc.save("sales-overview-" + today.replace(/\s/g, "-") + ".pdf");
+    }, [salesOverview, hiddenRows, cityFilter, hotelExpiryFilter]);
+
+    // Create columns with edit handler and hide toggle
+    const columns = useMemo(() => createColumns(handleEdit, hiddenRows, handleToggleHide), [hiddenRows, handleToggleHide]);
+
+    if (loading) {
+        return (
+            <div className="container mx-auto py-3 sm:py-4 md:py-6 px-0 sm:px-4">
+                <div className="flex items-center justify-center h-64">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                </div>
+            </div>
+        );
+    }
+
+    return (
+        <>
+            <div className="container mx-auto py-3 sm:py-4 md:py-6 px-0 sm:px-4">
+                {/* Summary Cards */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                    <div className="bg-white rounded-lg shadow-sm border p-4">
+                        <h3 className="text-sm font-medium text-gray-500">Total Hotels</h3>
+                        <p className="text-2xl font-bold text-gray-800">{salesOverview.length}</p>
+                    </div>
+                    <div className="bg-white rounded-lg shadow-sm border p-4">
+                        <h3 className="text-sm font-medium text-gray-500">Total Amount Due</h3>
+                        <p className="text-2xl font-bold text-green-600">
+                            ₹{totalAmountDueSum !== undefined ? totalAmountDueSum.toLocaleString('en-IN') : 0}
+                        </p>
+                    </div>
+                    <div className="bg-white rounded-lg shadow-sm border p-4">
+                        <h3 className="text-sm font-medium text-gray-500">Pending</h3>
+                        <p className="text-2xl font-bold text-yellow-600">
+                            {salesOverview.filter(s => s.totalAmountDue > 0).length}
+                        </p>
+                    </div>
+                    <div className="bg-white rounded-lg shadow-sm border p-4">
+                        <h3 className="text-sm font-medium text-gray-500">Paid / Advance</h3>
+                        <p className="text-2xl font-bold text-blue-600">
+                            {salesOverview.filter(s => s.totalAmountDue <= 0).length}
+                        </p>
+                    </div>
+                </div>
+
+                {/* Download PDF Section */}
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6 bg-white rounded-lg shadow-sm border p-4">
+                    <div className="text-sm text-gray-600">
+                        <span className="font-medium">{hiddenRows.size}</span> hotels hidden from PDF export
+                        {hiddenRows.size > 0 && (
+                            <button
+                                onClick={() => setHiddenRows(new Set())}
+                                className="ml-2 text-blue-600 hover:text-blue-800 underline"
+                            >
+                                Clear all
+                            </button>
+                        )}
+                    </div>
+                    <Button
+                        onClick={handleDownloadPDF}
+                        className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-md hover:shadow-lg transition-all duration-300"
+                    >
+                        📥 Download PDF
+                    </Button>
+                </div>
+
+                {/* Data Table */}
+                <div className="w-full overflow-hidden">
+                    <DataTable 
+                        columns={columns} 
+                        data={salesOverview} 
+                        hiddenRows={hiddenRows}
+                        cityFilter={cityFilter}
+                        setCityFilter={setCityFilter}
+                        hotelExpiryFilter={hotelExpiryFilter}
+                        setHotelExpiryFilter={setHotelExpiryFilter}
+                    />
+                </div>
+            </div>
+
+            {/* Edit Dialog */}
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogContent className="sm:max-w-[425px] bg-white z-[100]">
+                    <DialogHeader>
+                        <DialogTitle className="text-gray-900">Edit Hotel Information</DialogTitle>
+                        <DialogDescription className="text-gray-600">
+                            Update hotel expiry and status for {editingItem?.name}
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                        <div className="grid grid-cols-4 items-center gap-4">
+                            <Label htmlFor="hotel-name" className="text-right text-gray-600">
+                                Hotel
+                            </Label>
+                            <Input
+                                id="hotel-name"
+                                value={editingItem?.name || ""}
+                                disabled
+                                className="col-span-3 bg-gray-100 text-gray-700 border-gray-300"
+                            />
+                        </div>
+                        <div className="grid grid-cols-4 items-center gap-4">
+                            <Label htmlFor="city" className="text-right text-gray-700">
+                                City
+                            </Label>
+                            <Input
+                                id="city"
+                                value={cityValue}
+                                onChange={(e) => setCityValue(e.target.value)}
+                                placeholder="Enter city"
+                                className="col-span-3 border-gray-300 focus:border-blue-500"
+                            />
+                        </div>
+                        <div className="grid grid-cols-4 items-center gap-4">
+                            <Label htmlFor="hotel-expiry" className="text-right text-gray-700">
+                                Hotel Expiry
+                            </Label>
+                            <Select value={hotelExpiryValue} onValueChange={setHotelExpiryValue}>
+                                <SelectTrigger className="col-span-3 border-gray-300">
+                                    <SelectValue placeholder="Select hotel expiry status" />
+                                </SelectTrigger>
+                                <SelectContent className="bg-white rounded-xl border z-[101]">
+                                    <SelectItem className="text-gray-900 focus:bg-blue-50 focus:rounded-lg" value="continue">Continue</SelectItem>
+                                    <SelectItem className="text-gray-900 focus:bg-blue-50 focus:rounded-lg" value="uncontinue">Uncontinue</SelectItem>
+                                    <SelectItem className="text-gray-900 focus:bg-blue-50 focus:rounded-lg" value="not_to_give">Not to Give</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div className="grid grid-cols-4 items-center gap-4">
+                            <Label htmlFor="status" className="text-right text-gray-700">
+                                Status
+                            </Label>
+                            <Input
+                                id="status"
+                                value={statusValue}
+                                onChange={(e) => setStatusValue(e.target.value)}
+                                placeholder="Enter status"
+                                className="col-span-3 border-gray-300 focus:border-blue-500"
+                            />
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => setIsDialogOpen(false)}
+                            disabled={isUpdating}
+                            className="border-gray-300 text-gray-700 hover:bg-gray-100"
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            type="submit"
+                            onClick={handleSave}
+                            disabled={isUpdating}
+                            className="bg-blue-600 hover:bg-blue-700 text-white"
+                        >
+                            {isUpdating ? "Saving..." : "Save changes"}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+        </>
+    )
+}
+
+
+export default SalesOverviewList;
