@@ -505,10 +505,7 @@ export default function AddNewSalesDetailsComponent({ id }: AddNewSalesDetailsPr
                                                 </FormControl>
                                                 <SelectContent className="bg-white rounded-xl border">
                                                     {isPaymentDoneOptions.map((isPaymentDoneOption) => (
-                                                        <>
-                                                            <SelectItem className="text-gray-900 focus:bg-blue-50 focus:rounded-lg" value={isPaymentDoneOption}>{isPaymentDoneOption}</SelectItem>
-                                                        </>
-
+                                                        <SelectItem key={isPaymentDoneOption} className="text-gray-900 focus:bg-blue-50 focus:rounded-lg" value={isPaymentDoneOption}>{isPaymentDoneOption}</SelectItem>
                                                     ))}
                                                 </SelectContent>
                                             </Select>

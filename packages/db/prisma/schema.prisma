@@ -74,6 +74,9 @@ model SalesInfo {
   totalAmountDue    Float
   accountDetails    String?
   additionalDetails String?
+  city              String?
+  hotelExpiry       String?
+  status            String?
   details           SalesInfoDetail[]
 }
 

@@ -11,7 +11,8 @@ const payload = {
     propieder : z.string(),
     totalAmountDue : z.number(),
     accountDetails : z.string().optional(),
-    additionalDetails : z.string().optional()
+    additionalDetails : z.string().optional(),
+    city : z.string().optional()
   }),
 };
 
@@ -23,9 +24,28 @@ const params = {
   }),
 };
 
+const updatePayload = {
+  body: z.object({
+    id: z.string(),
+    city: z.string().optional(),
+    name: z.string().optional(),
+    phoneNumber: z.string().optional(),
+    address: z.string().optional(),
+    propieder: z.string().optional(),
+    accountDetails: z.string().optional(),
+    additionalDetails: z.string().optional(),
+    hotelExpiry: z.enum(["continue", "uncontinue", "not_to_give"]).optional(),
+    status: z.string().optional()
+  }),
+};
+
   export const addSalesInfoSchema = z.object({
       ...payload,
   });
+
+export const updateSalesInfoSchema = z.object({
+  ...updatePayload,
+});
 
 export const updateOrderSchema = z.object({
   ...payload,
@@ -43,6 +63,7 @@ export const getSupplierPurchaseSchema = z.object({
 })
 
 export type AddSalesInfoSchema = z.infer<typeof addSalesInfoSchema>;
+export type UpdateSalesInfoSchema = z.infer<typeof updateSalesInfoSchema>;
 export type UpdateOrder = z.infer<typeof updateOrderSchema>;
 export type DeleteOrderSchema = z.infer<typeof updateOrderSchema>;
 export type GetProductSchema = z.infer<typeof getSupplierPurchaseSchema>;
