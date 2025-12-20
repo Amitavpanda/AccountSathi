@@ -39,6 +39,8 @@ interface DataTableProps<TData, TValue> {
     hiddenRows?: Set<string>
     cityFilter: string
     setCityFilter: (value: string) => void
+    statusFilter: string
+    setStatusFilter: (value: string) => void
     hotelExpiryFilter: string[]
     setHotelExpiryFilter: (value: string[]) => void
 }
@@ -51,6 +53,8 @@ export function DataTable<TData extends SalesOverviewType, TValue>({
     setCityFilter,
     hotelExpiryFilter,
     setHotelExpiryFilter,
+    statusFilter,
+    setStatusFilter,
 }: DataTableProps<TData, TValue>) {
 
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
@@ -64,14 +68,30 @@ export function DataTable<TData extends SalesOverviewType, TValue>({
         return [...new Set(cities)].sort()
     }, [data])
 
+    // Get unique statuses from data
+    const uniqueStatuses = useMemo(() => {
+        const statuses = data
+            .map(item => (item as any).status)
+            .filter((s): s is string => s !== null && s !== "")
+        return [...new Set(statuses)].sort()
+    }, [data])
+
     // Filter data based on dropdown filters
     const filteredData = useMemo(() => {
         return data.filter(item => {
             const matchesCity = cityFilter === "all" || item.city === cityFilter
             const matchesHotelExpiry = hotelExpiryFilter.length === 0 || hotelExpiryFilter.includes(item.hotelExpiry || "")
-            return matchesCity && matchesHotelExpiry
+            let matchesStatus = true
+            if (statusFilter === "all") {
+                matchesStatus = true
+            } else if (statusFilter === "no-status") {
+                matchesStatus = !(item as any).status || (item as any).status === ""
+            } else {
+                matchesStatus = (item as any).status === statusFilter
+            }
+            return matchesCity && matchesHotelExpiry && matchesStatus
         })
-    }, [data, cityFilter, hotelExpiryFilter])
+    }, [data, cityFilter, hotelExpiryFilter, statusFilter])
 
     const table = useReactTable({
         data: filteredData,
@@ -113,6 +133,22 @@ export function DataTable<TData extends SalesOverviewType, TValue>({
                                 {uniqueCities.map(city => (
                                     <SelectItem key={city} className="text-gray-900 focus:bg-blue-50 focus:rounded-lg" value={city}>
                                         {city}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <div className="flex-1 sm:max-w-[200px]">
+                        <Select value={statusFilter} onValueChange={setStatusFilter}>
+                            <SelectTrigger className="h-12 border-gray-300">
+                                <SelectValue placeholder="Filter by status" />
+                            </SelectTrigger>
+                            <SelectContent className="bg-white rounded-xl border z-[50]">
+                                <SelectItem className="text-gray-900 focus:bg-blue-50 focus:rounded-lg" value="all">All Statuses</SelectItem>
+                                <SelectItem className="text-gray-900 focus:bg-blue-50 focus:rounded-lg" value="no-status">No Status</SelectItem>
+                                {uniqueStatuses.map(status => (
+                                    <SelectItem key={status} className="text-gray-900 focus:bg-blue-50 focus:rounded-lg" value={status}>
+                                        {status}
                                     </SelectItem>
                                 ))}
                             </SelectContent>
