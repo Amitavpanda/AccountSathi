@@ -43,8 +43,9 @@ function SalesOverviewList() {
     const [hiddenRows, setHiddenRows] = useState<Set<string>>(new Set());
     
     // Filter state (lifted from DataTable for PDF export access)
-    const [cityFilter, setCityFilter] = useState<string>("all");
+    const [cityFilter, setCityFilter] = useState<string[]>([]);
     const [hotelExpiryFilter, setHotelExpiryFilter] = useState<string[]>([]);
+    const [statusFilter, setStatusFilter] = useState<string>("all");
 
     const fetchSalesOverview = async () => {
         const baseUri = process.env.NEXT_PUBLIC_UI_BASE_URI;
@@ -122,11 +123,19 @@ function SalesOverviewList() {
 
     // Download PDF with visible and filtered rows only
     const handleDownloadPDF = useCallback(() => {
-        // First apply city and hotelExpiry filters
+        // First apply city, hotelExpiry and status filters
         let filteredRows = salesOverview.filter(item => {
-            const matchesCity = cityFilter === "all" || item.city === cityFilter;
+            const matchesCity = cityFilter.length === 0 || cityFilter.includes(item.city || "");
             const matchesHotelExpiry = hotelExpiryFilter.length === 0 || hotelExpiryFilter.includes(item.hotelExpiry || "");
-            return matchesCity && matchesHotelExpiry;
+            let matchesStatus = true;
+            if (statusFilter === "all") {
+                matchesStatus = true;
+            } else if (statusFilter === "no-status") {
+                matchesStatus = !item.status || item.status === "";
+            } else {
+                matchesStatus = item.status === statusFilter;
+            }
+            return matchesCity && matchesHotelExpiry && matchesStatus;
         });
         
         // Then exclude hidden rows
@@ -157,12 +166,15 @@ function SalesOverviewList() {
         
         // Filter info
         let filterInfoY = 28;
-        if (cityFilter !== "all" || hotelExpiryFilter.length > 0) {
+        if (cityFilter.length > 0 || hotelExpiryFilter.length > 0 || statusFilter !== "all") {
             doc.setFontSize(9);
             doc.setTextColor(100, 100, 100);
             let filterText = "Filters: ";
-            if (cityFilter !== "all") filterText += "City: " + cityFilter + " ";
+            if (cityFilter.length > 0) filterText += "City: " + cityFilter.join(", ") + " ";
             if (hotelExpiryFilter.length > 0) filterText += "Status: " + hotelExpiryFilter.join(", ");
+            if (statusFilter !== "all") {
+                filterText += "Status: " + (statusFilter === "no-status" ? "No Status" : statusFilter) + " ";
+            }
             doc.text(filterText, pageWidth / 2, 34, { align: "center" });
             filterInfoY = 34;
         }
@@ -229,7 +241,7 @@ function SalesOverviewList() {
         
         // Save
         doc.save("sales-overview-" + today.replace(/\s/g, "-") + ".pdf");
-    }, [salesOverview, hiddenRows, cityFilter, hotelExpiryFilter]);
+    }, [salesOverview, hiddenRows, cityFilter, hotelExpiryFilter, statusFilter]);
 
     // Create columns with edit handler and hide toggle
     const columns = useMemo(() => createColumns(handleEdit, hiddenRows, handleToggleHide), [hiddenRows, handleToggleHide]);
@@ -304,6 +316,8 @@ function SalesOverviewList() {
                         setCityFilter={setCityFilter}
                         hotelExpiryFilter={hotelExpiryFilter}
                         setHotelExpiryFilter={setHotelExpiryFilter}
+                        statusFilter={statusFilter}
+                        setStatusFilter={setStatusFilter}
                     />
                 </div>
             </div>
