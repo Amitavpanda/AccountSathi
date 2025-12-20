@@ -37,8 +37,8 @@ interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
     data: TData[]
     hiddenRows?: Set<string>
-    cityFilter: string
-    setCityFilter: (value: string) => void
+    cityFilter: string[]
+    setCityFilter: (value: string[]) => void
     statusFilter: string
     setStatusFilter: (value: string) => void
     hotelExpiryFilter: string[]
@@ -79,7 +79,7 @@ export function DataTable<TData extends SalesOverviewType, TValue>({
     // Filter data based on dropdown filters
     const filteredData = useMemo(() => {
         return data.filter(item => {
-            const matchesCity = cityFilter === "all" || item.city === cityFilter
+            const matchesCity = cityFilter.length === 0 || cityFilter.includes(item.city || "")
             const matchesHotelExpiry = hotelExpiryFilter.length === 0 || hotelExpiryFilter.includes(item.hotelExpiry || "")
             let matchesStatus = true
             if (statusFilter === "all") {
@@ -124,19 +124,24 @@ export function DataTable<TData extends SalesOverviewType, TValue>({
                 </div>
                 <div className="flex flex-col sm:flex-row gap-3">
                     <div className="flex-1 sm:max-w-[200px]">
-                        <Select value={cityFilter} onValueChange={setCityFilter}>
-                            <SelectTrigger className="h-12 border-gray-300">
-                                <SelectValue placeholder="Filter by city" />
-                            </SelectTrigger>
-                            <SelectContent className="bg-white rounded-xl border z-[50]">
-                                <SelectItem className="text-gray-900 focus:bg-blue-50 focus:rounded-lg" value="all">All Cities</SelectItem>
-                                {uniqueCities.map(city => (
-                                    <SelectItem key={city} className="text-gray-900 focus:bg-blue-50 focus:rounded-lg" value={city}>
-                                        {city}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
+                        <div className="flex flex-wrap items-center gap-2 h-12 px-3 border border-gray-300 rounded-lg bg-white overflow-auto max-h-40">
+                            <span className="text-sm text-gray-500 mr-1">Cities:</span>
+                            {uniqueCities.map(city => (
+                                <label key={city} className="flex items-center gap-1.5 cursor-pointer">
+                                    <Checkbox
+                                        checked={cityFilter.includes(city)}
+                                        onCheckedChange={(checked) => {
+                                            if (checked) {
+                                                setCityFilter([...cityFilter, city])
+                                            } else {
+                                                setCityFilter(cityFilter.filter(v => v !== city))
+                                            }
+                                        }}
+                                    />
+                                    <span className="text-sm text-gray-700">{city}</span>
+                                </label>
+                            ))}
+                        </div>
                     </div>
                     <div className="flex-1 sm:max-w-[200px]">
                         <Select value={statusFilter} onValueChange={setStatusFilter}>
@@ -178,11 +183,11 @@ export function DataTable<TData extends SalesOverviewType, TValue>({
                             ))}
                         </div>
                     </div>
-                    {(cityFilter !== "all" || hotelExpiryFilter.length > 0) && (
+                    {(cityFilter.length > 0 || hotelExpiryFilter.length > 0) && (
                         <Button
                             variant="outline"
                             onClick={() => {
-                                setCityFilter("all")
+                                setCityFilter([])
                                 setHotelExpiryFilter([])
                             }}
                             className="h-12 px-4 border-gray-300 text-gray-600 hover:bg-gray-100"

@@ -48,6 +48,9 @@ const nextConfig = {
     },
   },
 
+  // Add empty turbopack config to avoid Turbopack/webpack conflict errors
+  turbopack: {},
+
   // Ensure proper module resolution
   webpack: (config, { isServer }) => {
     if (isServer) {

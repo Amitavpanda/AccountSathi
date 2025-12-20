@@ -2,12 +2,14 @@ import {pino} from "pino"
 import dayjs from "dayjs"
 
 
-const logger = pino({
-    transport: {
-      target: 'pino-pretty'
-    },
-    timestamp : () => `,"time":"${dayjs().format()}"`,
-  })
+const isDev = process.env.NODE_ENV !== 'production'
+
+const logger = isDev
+  ? pino({
+      transport: { target: 'pino-pretty' },
+      timestamp: () => `,"time":"${dayjs().format()}"`,
+    })
+  : pino({ timestamp: () => `,"time":"${dayjs().format()}"` })
 
 
 export const info = (message : string, parameter? : any) => logger.info({message, parameter});

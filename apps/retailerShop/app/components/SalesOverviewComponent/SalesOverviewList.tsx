@@ -43,7 +43,7 @@ function SalesOverviewList() {
     const [hiddenRows, setHiddenRows] = useState<Set<string>>(new Set());
     
     // Filter state (lifted from DataTable for PDF export access)
-    const [cityFilter, setCityFilter] = useState<string>("all");
+    const [cityFilter, setCityFilter] = useState<string[]>([]);
     const [hotelExpiryFilter, setHotelExpiryFilter] = useState<string[]>([]);
     const [statusFilter, setStatusFilter] = useState<string>("all");
 
@@ -125,7 +125,7 @@ function SalesOverviewList() {
     const handleDownloadPDF = useCallback(() => {
         // First apply city, hotelExpiry and status filters
         let filteredRows = salesOverview.filter(item => {
-            const matchesCity = cityFilter === "all" || item.city === cityFilter;
+            const matchesCity = cityFilter.length === 0 || cityFilter.includes(item.city || "");
             const matchesHotelExpiry = hotelExpiryFilter.length === 0 || hotelExpiryFilter.includes(item.hotelExpiry || "");
             let matchesStatus = true;
             if (statusFilter === "all") {
@@ -166,11 +166,11 @@ function SalesOverviewList() {
         
         // Filter info
         let filterInfoY = 28;
-        if (cityFilter !== "all" || hotelExpiryFilter.length > 0 || statusFilter !== "all") {
+        if (cityFilter.length > 0 || hotelExpiryFilter.length > 0 || statusFilter !== "all") {
             doc.setFontSize(9);
             doc.setTextColor(100, 100, 100);
             let filterText = "Filters: ";
-            if (cityFilter !== "all") filterText += "City: " + cityFilter + " ";
+            if (cityFilter.length > 0) filterText += "City: " + cityFilter.join(", ") + " ";
             if (hotelExpiryFilter.length > 0) filterText += "Status: " + hotelExpiryFilter.join(", ");
             if (statusFilter !== "all") {
                 filterText += "Status: " + (statusFilter === "no-status" ? "No Status" : statusFilter) + " ";
