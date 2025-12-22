@@ -3,8 +3,8 @@ import PurchaseDetails from "../../components/PurchaseDetails";
 import { BadgePlus } from "lucide-react";
 import Link from "next/link";
 
-export default function PurchaseDetailsMain({ params }: any) {
-    const { id } = params;
+export default async function PurchaseDetailsMain({ params }: any) {
+    const { id } = await params;
     return (
         <div className="flex flex-col p-3 sm:p-4 md:p-6 lg:p-8 xl:p-20 min-h-screen">
             {/* Header Section */}

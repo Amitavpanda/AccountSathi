@@ -1,6 +1,5 @@
 "use client"
 
-import router, { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import axios, { AxiosResponse } from 'axios';
 import { error, info } from '@repo/logs/logs';
@@ -47,7 +46,7 @@ export default function SalesDetails({ id }: SalesDetailsProps) {
         }
 
         fetchSalesDetails();
-    }, [])
+    }, [id])
     return (
         <>
             <div className="flex flex-col p-3 sm:p-4 md:p-6 lg:p-8 xl:p-20 min-h-screen">

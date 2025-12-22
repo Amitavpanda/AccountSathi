@@ -1,7 +1,7 @@
 import { SalesDataDownloadPDF } from "../../../components/SalesDataDownlaodPDF";
 
-export default function SalesDataDownloadPDFMain({ params }: any){
-    const { id } = params;
+export default async function SalesDataDownloadPDFMain({ params }: any){
+    const { id } = await params;
     return (
         <div className="flex flex-col p-3 sm:p-4 md:p-6 lg:p-8 xl:p-20 min-h-screen">
             {/* Header Section */}
