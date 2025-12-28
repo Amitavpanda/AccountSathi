@@ -47,7 +47,7 @@ export const addSupplierPurchaseSchema = z.object({
   export const addSalesDetailsSchema = z.object({
     stockName: z.string().min(1).max(255),
     stockNameDetails : z.string().optional(),
-    date : z.date().optional(),
+    date : z.date(),
     quantity : z.string(), 
     quantityType : z.string().optional(),
     quantityDetails : z.string().optional(),

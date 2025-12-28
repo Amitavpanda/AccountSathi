@@ -51,11 +51,13 @@ function formatDate(dateString: string | null): string {
     }
 }
 
-// Function to create columns with edit handler and hide toggle
+// Function to create columns with edit handler, hide toggle, and select toggle
 export function createColumns(
     onEdit?: (item: SalesOverviewType) => void,
     hiddenRows?: Set<string>,
-    onToggleHide?: (id: string) => void
+    onToggleHide?: (id: string) => void,
+    selectedRows?: Set<string>,
+    onToggleSelect?: (id: string) => void
 ): ColumnDef<SalesOverviewType>[] {
     return [
         {
@@ -69,6 +71,22 @@ export function createColumns(
                             checked={isHidden}
                             onCheckedChange={() => onToggleHide?.(row.original.id)}
                             aria-label="Hide from PDF"
+                        />
+                    </div>
+                )
+            },
+        },
+        {
+            id: "selectForPdf",
+            header: "Select",
+            cell: ({ row }) => {
+                const isSelected = selectedRows?.has(row.original.id) || false
+                return (
+                    <div className="flex items-center justify-center">
+                        <Checkbox
+                            checked={isSelected}
+                            onCheckedChange={() => onToggleSelect?.(row.original.id)}
+                            aria-label="Select for PDF"
                         />
                     </div>
                 )

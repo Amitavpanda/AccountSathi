@@ -42,6 +42,9 @@ function SalesOverviewList() {
     // Hidden rows state for PDF export
     const [hiddenRows, setHiddenRows] = useState<Set<string>>(new Set());
     
+    // Selected rows state for PDF export
+    const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
+    
     // Filter state (lifted from DataTable for PDF export access)
     const [cityFilter, setCityFilter] = useState<string[]>([]);
     const [hotelExpiryFilter, setHotelExpiryFilter] = useState<string[]>([]);
@@ -121,6 +124,19 @@ function SalesOverviewList() {
         });
     }, []);
 
+    // Toggle select/deselect row for PDF export
+    const handleToggleSelect = useCallback((id: string) => {
+        setSelectedRows(prev => {
+            const newSet = new Set(prev);
+            if (newSet.has(id)) {
+                newSet.delete(id);
+            } else {
+                newSet.add(id);
+            }
+            return newSet;
+        });
+    }, []);
+
     // Download PDF with visible and filtered rows only
     const handleDownloadPDF = useCallback(() => {
         // First apply city, hotelExpiry and status filters
@@ -141,8 +157,13 @@ function SalesOverviewList() {
         // Then exclude hidden rows
         const visibleRows = filteredRows.filter(item => !hiddenRows.has(item.id));
         
-        if (visibleRows.length === 0) {
-            alert("No visible rows to export. Please adjust filters or uncheck some rows.");
+        // Finally, only include selected rows (if any are selected)
+        const finalRows = selectedRows.size > 0 
+            ? visibleRows.filter(item => selectedRows.has(item.id))
+            : visibleRows;
+        
+        if (finalRows.length === 0) {
+            alert("No rows selected for export. Please select at least one row.");
             return;
         }
 
@@ -198,7 +219,7 @@ function SalesOverviewList() {
         let currentY = startY + 12;
         let totalAmount = 0;
         
-        visibleRows.forEach((item, index) => {
+        finalRows.forEach((item, index) => {
             // Check if we need a new page
             if (currentY > 270) {
                 doc.addPage();
@@ -237,14 +258,14 @@ function SalesOverviewList() {
         doc.setTextColor(128, 128, 128);
         doc.setFontSize(8);
         doc.setFont("helvetica", "normal");
-        doc.text("Total Hotels: " + visibleRows.length, leftMargin, currentY + 15);
+        doc.text("Total Hotels: " + finalRows.length, leftMargin, currentY + 15);
         
         // Save
         doc.save("sales-overview-" + today.replace(/\s/g, "-") + ".pdf");
-    }, [salesOverview, hiddenRows, cityFilter, hotelExpiryFilter, statusFilter]);
+    }, [salesOverview, hiddenRows, selectedRows, cityFilter, hotelExpiryFilter, statusFilter]);
 
-    // Create columns with edit handler and hide toggle
-    const columns = useMemo(() => createColumns(handleEdit, hiddenRows, handleToggleHide), [hiddenRows, handleToggleHide]);
+    // Create columns with edit handler, hide toggle, and select toggle
+    const columns = useMemo(() => createColumns(handleEdit, hiddenRows, handleToggleHide, selectedRows, handleToggleSelect), [hiddenRows, handleToggleHide, selectedRows, handleToggleSelect]);
 
     if (loading) {
         return (
@@ -287,22 +308,36 @@ function SalesOverviewList() {
 
                 {/* Download PDF Section */}
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6 bg-white rounded-lg shadow-sm border p-4">
-                    <div className="text-sm text-gray-600">
-                        <span className="font-medium">{hiddenRows.size}</span> hotels hidden from PDF export
-                        {hiddenRows.size > 0 && (
-                            <button
-                                onClick={() => setHiddenRows(new Set())}
-                                className="ml-2 text-blue-600 hover:text-blue-800 underline"
-                            >
-                                Clear all
-                            </button>
-                        )}
+                    <div className="text-sm text-gray-600 flex flex-col sm:flex-row gap-2 sm:gap-4">
+                        <div>
+                            <span className="font-medium">{selectedRows.size}</span> hotels selected for PDF export
+                            {selectedRows.size > 0 && (
+                                <button
+                                    onClick={() => setSelectedRows(new Set())}
+                                    className="ml-2 text-blue-600 hover:text-blue-800 underline"
+                                >
+                                    Clear selection
+                                </button>
+                            )}
+                        </div>
+                        <div>
+                            <span className="font-medium">{hiddenRows.size}</span> hotels hidden from PDF export
+                            {hiddenRows.size > 0 && (
+                                <button
+                                    onClick={() => setHiddenRows(new Set())}
+                                    className="ml-2 text-blue-600 hover:text-blue-800 underline"
+                                >
+                                    Clear hidden
+                                </button>
+                            )}
+                        </div>
                     </div>
                     <Button
                         onClick={handleDownloadPDF}
                         className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-md hover:shadow-lg transition-all duration-300"
+                        disabled={selectedRows.size === 0}
                     >
-                        📥 Download PDF
+                        📥 Download Selected PDF ({selectedRows.size})
                     </Button>
                 </div>
 
@@ -312,6 +347,8 @@ function SalesOverviewList() {
                         columns={columns} 
                         data={salesOverview} 
                         hiddenRows={hiddenRows}
+                        selectedRows={selectedRows}
+                        onToggleSelect={handleToggleSelect}
                         cityFilter={cityFilter}
                         setCityFilter={setCityFilter}
                         hotelExpiryFilter={hotelExpiryFilter}

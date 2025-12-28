@@ -75,6 +75,7 @@ export default function AddNewSalesDetailsComponent({ id }: AddNewSalesDetailsPr
         defaultValues: {
             stockName: "",
             stockNameDetails: "",
+            date: new Date(),
             quantity: "",
             quantityType: "",
             quantityDetails: "",
@@ -111,6 +112,7 @@ export default function AddNewSalesDetailsComponent({ id }: AddNewSalesDetailsPr
 
         const transformedValues = {
             ...values,
+            date: values.date ? format(values.date, 'yyyy-MM-dd') : undefined,
             quantity: Number(values.quantity),
             price: Number(values.price),
             amountPaid: Number(values.amountPaid),
