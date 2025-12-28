@@ -65,6 +65,7 @@ export default function AddNewPurchaseDetailsComponent({ id }: AddNewPurchaseDet
         defaultValues: {
             stockName: "",
             stockNameDetails: "",
+            date: new Date(),
             quantity: "",
             quantityType: "",
             quantityDetails: "",
@@ -87,6 +88,7 @@ export default function AddNewPurchaseDetailsComponent({ id }: AddNewPurchaseDet
 
         const transformedValues = {
             ...values,
+            date: values.date ? format(values.date, 'yyyy-MM-dd') : format(new Date(), 'yyyy-MM-dd'),
             quantity: Number(values.quantity),
             price: Number(values.price),
             amountPaid: Number(values.amountPaid),

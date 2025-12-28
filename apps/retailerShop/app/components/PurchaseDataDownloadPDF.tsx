@@ -19,9 +19,6 @@ import { Button } from "@repo/ui/button"
 import { DataTable } from './PurchaseDetailsComponent/data-table';
 
 
-import "../globals.css";
-
-
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
@@ -70,6 +67,8 @@ export function PurchaseDataDownloadPDF({ id }: PurchaseDataDownloadPDFProps) {
         resolver: zodResolver(purchaseDataDurationSchema),
         defaultValues: {
             purchaseInfoId: id,
+            startingDate: new Date(),
+            endDate: new Date(),
         },
     })
 
@@ -79,8 +78,13 @@ export function PurchaseDataDownloadPDF({ id }: PurchaseDataDownloadPDFProps) {
 
         try {
             const baseUri = process.env.NEXT_PUBLIC_UI_BASE_URI;
-            console.log("form data submitted", values);
-            const response = await axios.post(`${baseUri}/getPurchasesDataDuration`, values);
+            const transformedValues = {
+                ...values,
+                startingDate: values.startingDate ? format(values.startingDate, 'yyyy-MM-dd') : format(new Date(), 'yyyy-MM-dd'),
+                endDate: values.endDate ? format(values.endDate, 'yyyy-MM-dd') : format(new Date(), 'yyyy-MM-dd'),
+            };
+            console.log("form data submitted", transformedValues);
+            const response = await axios.post(`${baseUri}/getPurchasesDataDuration`, transformedValues);
             console.log("response", response.data);
             setPurchaseDataDuration(response.data.data);
             setEndDate(response.data.endDateResponse);

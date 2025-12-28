@@ -37,6 +37,8 @@ interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
     data: TData[]
     hiddenRows?: Set<string>
+    selectedRows?: Set<string>
+    onToggleSelect?: (id: string) => void
     cityFilter: string[]
     setCityFilter: (value: string[]) => void
     statusFilter: string
@@ -49,6 +51,8 @@ export function DataTable<TData extends SalesOverviewType, TValue>({
     columns,
     data,
     hiddenRows,
+    selectedRows,
+    onToggleSelect,
     cityFilter,
     setCityFilter,
     hotelExpiryFilter,
@@ -196,6 +200,45 @@ export function DataTable<TData extends SalesOverviewType, TValue>({
                         </Button>
                     )}
                 </div>
+                
+                {/* Bulk Selection Controls */}
+                {selectedRows !== undefined && onToggleSelect && (
+                    <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mt-3 pt-3 border-t">
+                        <div className="text-sm text-gray-600">
+                            <span className="font-medium">{selectedRows.size}</span> of <span className="font-medium">{filteredData.length}</span> rows selected
+                        </div>
+                        <div className="flex gap-2">
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => {
+                                    filteredData.forEach(item => {
+                                        if (!selectedRows.has(item.id)) {
+                                            onToggleSelect(item.id);
+                                        }
+                                    });
+                                }}
+                                className="h-9 px-3 border-blue-500 text-blue-600 hover:bg-blue-50"
+                            >
+                                Select All Visible
+                            </Button>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => {
+                                    filteredData.forEach(item => {
+                                        if (selectedRows.has(item.id)) {
+                                            onToggleSelect(item.id);
+                                        }
+                                    });
+                                }}
+                                className="h-9 px-3 border-gray-300 text-gray-600 hover:bg-gray-100"
+                            >
+                                Deselect All Visible
+                            </Button>
+                        </div>
+                    </div>
+                )}
             </div>
 
             {/* Table Section */}
@@ -223,11 +266,18 @@ export function DataTable<TData extends SalesOverviewType, TValue>({
                         {table.getRowModel().rows?.length ? (
                             table.getRowModel().rows.map((row) => {
                                 const isHidden = hiddenRows?.has(row.original.id) || false
+                                const isSelected = selectedRows?.has(row.original.id) || false
                                 return (
                                     <TableRow
                                         key={row.id}
                                         data-state={row.getIsSelected() && "selected"}
-                                        className={isHidden ? "opacity-50 bg-gray-50" : ""}
+                                        className={
+                                            isHidden 
+                                                ? "opacity-50 bg-gray-50" 
+                                                : isSelected 
+                                                    ? "bg-blue-50 hover:bg-blue-100" 
+                                                    : ""
+                                        }
                                     >
                                         {row.getVisibleCells().map((cell) => (
                                             <TableCell key={cell.id} className={`text-xs sm:text-sm px-3 sm:px-4 py-3 sm:py-4 align-middle mobile-text ${isHidden ? "line-through" : ""}`}>

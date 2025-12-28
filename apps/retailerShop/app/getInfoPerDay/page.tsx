@@ -37,7 +37,7 @@ function GetInfoPerDay() {
     const form = useForm<z.infer<typeof infoPerDayMonthSchema>>({
         resolver: zodResolver(infoPerDayMonthSchema),
         defaultValues: {
-
+            date: new Date(),
         },
     })
 
@@ -45,8 +45,12 @@ function GetInfoPerDay() {
         console.log(" I am getting called after clicking button");
         try {
             const baseUri = process.env.NEXT_PUBLIC_UI_BASE_URI;
-            console.log("the  values are ", values);
-            const response = await axios.post(`${baseUri}/infoPerDayMonth`, values);
+            const transformedValues = {
+                ...values,
+                date: values.date ? format(values.date, 'yyyy-MM-dd') : format(new Date(), 'yyyy-MM-dd'),
+            };
+            console.log("the  values are ", transformedValues);
+            const response = await axios.post(`${baseUri}/infoPerDayMonth`, transformedValues);
             console.log("the response.data", response.data);
             console.log("the perDayDetails", response.data.perDayData);
             setInfoDetails(response.data.perDayData);

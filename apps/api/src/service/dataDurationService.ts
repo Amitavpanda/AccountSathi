@@ -55,12 +55,17 @@ export async function salesDataDurationService(input : GetSalesDetaDurationSchem
     let previousAmount : number = 0;
     let previousDate : string = "";
     let response = new Map<string, ObjectType>();
+    
+    // Convert date strings to ISO DateTime format for Prisma
+    const startDateTime = new Date(startingDate + 'T00:00:00.000Z').toISOString();
+    const endDateTime = new Date(endDate + 'T23:59:59.999Z').toISOString();
+    
     const salesDataDuration = await prisma.salesInfoDetail.findMany({
         where : {
             salesInfoId,
             date : {
-                gte : startingDate,
-                lte : endDate 
+                gte : startDateTime,
+                lte : endDateTime
             }
         },
         orderBy : {
