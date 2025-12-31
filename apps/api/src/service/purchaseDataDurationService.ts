@@ -68,35 +68,44 @@ export async function purchaseDataDurationService(input : GetPurchaseDetaDuratio
                 lte : endDateTime
             }
         },
-        orderBy : {
-            date : 'asc'
-        }
+        orderBy : [
+            { date : 'asc' },
+            { createdAt : 'asc' }
+        ]
     })
     const formattedPurchaseDataDuration = purchaseDataDuration.map((detail: any) => {
         return {
             ...detail,
-            date : format(new Date(detail.date), 'dd/MM/yyyy', { locale: enIN }),
+            date : format(new Date(detail.date), 'dd/MM/yyyy hh:mm a', { locale: enIN }),
         }
     }) 
     console.log("formattedSalesDuration", formattedPurchaseDataDuration);
 
-    // const getTotalAmountDueFromSalesInfo = await prisma.salesInfo.findUnique({
-
-    // })
-
-    let flag = 1;
+    // Calculate BF (Brought Forward) from the last entry BEFORE the selected date range
     let BF = 0;
-    for(const d of formattedPurchaseDataDuration){
-        if(flag > 1) break;
+    
+    // Get the last entry before the starting date to use as BF
+    const entryBeforeRange = await prisma.supplierPurchaseDetail.findFirst({
+        where: {
+            supplierPurchaseId: purchaseInfoId,
+            date: {
+                lt: startDateTime  // Less than start date
+            }
+        },
+        orderBy: [
+            { date: 'desc' },
+            { createdAt: 'desc' }
+        ]
+    });
 
-        if(d.amountPaid === 0 && d.amountPaidDescription === ""){
-            BF = d.totalAmountDue - d.amount;
-        }
-        if(d.amountPaid > 0 && d.amountPaidDescription !== ""){
-            BF = d.amountPaid + d.totalAmountDue;
-        }
-        flag += 1;
+    if (entryBeforeRange) {
+        // BF is the totalAmountDue from the last entry before this date range
+        BF = entryBeforeRange.totalAmountDue;
+    } else {
+        // No entries before the range, BF is 0
+        BF = 0;
     }
+    
     presentAmount = BF;
     for (const d of formattedPurchaseDataDuration){
         info("i am in");

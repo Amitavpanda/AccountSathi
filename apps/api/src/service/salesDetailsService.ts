@@ -99,8 +99,8 @@ export async function addSalesDetail(input : AddSalesDetailsSchema){
           })
           hotelName = hotelName?.name;
 
-          const originalDate = new Date(date);
-          const updatedDate = new Date(Date.UTC(originalDate.getUTCFullYear(), originalDate.getUTCMonth(), originalDate.getUTCDate(), 0, 0, 0));
+          // Preserve the full timestamp from frontend
+          const updatedDate = new Date(date);
           
 
           console.log("hotelName", hotelName);
@@ -143,13 +143,16 @@ export async function getSalesDetailsBySalesInfoId(salesInfoId :string){
     try{
         const details = await prisma.salesInfoDetail.findMany({
             where: { salesInfoId : salesInfoId},
-            orderBy: { date: 'asc' }, // Optional: Order by date ascending
+            orderBy: [
+              { date: 'asc' },
+              { createdAt: 'asc' }
+            ],
           });
 
           const formattedDetails = details.map((detail: any) => {
             return {
               ...detail,
-              date: format(new Date(detail.date), 'MMMM do yyyy', { locale: enIN }),
+              date: format(new Date(detail.date), 'MMMM do yyyy, hh:mm a', { locale: enIN }),
             };
           });
 

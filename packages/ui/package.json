@@ -12,7 +12,8 @@
     "./dialog": "./@/components/ui/dialog.tsx",
     "./label": "./@/components/ui/label.tsx",
     "./select": "./@/components/ui/select.tsx",
-    "./checkbox": "./@/components/ui/checkbox.tsx"
+    "./checkbox": "./@/components/ui/checkbox.tsx",
+    "./datetime-picker": "./@/components/ui/datetime-picker.tsx"
   },
   "scripts": {
     "lint": "eslint . --max-warnings 0",
@@ -47,6 +48,8 @@
     "clsx": "^2.1.1",
     "date-fns": "^3.6.0",
     "lucide-react": "^0.395.0",
+    "react-clock": "^5.0.0",
+    "react-datetime-picker": "^6.0.1",
     "react-day-picker": "^8.10.1",
     "react-hook-form": "^7.52.0",
     "tailwind-merge": "^2.3.0",
