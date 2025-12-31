@@ -104,8 +104,8 @@ export async function addSupplierPurchaseDetail(input : AddSupplierPurchaseDetai
             nameOfTheSupplier : true
           }
         })
-        const originalDate = new Date(date);
-        const updatedDate = new Date(Date.UTC(originalDate.getUTCFullYear(), originalDate.getUTCMonth(), originalDate.getUTCDate(), 0, 0, 0));
+        // Preserve the full timestamp from frontend
+        const updatedDate = new Date(date);
         
 
         const supplierPurchaseDetail = await prisma.supplierPurchaseDetail.create({
@@ -147,13 +147,16 @@ export async function getSupplierPurchaseDetailBySupplierId(supplierId :string){
         console.log("inside getSupplierPurchaseDetailBySupplierId ")
           const details = await prisma.supplierPurchaseDetail.findMany({
             where: { supplierPurchaseId : supplierId},
-            orderBy: { date: 'asc' }, // Optional: Order by date ascending
+            orderBy: [
+              { date: 'asc' },
+              { createdAt: 'asc' }
+            ],
           });
 
           const formattedDetails = details.map((detail: any) => {
             return {
               ...detail,
-              date: format(new Date(detail.date), 'MMMM do yyyy', { locale: enIN }),
+              date: format(new Date(detail.date), 'MMMM do yyyy, hh:mm a', { locale: enIN }),
             };
           });
 

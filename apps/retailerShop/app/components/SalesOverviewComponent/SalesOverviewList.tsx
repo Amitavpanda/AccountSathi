@@ -34,6 +34,7 @@ function SalesOverviewList() {
     // Edit dialog state
     const [editingItem, setEditingItem] = useState<SalesOverviewType | null>(null);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [hotelNameValue, setHotelNameValue] = useState<string>("");
     const [hotelExpiryValue, setHotelExpiryValue] = useState<string>("");
     const [statusValue, setStatusValue] = useState<string>("");
     const [cityValue, setCityValue] = useState<string>("");
@@ -75,6 +76,7 @@ function SalesOverviewList() {
 
     const handleEdit = (item: SalesOverviewType) => {
         setEditingItem(item);
+        setHotelNameValue(item.name || "");
         setHotelExpiryValue(item.hotelExpiry || "");
         setStatusValue(item.status || "");
         setCityValue(item.city || "");
@@ -89,6 +91,7 @@ function SalesOverviewList() {
             setIsUpdating(true);
             const response = await axios.put(`${baseUri}/updateSalesInfo`, {
                 id: editingItem.id,
+                name: hotelNameValue || undefined,
                 hotelExpiry: hotelExpiryValue || undefined,
                 status: statusValue || undefined,
                 city: cityValue || undefined,
@@ -98,7 +101,13 @@ function SalesOverviewList() {
                 // Update local state
                 setSalesOverview(prev => prev.map(item => 
                     item.id === editingItem.id 
-                        ? { ...item, hotelExpiry: hotelExpiryValue || null, status: statusValue || null, city: cityValue || null }
+                        ? { 
+                            ...item, 
+                            name: hotelNameValue || item.name,
+                            hotelExpiry: hotelExpiryValue || null, 
+                            status: statusValue || null, 
+                            city: cityValue || null 
+                        }
                         : item
                 ));
                 setIsDialogOpen(false);
@@ -365,19 +374,20 @@ function SalesOverviewList() {
                     <DialogHeader>
                         <DialogTitle className="text-gray-900">Edit Hotel Information</DialogTitle>
                         <DialogDescription className="text-gray-600">
-                            Update hotel expiry and status for {editingItem?.name}
+                            Update hotel details for {editingItem?.name}
                         </DialogDescription>
                     </DialogHeader>
                     <div className="grid gap-4 py-4">
                         <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="hotel-name" className="text-right text-gray-600">
-                                Hotel
+                            <Label htmlFor="hotel-name" className="text-right text-gray-700">
+                                Hotel Name
                             </Label>
                             <Input
                                 id="hotel-name"
-                                value={editingItem?.name || ""}
-                                disabled
-                                className="col-span-3 bg-gray-100 text-gray-700 border-gray-300"
+                                value={hotelNameValue}
+                                onChange={(e) => setHotelNameValue(e.target.value)}
+                                placeholder="Enter hotel name"
+                                className="col-span-3 border-gray-300 focus:border-blue-500"
                             />
                         </div>
                         <div className="grid grid-cols-4 items-center gap-4">

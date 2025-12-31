@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
-import { Calendar } from "@repo/ui/calendar"
+import { DateTimePicker } from "@repo/ui/datetime-picker"
 
 
 import { Button } from "@repo/ui/button"
@@ -27,17 +27,10 @@ import {
 } from "@repo/ui/select"
 
 
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@repo/ui/popover"
-
-
 import { format } from "date-fns"
 
 
-import { BadgePlus, CalendarIcon } from "lucide-react"
+import { BadgePlus } from "lucide-react"
 
 import { addSupplierPurchaseDetailsSchema, addSupplierPurchaseSchema } from "../utils/validator"
 
@@ -88,7 +81,7 @@ export default function AddNewPurchaseDetailsComponent({ id }: AddNewPurchaseDet
 
         const transformedValues = {
             ...values,
-            date: values.date ? format(values.date, 'yyyy-MM-dd') : format(new Date(), 'yyyy-MM-dd'),
+            date: values.date ? values.date.toISOString() : new Date().toISOString(),
             quantity: Number(values.quantity),
             price: Number(values.price),
             amountPaid: Number(values.amountPaid),
@@ -189,41 +182,17 @@ export default function AddNewPurchaseDetailsComponent({ id }: AddNewPurchaseDet
                                     name="date"
                                     render={({ field }) => (
                                         <FormItem className="flex flex-col">
-                                            <FormLabel className="text-sm font-medium text-slate-700">Date</FormLabel>
-                                            <Popover>
-                                                <PopoverTrigger asChild>
-                                                    <FormControl>
-                                                        <Button
-                                                            variant={"outline"}
-                                                            className={cn(
-                                                                "h-11 pl-3 text-left font-normal rounded-lg border-gray-300 hover:border-emerald-500 transition-colors bg-white",
-                                                                !field.value && "text-muted-foreground"
-                                                            )}
-                                                        >
-                                                            {field.value ? (
-                                                                format(field.value, "PPP")
-                                                            ) : (
-                                                                <span>Pick a date</span>
-                                                            )}
-                                                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                                        </Button>
-                                                    </FormControl>
-                                                </PopoverTrigger>
-                                                <PopoverContent className="w-auto p-0 bg-white border border-gray-200 rounded-lg shadow-lg">
-                                                    <Calendar
-                                                        mode="single"
-                                                        selected={field.value}
-                                                        onSelect={field.onChange}
-                                                        disabled={(date) =>
-                                                            date > new Date() || date < new Date("1900-01-01")
-                                                        }
-                                                        initialFocus
-                                                        className="rounded-lg border border-gray-200 bg-white"
-                                                    />
-                                                </PopoverContent>
-                                            </Popover>
+                                            <FormLabel className="text-sm font-medium text-slate-700">Date and Time</FormLabel>
+                                            <FormControl>
+                                                <DateTimePicker
+                                                    value={field.value}
+                                                    onChange={field.onChange}
+                                                    maxDate={new Date()}
+                                                    className="w-full"
+                                                />
+                                            </FormControl>
                                             <FormDescription className="text-xs text-slate-500">
-                                                Date when the stock is being purchased
+                                                Date and time of the purchase transaction
                                             </FormDescription>
                                             <FormMessage />
                                         </FormItem>

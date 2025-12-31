@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
-import { Calendar } from "@repo/ui/calendar"
+import { DateTimePicker } from "@repo/ui/datetime-picker"
 
 
 import { Button } from "@repo/ui/button"
@@ -20,13 +20,6 @@ import { Input } from "@repo/ui/input"
 
 
 import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@repo/ui/popover"
-
-
-import {
     Select,
     SelectContent,
     SelectItem,
@@ -40,7 +33,7 @@ import {
 import { format } from "date-fns"
 
 
-import { BadgePlus, CalendarIcon } from "lucide-react"
+import { BadgePlus } from "lucide-react"
 
 import { addSalesDetailsSchema, addSupplierPurchaseDetailsSchema, addSupplierPurchaseSchema } from "../utils/validator"
 
@@ -112,7 +105,7 @@ export default function AddNewSalesDetailsComponent({ id }: AddNewSalesDetailsPr
 
         const transformedValues = {
             ...values,
-            date: values.date ? format(values.date, 'yyyy-MM-dd') : undefined,
+            date: values.date ? values.date.toISOString() : undefined,
             quantity: Number(values.quantity),
             price: Number(values.price),
             amountPaid: Number(values.amountPaid),
@@ -203,41 +196,17 @@ export default function AddNewSalesDetailsComponent({ id }: AddNewSalesDetailsPr
                                     name="date"
                                     render={({ field }) => (
                                         <FormItem className="flex flex-col">
-                                            <FormLabel>Date</FormLabel>
-                                            <Popover>
-                                                <PopoverTrigger asChild>
-                                                    <FormControl>
-                                                        <Button
-                                                            variant={"outline"}
-                                                            className={cn(
-                                                                "w-full h-11 pl-3 text-left font-normal rounded-xl border-gray-300 hover:bg-gray-50",
-                                                                !field.value && "text-muted-foreground"
-                                                            )}
-                                                        >
-                                                            {field.value ? (
-                                                                format(field.value, "PPP")
-                                                            ) : (
-                                                                <span>Pick a date</span>
-                                                            )}
-                                                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50 " />
-                                                        </Button>
-                                                    </FormControl>
-                                                </PopoverTrigger>
-                                                <PopoverContent className="w-auto p-0" align="start">
-                                                    <Calendar className="bg-white text-gray-900 rounded-xl border"
-                                                        mode="single"
-                                                        selected={field.value}
-                                                        onSelect={field.onChange}
-                                                        disabled={(date) =>
-                                                            date > new Date() || date < new Date("1900-01-01")
-                                                        }
-                                                        initialFocus
-
-                                                    />
-                                                </PopoverContent>
-                                            </Popover>
+                                            <FormLabel>Date and Time</FormLabel>
+                                            <FormControl>
+                                                <DateTimePicker
+                                                    value={field.value}
+                                                    onChange={field.onChange}
+                                                    maxDate={new Date()}
+                                                    className="w-full"
+                                                />
+                                            </FormControl>
                                             <FormDescription>
-                                                Date when the stock is being
+                                                Date and time of the transaction
                                             </FormDescription>
                                             <FormMessage />
                                         </FormItem>
