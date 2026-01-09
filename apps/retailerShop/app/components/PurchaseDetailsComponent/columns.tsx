@@ -2,30 +2,31 @@
 
 import { ColumnDef } from "@tanstack/react-table"
 import Link from "next/link"
+import { formatAmount } from "../../utils/formatters"
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 export type PurchaseDetailsType = {
-    id : string
+    id: string
     stockName: string,
-    stockNameDetails : string,
+    stockNameDetails: string,
     date: string,
     quantity: string,
-    quantityType : string,
-    quantityDetails : string,
+    quantityType: string,
+    quantityDetails: string,
     price: number,
-    priceDetails : string,
-    amount : string,
-    totalAmountDue : string,
-    extraAmount : string,
-    extraAmountDescription : string,
-    amountPaid : string,
-    amountPaidDescription : string,
-    dateDescription : string
-    supplierPurchaseId : string,
-    additionalDetails1 : string,
-    additionalDetails2 : string,
-    isPaymentDone : string
+    priceDetails: string,
+    amount: string,
+    totalAmountDue: string,
+    extraAmount: string,
+    extraAmountDescription: string,
+    amountPaid: string,
+    amountPaidDescription: string,
+    dateDescription: string
+    supplierPurchaseId: string,
+    additionalDetails1: string,
+    additionalDetails2: string,
+    isPaymentDone: string
 }
 
 export const columns: ColumnDef<PurchaseDetailsType>[] = [
@@ -56,6 +57,7 @@ export const columns: ColumnDef<PurchaseDetailsType>[] = [
     {
         accessorKey: "price",
         header: "Price",
+        cell: ({ row }) => formatAmount(row.getValue("price")),
     },
     {
         accessorKey: "priceDetails",
@@ -64,10 +66,12 @@ export const columns: ColumnDef<PurchaseDetailsType>[] = [
     {
         accessorKey: "amount",
         header: "Amount",
+        cell: ({ row }) => formatAmount(row.getValue("amount")),
     },
     {
         accessorKey: "extraAmount",
-        header: "extraAmoint",
+        header: "Extra Amount",
+        cell: ({ row }) => formatAmount(row.getValue("extraAmount")),
     },
     {
         accessorKey: "extraAmountDescription",
@@ -77,11 +81,13 @@ export const columns: ColumnDef<PurchaseDetailsType>[] = [
     {
         accessorKey: "totalAmountDue",
         header: "Total Amount Due",
+        cell: ({ row }) => formatAmount(row.getValue("totalAmountDue")),
     },
 
     {
         accessorKey: "amountPaid",
         header: "Amount Paid",
+        cell: ({ row }) => formatAmount(row.getValue("amountPaid")),
     },
 
     {

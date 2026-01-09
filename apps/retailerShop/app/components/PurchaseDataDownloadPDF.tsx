@@ -39,6 +39,7 @@ import {
 } from "@repo/ui/form"
 import { purchaseDataDurationSchema } from "../utils/validator"
 import { cn } from "../../../../packages/ui/@/lib/utils"
+import { formatAmount } from "../utils/formatters"
 import axios from "axios"
 import { useEffect, useState, useRef } from "react"
 import { PurchaseDetailsType, columns } from "./PurchaseDetailsComponent/columns";
@@ -421,7 +422,7 @@ export function PurchaseDataDownloadPDF({ id }: PurchaseDataDownloadPDFProps) {
                                             <>
                                                 <h1>BF Total Balance</h1>
                                                 <h1>=</h1>
-                                                <h1>Rs {BF}</h1>
+                                                <h1>Rs {formatAmount(BF)}</h1>
                                             </>
                                         )}
                                     </div>
@@ -445,7 +446,7 @@ export function PurchaseDataDownloadPDF({ id }: PurchaseDataDownloadPDFProps) {
                                                                 <h1>{item.stockName}</h1>
                                                                 <div className="flex flex-row items-center justify-center gap-2">
                                                                     <h1>{item.quantity} X</h1>
-                                                                    <h1>Rs {item.price}</h1>
+                                                                    <h1>Rs {formatAmount(item.price)}</h1>
                                                                 </div>
                                                                 {item.isPaymentDone === "Yes" && (
                                                                     <div className="bg-green-50 rounded-xl p-2">
@@ -462,17 +463,17 @@ export function PurchaseDataDownloadPDF({ id }: PurchaseDataDownloadPDFProps) {
 
                                                     <div className="break-inside-avoid overflow-visible">
                                                         {item.extraAmount > 0 ? (
-                                                            <h1><span className="font-[700] text-[20px]"> + </span> Rs {item.extraAmount}</h1>
+                                                            <h1><span className="font-[700] text-[20px]"> + </span> Rs {formatAmount(item.extraAmount)}</h1>
                                                         ) : item.cashPaid === "no" ? (
                                                             <>
                                                                 {BF === 0 && index === 0 ? (
-                                                                    <h1>Rs {item.amount}</h1>
+                                                                    <h1>Rs {formatAmount(item.amount)}</h1>
                                                                 ) : (
-                                                                    <h1>{item.isPaymentDone !== "Yes" && <span className="font-[700] text-[20px]"> + </span>} Rs {item.amount}</h1>
+                                                                    <h1>{item.isPaymentDone !== "Yes" && <span className="font-[700] text-[20px]"> + </span>} Rs {formatAmount(item.amount)}</h1>
                                                                 )}
                                                             </>
                                                         ) : (
-                                                            <h1><span className="font-[700] text-[20px]"> - </span> Rs {item.amountPaid}</h1>
+                                                            <h1><span className="font-[700] text-[20px]"> - </span> Rs {formatAmount(item.amountPaid)}</h1>
                                                         )}
                                                     </div>
                                                 </div>
@@ -485,7 +486,7 @@ export function PurchaseDataDownloadPDF({ id }: PurchaseDataDownloadPDFProps) {
                                                 ) : (
                                                     <h1 className="">Balance Total Amount</h1>
                                                 )}
-                                                <h1>Rs {purchaseDataDuration[date]?.finalAmount}</h1>
+                                                <h1>Rs {formatAmount(purchaseDataDuration[date]?.finalAmount)}</h1>
                                             </div>
                                         </div>
                                     ))}

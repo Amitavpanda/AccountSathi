@@ -1,8 +1,7 @@
 
-
 ***
 
-# AccountSaathi - AI Copilot Instructions
+# AccountSaathi - Antigravity AI Instructions
 
 ## Project Overview  
 This project enables users to create and manage accounting by uploading Sales and Purchase data by giving the inputs through a user-friendly interface. The system processes the data, generates accounting entries, and provides downloadable reports in PDF format.
@@ -17,15 +16,15 @@ This project enables users to create and manage accounting by uploading Sales an
 This project uses the *Context7 MCP* VS Code extension for accessing real-time and up-to-date library documentation:
 
 - **Extension:** upstash.context7-mcp (pre-installed per `.vscode/extensions.json`)  
-- **Function:** Query Next.js, Node.js, Leegality API, Supabase, and other libraries instantly via Copilot  
-- **Instruction:** Ask Copilot to fetch documentation via Context7 whenever you need to clarify library-specific usage or APIs
+- **Function:** Query Next.js, Node.js, Leegality API, Supabase, and other libraries instantly via Antigravity  
+- **Instruction:** Ask Antigravity to fetch documentation via Context7 whenever you need to clarify library-specific usage or APIs
 
 
 ### Chrome Dev Tools MCP Extension
 This project uses the *Chrome Dev Tools MCP* extension for real-time debugging and inspection whenever there is a need to interact with Chrome Dev Tools or asking about frontend changes:
 - *VS Code Extension*: upstash.chrome-devtools-mcp (already installed - see .vscode/extensions.json)
 - *Usage*: Access Chrome Dev Tools features directly within VS Code
-- *How to use*: Ask Copilot to assist with Chrome Dev Tools commands and workflows
+- *How to use*: Ask Antigravity to assist with Chrome Dev Tools commands and workflows
 
 
 ### Reference Documentation Sources
@@ -41,9 +40,9 @@ This project uses the *Chrome Dev Tools MCP* extension for real-time debugging a
 
 ***
 
-## Expectations from Copilot
+## Expectations from Antigravity
 
-- **Role:** Act as a Senior Architect and Senior Full-Stack Developer  
+- **Role:** Act as a Senior Architect and Senior Full-Stack Developer (Google Deepmind Advanced Agentic Coding Team)
 - **Code Quality:** Follow industry standards, security best practices, clean architecture, and scalable design principles strictly  
 - **Focus Areas:**  
   - Modular, maintainable code with clear separation of concerns  
@@ -88,14 +87,10 @@ This project uses the *Chrome Dev Tools MCP* extension for real-time debugging a
 ## Context7 Integration Usage
 
 For real-time, up-to-date ABP or other library docs:  
-- Prompt Copilot to query Context7 MCP extension before generating code or answering questions  
+- Prompt Antigravity to query Context7 MCP extension before generating code or answering questions  
 
 ***
 
 If you want, this file can be extended with templates for prompts, testing checklists, or team best practices summaries.
 
 ***
-
-
-
-
