@@ -30,7 +30,7 @@ function SalesOverviewList() {
     const [salesOverview, setSalesOverview] = useState<SalesOverviewType[]>([]);
     const [totalAmountDueSum, setTotalAmountDueSum] = useState<number | undefined>();
     const [loading, setLoading] = useState(true);
-    
+
     // Edit dialog state
     const [editingItem, setEditingItem] = useState<SalesOverviewType | null>(null);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -39,17 +39,20 @@ function SalesOverviewList() {
     const [statusValue, setStatusValue] = useState<string>("");
     const [cityValue, setCityValue] = useState<string>("");
     const [isUpdating, setIsUpdating] = useState(false);
-    
+
     // Hidden rows state for PDF export
     const [hiddenRows, setHiddenRows] = useState<Set<string>>(new Set());
-    
+
     // Selected rows state for PDF export
     const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
-    
+
     // Filter state (lifted from DataTable for PDF export access)
     const [cityFilter, setCityFilter] = useState<string[]>([]);
     const [hotelExpiryFilter, setHotelExpiryFilter] = useState<string[]>([]);
     const [statusFilter, setStatusFilter] = useState<string>("all");
+
+    // Track selection order to preserve row order in PDF
+    const [selectionOrder, setSelectionOrder] = useState<string[]>([]);
 
     const fetchSalesOverview = async () => {
         const baseUri = process.env.NEXT_PUBLIC_UI_BASE_URI;
@@ -99,14 +102,14 @@ function SalesOverviewList() {
             info("Update response:", response);
             if (response.status === 200) {
                 // Update local state
-                setSalesOverview(prev => prev.map(item => 
-                    item.id === editingItem.id 
-                        ? { 
-                            ...item, 
+                setSalesOverview(prev => prev.map(item =>
+                    item.id === editingItem.id
+                        ? {
+                            ...item,
                             name: hotelNameValue || item.name,
-                            hotelExpiry: hotelExpiryValue || null, 
-                            status: statusValue || null, 
-                            city: cityValue || null 
+                            hotelExpiry: hotelExpiryValue || null,
+                            status: statusValue || null,
+                            city: cityValue || null
                         }
                         : item
                 ));
@@ -139,51 +142,32 @@ function SalesOverviewList() {
             const newSet = new Set(prev);
             if (newSet.has(id)) {
                 newSet.delete(id);
+                // Remove from selection order
+                setSelectionOrder(order => order.filter(rowId => rowId !== id));
             } else {
                 newSet.add(id);
+                // Add to selection order
+                setSelectionOrder(order => [...order, id]);
             }
             return newSet;
         });
     }, []);
 
-    // Download PDF with visible and filtered rows only
-    const handleDownloadPDF = useCallback(() => {
-        // First apply city, hotelExpiry and status filters
-        let filteredRows = salesOverview.filter(item => {
-            const matchesCity = cityFilter.length === 0 || cityFilter.includes(item.city || "");
-            const matchesHotelExpiry = hotelExpiryFilter.length === 0 || hotelExpiryFilter.includes(item.hotelExpiry || "");
-            let matchesStatus = true;
-            if (statusFilter === "all") {
-                matchesStatus = true;
-            } else if (statusFilter === "no-status") {
-                matchesStatus = !item.status || item.status === "";
-            } else {
-                matchesStatus = item.status === statusFilter;
-            }
-            return matchesCity && matchesHotelExpiry && matchesStatus;
-        });
-        
-        // Then exclude hidden rows
-        const visibleRows = filteredRows.filter(item => !hiddenRows.has(item.id));
-        
-        // Finally, only include selected rows (if any are selected)
-        const finalRows = selectedRows.size > 0 
-            ? visibleRows.filter(item => selectedRows.has(item.id))
-            : visibleRows;
-        
-        if (finalRows.length === 0) {
-            alert("No rows selected for export. Please select at least one row.");
+    // Helper function to generate PDF for a given set of rows
+    const generatePDF = useCallback((rows: SalesOverviewType[], filename: string, pdfType: "selected" | "deselected") => {
+        if (rows.length === 0) {
             return;
         }
 
         const doc = new jsPDF();
         const pageWidth = doc.internal.pageSize.getWidth();
-        
+
         // Title
         doc.setFontSize(18);
         doc.setFont("helvetica", "bold");
-        doc.text("Sales Overview Report", pageWidth / 2, 20, { align: "center" });
-        
+        const titleText = pdfType === "selected" ? "Sales Overview Report (Selected)" : "Sales Overview Report (Deselected)";
+        doc.text(titleText, pageWidth / 2, 20, { align: "center" });
+
         // Date
         doc.setFontSize(10);
         doc.setFont("helvetica", "normal");
@@ -193,7 +177,7 @@ function SalesOverviewList() {
             year: "numeric"
         });
         doc.text("Generated on: " + today, pageWidth / 2, 28, { align: "center" });
-        
+
         // Filter info
         let filterInfoY = 28;
         if (cityFilter.length > 0 || hotelExpiryFilter.length > 0 || statusFilter !== "all") {
@@ -213,7 +197,7 @@ function SalesOverviewList() {
         const startY = filterInfoY + 10;
         const colWidths = { name: 100, amount: 50 };
         const leftMargin = 30;
-        
+
         doc.setFontSize(12);
         doc.setFont("helvetica", "bold");
         doc.setFillColor(66, 133, 244);
@@ -221,39 +205,39 @@ function SalesOverviewList() {
         doc.setTextColor(255, 255, 255);
         doc.text("Hotel Name", leftMargin + 5, startY);
         doc.text("Amount", leftMargin + colWidths.name + 5, startY);
-        
+
         // Table rows
         doc.setFont("helvetica", "normal");
         doc.setTextColor(0, 0, 0);
         let currentY = startY + 12;
         let totalAmount = 0;
-        
-        finalRows.forEach((item, index) => {
+
+        rows.forEach((item, index) => {
             // Check if we need a new page
             if (currentY > 270) {
                 doc.addPage();
                 currentY = 20;
             }
-            
+
             // Alternate row background
             if (index % 2 === 0) {
                 doc.setFillColor(245, 247, 250);
                 doc.rect(leftMargin, currentY - 6, colWidths.name + colWidths.amount, 10, "F");
             }
-            
+
             doc.setFontSize(10);
             const hotelName = item.name.length > 35 ? item.name.substring(0, 35) + "..." : item.name;
             doc.text(hotelName, leftMargin + 5, currentY);
-            
+
             // Use "Rs." instead of rupee symbol for PDF compatibility
             const amountValue = Math.abs(item.totalAmountDue).toLocaleString("en-IN");
             const amountPrefix = item.totalAmountDue < 0 ? "(Adv) Rs." : item.totalAmountDue === 0 ? "(Paid) Rs." : "Rs.";
             doc.text(amountPrefix + amountValue, leftMargin + colWidths.name + 5, currentY);
-            
+
             totalAmount += item.totalAmountDue;
             currentY += 10;
         });
-        
+
         // Total row
         currentY += 5;
         doc.setFont("helvetica", "bold");
@@ -262,16 +246,85 @@ function SalesOverviewList() {
         doc.setTextColor(255, 255, 255);
         doc.text("Total", leftMargin + 5, currentY);
         doc.text("Rs." + totalAmount.toLocaleString("en-IN"), leftMargin + colWidths.name + 5, currentY);
-        
+
         // Footer
         doc.setTextColor(128, 128, 128);
         doc.setFontSize(8);
         doc.setFont("helvetica", "normal");
-        doc.text("Total Hotels: " + finalRows.length, leftMargin, currentY + 15);
-        
+        doc.text("Total Hotels: " + rows.length, leftMargin, currentY + 15);
+
         // Save
-        doc.save("sales-overview-" + today.replace(/\s/g, "-") + ".pdf");
-    }, [salesOverview, hiddenRows, selectedRows, cityFilter, hotelExpiryFilter, statusFilter]);
+        doc.save(filename);
+    }, [cityFilter, hotelExpiryFilter, statusFilter]);
+
+    // Download both selected and deselected PDFs
+    const handleDownloadBothPDFs = useCallback(() => {
+        // First apply city, hotelExpiry and status filters
+        let filteredRows = salesOverview.filter(item => {
+            const matchesCity = cityFilter.length === 0 || cityFilter.includes(item.city || "");
+            const matchesHotelExpiry = hotelExpiryFilter.length === 0 || hotelExpiryFilter.includes(item.hotelExpiry || "");
+            let matchesStatus = true;
+            if (statusFilter === "all") {
+                matchesStatus = true;
+            } else if (statusFilter === "no-status") {
+                matchesStatus = !item.status || item.status === "";
+            } else {
+                matchesStatus = item.status === statusFilter;
+            }
+            return matchesCity && matchesHotelExpiry && matchesStatus;
+        });
+
+        // Then exclude hidden rows
+        const visibleRows = filteredRows.filter(item => !hiddenRows.has(item.id));
+
+        // Split into selected and deselected while preserving selection order for selected PDF
+        // Create a map of visible rows for quick lookup
+        const visibleMap = new Map<string, SalesOverviewType>(visibleRows.map(r => [r.id, r]));
+
+        // Build selected rows preserving a mix of selection order and visible table order:
+        // - Items present in `selectionOrder` will be ordered by that list
+        // - Items not present in `selectionOrder` will preserve their visible table order
+        const orderMap = new Map(selectionOrder.map((id, i) => [id, i]));
+        const selectedInVisible = visibleRows
+            .map((item, idx) => ({ item, idx }))
+            .filter(({ item }) => selectedRows.has(item.id));
+
+        selectedInVisible.sort((a, b) => {
+            const aPos = orderMap.has(a.item.id) ? orderMap.get(a.item.id)! : Number.POSITIVE_INFINITY;
+            const bPos = orderMap.has(b.item.id) ? orderMap.get(b.item.id)! : Number.POSITIVE_INFINITY;
+            if (aPos === bPos) {
+                return a.idx - b.idx; // preserve visible order for items not in selectionOrder
+            }
+            return aPos - bPos;
+        });
+
+        const selectedRowsData = selectedInVisible.map(x => x.item);
+
+        // Deselected keep visibleRows order
+        const deselectedRowsData = visibleRows.filter(item => !selectedRows.has(item.id));
+
+        // Validate
+        if (selectedRowsData.length === 0) {
+            alert("No rows selected for export. Please select at least one row.");
+            return;
+        }
+
+        const today = new Date().toLocaleDateString("en-IN", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric"
+        }).replace(/\s/g, "-");
+
+        // Generate selected PDF
+        generatePDF(selectedRowsData, `selected-sales-overview-${today}.pdf`, "selected");
+
+        // Generate deselected PDF after a small delay to ensure first download starts
+        if (deselectedRowsData.length > 0) {
+            setTimeout(() => {
+                generatePDF(deselectedRowsData, `deselected-sales-overview-${today}.pdf`, "deselected");
+            }, 300);
+        }
+    }, [salesOverview, hiddenRows, selectedRows, selectionOrder, cityFilter, hotelExpiryFilter, statusFilter, generatePDF]);
 
     // Create columns with edit handler, hide toggle, and select toggle
     const columns = useMemo(() => createColumns(handleEdit, hiddenRows, handleToggleHide, selectedRows, handleToggleSelect), [hiddenRows, handleToggleHide, selectedRows, handleToggleSelect]);
@@ -322,7 +375,7 @@ function SalesOverviewList() {
                             <span className="font-medium">{selectedRows.size}</span> hotels selected for PDF export
                             {selectedRows.size > 0 && (
                                 <button
-                                    onClick={() => setSelectedRows(new Set())}
+                                    onClick={() => { setSelectedRows(new Set()); setSelectionOrder([]); }}
                                     className="ml-2 text-blue-600 hover:text-blue-800 underline"
                                 >
                                     Clear selection
@@ -342,19 +395,19 @@ function SalesOverviewList() {
                         </div>
                     </div>
                     <Button
-                        onClick={handleDownloadPDF}
+                        onClick={handleDownloadBothPDFs}
                         className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-md hover:shadow-lg transition-all duration-300"
                         disabled={selectedRows.size === 0}
                     >
-                        📥 Download Selected PDF ({selectedRows.size})
+                        📥 Download Both PDFs ({selectedRows.size} selected)
                     </Button>
                 </div>
 
                 {/* Data Table */}
                 <div className="w-full overflow-hidden">
-                    <DataTable 
-                        columns={columns} 
-                        data={salesOverview} 
+                    <DataTable
+                        columns={columns}
+                        data={salesOverview}
                         hiddenRows={hiddenRows}
                         selectedRows={selectedRows}
                         onToggleSelect={handleToggleSelect}
