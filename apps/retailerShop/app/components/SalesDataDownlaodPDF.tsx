@@ -61,6 +61,8 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
     const [startingDate, setStartingDate] = useState<String>("");
     const [hotelName, setHotelName] = useState<String>();
     const [hotelAddress, setHotelAddress] = useState<String>();
+    const [hotelPhoneNumber, setHotelPhoneNumber] = useState<string>("");
+    const [hotelTotalAmountDue, setHotelTotalAmountDue] = useState<number>(0);
 
     const [BF, setBF] = useState<number>(0);
 
@@ -94,6 +96,8 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
             setStartingDate(response.data.startingDateResponse);
             setHotelName(response.data.hotelName.name);
             setHotelAddress(response.data.hotelAddress.address);
+            setHotelPhoneNumber(response.data.hotelPhone?.phoneNumber || "");
+            setHotelTotalAmountDue(response.data.hotelTotalAmountDue ?? 0);
             setBF(response.data.BF);
 
             if (response.status = 200) {
@@ -119,24 +123,6 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
         if (!element) return;
 
         try {
-            // Temporarily modify styles for PDF generation
-            const originalStyles = element.style.cssText;
-            element.style.cssText += `
-                width: 800px !important;
-                min-width: 800px !important;
-                max-width: 800px !important;
-                white-space: nowrap !important;
-                word-wrap: break-word !important;
-                overflow-wrap: break-word !important;
-            `;
-
-            // Force layout recalculation
-            element.offsetHeight;
-
-            // Programmatic pagination similar to Purchase PDF: create page-sized clones with
-            // proper margins (left/right/top/bottom) and render each page separately with html2canvas
-            // then append to jsPDF. This keeps layout consistent and avoids html2pdf pagebreak issues.
-
             const MARGINS_IN = { top: 0.5, bottom: 0.5, left: 0.5, right: 0.5 };
             const A4_IN_HEIGHT = 11.69; // inches
             const A4_IN_WIDTH = 8.27; // inches
@@ -159,6 +145,22 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
                 right: MARGINS_IN.right * CSS_PX_PER_IN,
             };
 
+            // Temporarily modify styles for PDF generation; use the computed A4 width so the
+            // layout is identical regardless of device viewport.  We don't need the
+            // whitespace/word-wrap hacks now that width is enforced exactly.
+            const originalStyles = element.style.cssText;
+            element.style.cssText += `
+                width: ${A4_PX_WIDTH}px !important;
+                min-width: ${A4_PX_WIDTH}px !important;
+                max-width: ${A4_PX_WIDTH}px !important;
+            `;
+
+            // Force layout recalculation
+            element.offsetHeight;
+
+            // Programmatic pagination ... (rest remains unchanged)
+
+
             const pageMaxHeightPx = A4_PX_HEIGHT;
 
             const allChildren = Array.from(element.children) as HTMLElement[];
@@ -179,6 +181,26 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
 
             let currentPage = createPageContainer();
             let started = false;
+
+            // MEASUREMENT FIX: html2canvas renders with windowWidth=A4_PX_WIDTH so
+            // Tailwind sm: classes (min-width:640px) activate. But DOM scrollHeight is
+            // measured against the real viewport (mobile=375px) so sm: never fires →
+            // elements stack tall → pagination creates too many pages → blank space.
+            // Solution: temporarily force sm: responsive classes to apply at 0px.
+            const measureOverrideStyle = document.createElement('style');
+            measureOverrideStyle.textContent = `
+                .sm\\:flex-row { flex-direction: row !important; }
+                .sm\\:flex-col { flex-direction: column !important; }
+                .sm\\:items-center { align-items: center !important; }
+                .sm\\:items-start { align-items: flex-start !important; }
+                .sm\\:gap-4 { gap: 1rem !important; }
+                .sm\\:gap-2 { gap: 0.5rem !important; }
+                .sm\\:w-auto { width: auto !important; }
+                .sm\\:mr-1 { margin-right: 0.25rem !important; }
+                .md\\:flex-row { flex-direction: row !important; }
+                .md\\:items-center { align-items: center !important; }
+            `;
+            document.head.appendChild(measureOverrideStyle);
 
             for (const child of allChildren) {
                 const isGroup = child.classList && child.classList.contains('page-break-avoid');
@@ -223,6 +245,9 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
 
             if (currentPage.childElementCount > 0) pageContainers.push(currentPage);
 
+            // Remove the measurement style override
+            document.head.removeChild(measureOverrideStyle);
+
             const pdf = new jsPDF({ unit: 'in', format: 'a4', orientation: 'portrait' });
             const pageWidthIn = pdf.internal.pageSize.getWidth();
 
@@ -239,6 +264,10 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
                     logging: false,
                     width: pageEl.offsetWidth,
                     height: pageEl.scrollHeight,
+                    // this is the critical fix: tell html2canvas to treat the viewport
+                    // as A4-wide so Tailwind sm:/md: breakpoints activate on mobile
+                    windowWidth: A4_PX_WIDTH,
+                    windowHeight: A4_PX_HEIGHT,
                 });
 
                 const imgData = canvas.toDataURL('image/jpeg', 0.98);
@@ -259,6 +288,20 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
         } catch (error) {
             console.error("Error generating PDF:", error);
         }
+    }
+
+    const handleSharePDF = async () => {
+        if (!hotelPhoneNumber) {
+            alert('No WhatsApp number saved for this hotel. Please add it via the Sales Overview edit dialog.');
+            return;
+        }
+
+        // only send the payment text, PDF link will be added later
+        const phone = hotelPhoneNumber.replace(/[^\d]/g, '');
+        const message = encodeURIComponent(
+            `Please make the payment. Total Due is Rs ${hotelTotalAmountDue.toLocaleString('en-IN')}.`
+        );
+        window.open(`https://wa.me/${phone}?text=${message}`, '_blank');
     }
     return (
         <>
@@ -511,9 +554,14 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
                             </div>
                         </div>
                         <div className="flex justify-center mt-6">
-                            <Button onClick={() => handleGeneratePDF()} className="w-full sm:w-48 h-12 sm:h-11 md:h-12 rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white transition-all duration-300 flex items-center justify-center gap-2 text-sm sm:text-sm font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 mobile-button touch-target border-0">
-                                Download PDF
-                            </Button>
+                            <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                                <Button onClick={() => handleGeneratePDF()} className="w-full sm:w-48 h-12 sm:h-11 md:h-12 rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white transition-all duration-300 flex items-center justify-center gap-2 text-sm sm:text-sm font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 mobile-button touch-target border-0">
+                                    📥 Download PDF
+                                </Button>
+                                <Button onClick={() => handleSharePDF()} className="w-full sm:w-48 h-12 sm:h-11 md:h-12 rounded-xl bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white transition-all duration-300 flex items-center justify-center gap-2 text-sm sm:text-sm font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 mobile-button touch-target border-0">
+                                    📤 Share PDF
+                                </Button>
+                            </div>
                         </div>
                     </>
                 )}

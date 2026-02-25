@@ -59,6 +59,8 @@ export function PurchaseDataDownloadPDF({ id }: PurchaseDataDownloadPDFProps) {
     const [startingDate, setStartingDate] = useState<String>("");
     const [supplierName, setSupplierName] = useState<String>();
     const [supplierAddress, setSupplierAddress] = useState<String>();
+    const [supplierPhoneNumber, setSupplierPhoneNumber] = useState<string>("");
+    const [supplierTotalAmountDue, setSupplierTotalAmountDue] = useState<number>(0);
 
     const [BF, setBF] = useState<number>(0);
 
@@ -92,6 +94,8 @@ export function PurchaseDataDownloadPDF({ id }: PurchaseDataDownloadPDFProps) {
             setStartingDate(response.data.startingDateResponse);
             setSupplierName(response.data.supplierName.nameOfTheSupplier);
             setSupplierAddress(response.data.supplierAddress.address);
+            setSupplierPhoneNumber(response.data.supplierPhone?.phoneNumber || "");
+            setSupplierTotalAmountDue(response.data.supplierTotalAmountDue ?? 0);
             setBF(response.data.BF);
 
             if (response.status = 200) {
@@ -118,25 +122,6 @@ export function PurchaseDataDownloadPDF({ id }: PurchaseDataDownloadPDFProps) {
         if (!element) return;
 
         try {
-            // Temporarily modify styles for PDF generation
-            const originalStyles = element.style.cssText;
-            element.style.cssText += `
-                width: 800px !important;
-                min-width: 800px !important;
-                max-width: 800px !important;
-                white-space: normal !important;
-                word-wrap: break-word !important;
-                overflow-wrap: break-word !important;
-            `;
-
-            // Force layout recalculation
-            element.offsetHeight;
-
-            // Use html2pdf (which wraps html2canvas + jsPDF) with pagebreak support
-            // Programmatic pagination with proper margins: create page clones that include
-            // left/right/top/bottom padding (margins) so each rendered canvas already contains
-            // the visual margins and pages align consistently.
-
             const MARGINS_IN = { top: 0.5, bottom: 0.5, left: 0.5, right: 0.5 };
             const A4_IN_HEIGHT = 11.69; // inches
             const A4_IN_WIDTH = 8.27; // inches
@@ -159,6 +144,23 @@ export function PurchaseDataDownloadPDF({ id }: PurchaseDataDownloadPDFProps) {
                 right: MARGINS_IN.right * CSS_PX_PER_IN,
             };
 
+            // Temporarily modify styles for PDF generation using computed width
+            const originalStyles = element.style.cssText;
+            element.style.cssText += `
+                width: ${A4_PX_WIDTH}px !important;
+                min-width: ${A4_PX_WIDTH}px !important;
+                max-width: ${A4_PX_WIDTH}px !important;
+            `;
+
+            // Force layout recalculation
+            element.offsetHeight;
+
+            // Use html2pdf (which wraps html2canvas + jsPDF) with pagebreak support
+            // Programmatic pagination with proper margins: create page clones that include
+            // left/right/top/bottom padding (margins) so each rendered canvas already contains
+            // the visual margins and pages align consistently.
+
+
             const pageMaxHeightPx = A4_PX_HEIGHT;
 
             // select top-level groups to paginate
@@ -180,6 +182,23 @@ export function PurchaseDataDownloadPDF({ id }: PurchaseDataDownloadPDFProps) {
 
             let currentPage = createPageContainer();
             let started = false;
+
+            // MEASUREMENT FIX: force sm:/md: responsive classes to apply unconditionally
+            // during DOM scrollHeight measurement so it matches html2canvas render at A4 width.
+            const measureOverrideStyle = document.createElement('style');
+            measureOverrideStyle.textContent = `
+                .sm\\:flex-row { flex-direction: row !important; }
+                .sm\\:flex-col { flex-direction: column !important; }
+                .sm\\:items-center { align-items: center !important; }
+                .sm\\:items-start { align-items: flex-start !important; }
+                .sm\\:gap-4 { gap: 1rem !important; }
+                .sm\\:gap-2 { gap: 0.5rem !important; }
+                .sm\\:w-auto { width: auto !important; }
+                .sm\\:mr-1 { margin-right: 0.25rem !important; }
+                .md\\:flex-row { flex-direction: row !important; }
+                .md\\:items-center { align-items: center !important; }
+            `;
+            document.head.appendChild(measureOverrideStyle);
 
             for (const child of allChildren) {
                 // treat elements with 'page-break-avoid' as atomic groups
@@ -231,6 +250,9 @@ export function PurchaseDataDownloadPDF({ id }: PurchaseDataDownloadPDFProps) {
 
             if (currentPage.childElementCount > 0) pageContainers.push(currentPage);
 
+            // Remove the measurement style override
+            document.head.removeChild(measureOverrideStyle);
+
             // Render pages and add to PDF
             const pdf = new jsPDF({ unit: 'in', format: 'a4', orientation: 'portrait' });
             const pageWidthIn = pdf.internal.pageSize.getWidth();
@@ -248,6 +270,10 @@ export function PurchaseDataDownloadPDF({ id }: PurchaseDataDownloadPDFProps) {
                     logging: false,
                     width: pageEl.offsetWidth,
                     height: pageEl.scrollHeight,
+                    // this is the critical fix: tell html2canvas to treat the viewport
+                    // as A4-wide so Tailwind sm:/md: breakpoints activate on mobile
+                    windowWidth: A4_PX_WIDTH,
+                    windowHeight: A4_PX_HEIGHT,
                 });
 
                 const imgData = canvas.toDataURL('image/jpeg', 0.98);
@@ -268,6 +294,20 @@ export function PurchaseDataDownloadPDF({ id }: PurchaseDataDownloadPDFProps) {
         } catch (error) {
             console.error("Error generating PDF:", error);
         }
+    }
+
+    const handleSharePDF = async () => {
+        if (!supplierPhoneNumber) {
+            alert('No WhatsApp number saved for this supplier. Please add it via the Purchase edit dialog.');
+            return;
+        }
+
+        // only send the payment text for now
+        const phone = supplierPhoneNumber.replace(/[^\d]/g, '');
+        const message = encodeURIComponent(
+            `Please make the payment. Total Due is Rs ${supplierTotalAmountDue.toLocaleString('en-IN')}.`
+        );
+        window.open(`https://wa.me/${phone}?text=${message}`, '_blank');
     }
     return (
         <div className="p-4 sm:p-6 md:p-8">
@@ -495,12 +535,20 @@ export function PurchaseDataDownloadPDF({ id }: PurchaseDataDownloadPDFProps) {
                         </div>
 
                         <div className="flex justify-center mt-6">
-                            <Button
-                                onClick={() => handleGeneratePDF()}
-                                className="w-full sm:w-48 h-12 sm:h-11 md:h-12 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white transition-all duration-300 flex items-center justify-center gap-2 text-sm sm:text-sm font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 mobile-button touch-target border-0"
-                            >
-                                Download PDF
-                            </Button>
+                            <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                                <Button
+                                    onClick={() => handleGeneratePDF()}
+                                    className="w-full sm:w-48 h-12 sm:h-11 md:h-12 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white transition-all duration-300 flex items-center justify-center gap-2 text-sm sm:text-sm font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 mobile-button touch-target border-0"
+                                >
+                                    📥 Download PDF
+                                </Button>
+                                <Button
+                                    onClick={() => handleSharePDF()}
+                                    className="w-full sm:w-48 h-12 sm:h-11 md:h-12 rounded-xl bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white transition-all duration-300 flex items-center justify-center gap-2 text-sm sm:text-sm font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 mobile-button touch-target border-0"
+                                >
+                                    📤 Share PDF
+                                </Button>
+                            </div>
                         </div>
                     </>
                 )}

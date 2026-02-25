@@ -27,6 +27,9 @@ out/
 build
 dist
 
+# Temp WhatsApp PDF files
+apps/api/temp/
+
 
 # Debug
 npm-debug.log*

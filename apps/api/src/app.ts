@@ -5,6 +5,11 @@ import dotenv from 'dotenv';
 dotenv.config();
 import { info } from "@repo/logs/logs";
 import routes from "./routes.js";
+import path from "path";
+import { fileURLToPath } from "url";
+import { TEMP_DIR } from "./service/tempPDFService.js";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const app = express();
 
@@ -16,7 +21,10 @@ app.use(cors({
   credentials: true // Set to true if the frontend uses cookies/auth headers
 }));
 
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
+
+// Serve temp PDFs publicly so WhatsApp recipients can download them
+app.use('/temp', express.static(TEMP_DIR));
 
 
 const port = parseInt(process.env.PORT || '4000');
