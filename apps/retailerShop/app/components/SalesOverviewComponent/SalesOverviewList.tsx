@@ -38,6 +38,7 @@ function SalesOverviewList() {
     const [hotelExpiryValue, setHotelExpiryValue] = useState<string>("");
     const [statusValue, setStatusValue] = useState<string>("");
     const [cityValue, setCityValue] = useState<string>("");
+    const [phoneNumberValue, setPhoneNumberValue] = useState<string>("");
     const [isUpdating, setIsUpdating] = useState(false);
 
     // Hidden rows state for PDF export
@@ -83,6 +84,7 @@ function SalesOverviewList() {
         setHotelExpiryValue(item.hotelExpiry || "");
         setStatusValue(item.status || "");
         setCityValue(item.city || "");
+        setPhoneNumberValue(item.phoneNumber || "");
         setIsDialogOpen(true);
     };
 
@@ -98,6 +100,7 @@ function SalesOverviewList() {
                 hotelExpiry: hotelExpiryValue || undefined,
                 status: statusValue || undefined,
                 city: cityValue || undefined,
+                phoneNumber: phoneNumberValue || undefined,
             });
             info("Update response:", response);
             if (response.status === 200) {
@@ -109,7 +112,8 @@ function SalesOverviewList() {
                             name: hotelNameValue || item.name,
                             hotelExpiry: hotelExpiryValue || null,
                             status: statusValue || null,
-                            city: cityValue || null
+                            city: cityValue || null,
+                            phoneNumber: phoneNumberValue || null
                         }
                         : item
                 ));
@@ -479,6 +483,19 @@ function SalesOverviewList() {
                                 value={statusValue}
                                 onChange={(e) => setStatusValue(e.target.value)}
                                 placeholder="Enter status"
+                                className="col-span-3 border-gray-300 focus:border-blue-500"
+                            />
+                        </div>
+                        <div className="grid grid-cols-4 items-center gap-4">
+                            <Label htmlFor="phone-number" className="text-right text-gray-700">
+                                WhatsApp No.
+                            </Label>
+                            <Input
+                                id="phone-number"
+                                value={phoneNumberValue}
+                                onChange={(e) => setPhoneNumberValue(e.target.value)}
+                                placeholder="Enter WhatsApp number"
+                                type="tel"
                                 className="col-span-3 border-gray-300 focus:border-blue-500"
                             />
                         </div>

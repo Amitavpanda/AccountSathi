@@ -12,6 +12,7 @@ export type SalesOverviewType = {
     city: string | null
     hotelExpiry: string | null
     status: string | null
+    phoneNumber: string | null
     lastPaymentDate: string | null
     lastRiceSupplyDate: string | null
 }

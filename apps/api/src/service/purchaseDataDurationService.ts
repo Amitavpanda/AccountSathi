@@ -250,21 +250,15 @@ export async function purchaseDataDurationService(input : GetPurchaseDetaDuratio
     }
 
     // console.log("final response", response);
-    const supplierName = await prisma.supplierPurchase.findUnique({
+    const supplierInfo = await prisma.supplierPurchase.findUnique({
         where : {
             id : purchaseInfoId
         },
         select : {
-            nameOfTheSupplier : true
-        }
-    })
-
-    const supplierAddress = await prisma.supplierPurchase.findUnique({
-        where : {
-            id : purchaseInfoId
-        },
-        select : {
-            address : true
+            nameOfTheSupplier : true,
+            address : true,
+            phoneNumber : true,
+            totalAmountDue : true
         }
     })
 
@@ -272,7 +266,17 @@ export async function purchaseDataDurationService(input : GetPurchaseDetaDuratio
     const endDateResponse = format(new Date(endDate), 'MMMM do yyyy', { locale: enIN });
 
     console.log("final response", response);
-    return {success : true, BF: BF, data : Object.fromEntries(response), supplierName : supplierName, startingDateResponse : startingDateResponse, endDateResponse : endDateResponse, supplierAddress : supplierAddress}
+    return {
+        success : true,
+        BF: BF,
+        data : Object.fromEntries(response),
+        supplierName : { nameOfTheSupplier: supplierInfo?.nameOfTheSupplier },
+        supplierAddress : { address: supplierInfo?.address },
+        supplierPhone : { phoneNumber: supplierInfo?.phoneNumber },
+        supplierTotalAmountDue : supplierInfo?.totalAmountDue ?? 0,
+        startingDateResponse,
+        endDateResponse
+    }
 }
 
 

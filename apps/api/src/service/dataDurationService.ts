@@ -253,21 +253,15 @@ export async function salesDataDurationService(input : GetSalesDetaDurationSchem
     }
 
     // console.log("final response", response);
-    const hotelName = await prisma.salesInfo.findUnique({
+    const hotelInfo = await prisma.salesInfo.findUnique({
         where : {
             id : salesInfoId
         },
         select : {
-            name : true
-        }
-    })
-
-    const hotelAddress = await prisma.salesInfo.findUnique({
-        where : {
-            id : salesInfoId
-        },
-        select : {
-            address : true
+            name : true,
+            address : true,
+            phoneNumber : true,
+            totalAmountDue : true
         }
     })
 
@@ -275,7 +269,17 @@ export async function salesDataDurationService(input : GetSalesDetaDurationSchem
     const endDateResponse = format(new Date(endDate), 'MMMM do yyyy', { locale: enIN });
 
     console.log("final response", response);
-    return {success : true, BF: BF, data : Object.fromEntries(response), hotelName : hotelName, startingDateResponse : startingDateResponse, endDateResponse : endDateResponse, hotelAddress : hotelAddress}
+    return {
+        success : true,
+        BF: BF,
+        data : Object.fromEntries(response),
+        hotelName : { name: hotelInfo?.name },
+        hotelAddress : { address: hotelInfo?.address },
+        hotelPhone : { phoneNumber: hotelInfo?.phoneNumber },
+        hotelTotalAmountDue : hotelInfo?.totalAmountDue ?? 0,
+        startingDateResponse,
+        endDateResponse
+    }
 }
 
 

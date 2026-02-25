@@ -130,6 +130,7 @@ export async function getSalesOverview() {
                 city: salesInfo.city,
                 hotelExpiry: salesInfo.hotelExpiry,
                 status: salesInfo.status,
+                phoneNumber: salesInfo.phoneNumber,
                 lastPaymentDate: lastPayment ? lastPayment.date : null,
                 lastRiceSupplyDate: lastRiceSupply ? lastRiceSupply.date : null
             };

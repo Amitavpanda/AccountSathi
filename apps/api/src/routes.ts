@@ -15,6 +15,7 @@ import {loginUserSchema, otpVerificationSchema, registerUserSchema} from "@repo/
 import { loginHandler, otpVerificationHandler, register } from "./contollers/users.controller.js";
 import { getPurchaseDataDurationSchema } from "@repo/validations/getPurchaseDataDuration";
 import { purchaseDataDurationHandler } from "./contollers/purchaseDataDuration.contoller.js";
+import { uploadTempPDFHandler } from "./contollers/tempPDF.controller.js";
 
 function routes(app : Express){
     app.get('/healthcheck', (req : Request, res : Response)  => res.sendStatus(200));
@@ -47,6 +48,9 @@ function routes(app : Express){
     app.post('/register', validate(registerUserSchema), register );
     app.post('/login', validate(loginUserSchema), loginHandler);
     app.post('/otpVerification', validate(otpVerificationSchema), otpVerificationHandler);
+
+    // Temp PDF upload for WhatsApp sharing
+    app.post('/uploadTempPDF', uploadTempPDFHandler);
 
     // Routes for Hotel Management Software
 
