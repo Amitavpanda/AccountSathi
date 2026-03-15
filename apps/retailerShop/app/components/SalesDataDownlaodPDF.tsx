@@ -158,10 +158,12 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
             // Force layout recalculation
             element.offsetHeight;
 
-            // Programmatic pagination ... (rest remains unchanged)
+            // Programmatic pagination with proper margins
 
-
-            const pageMaxHeightPx = A4_PX_HEIGHT;
+            // Apply a 5% safety buffer so measurement rounding never clips content at the
+            // bottom of a rendered page (the primary cause of hidden data on last pages).
+            const PAGE_SAFETY_FACTOR = 0.95;
+            const pageMaxHeightPx = A4_PX_HEIGHT * PAGE_SAFETY_FACTOR;
 
             const allChildren = Array.from(element.children) as HTMLElement[];
             const pageContainers: HTMLElement[] = [];
@@ -182,23 +184,57 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
             let currentPage = createPageContainer();
             let started = false;
 
-            // MEASUREMENT FIX: html2canvas renders with windowWidth=A4_PX_WIDTH so
-            // Tailwind sm: classes (min-width:640px) activate. But DOM scrollHeight is
-            // measured against the real viewport (mobile=375px) so sm: never fires →
-            // elements stack tall → pagination creates too many pages → blank space.
-            // Solution: temporarily force sm: responsive classes to apply at 0px.
+            // MEASUREMENT FIX: During measurement the browser uses the real viewport width
+            // (often <640px) so Tailwind sm:/md: breakpoints never fire.  But html2canvas
+            // renders with windowWidth=A4_PX_WIDTH (793px) so sm: classes DO apply, making
+            // elements taller.  The accumulated height difference causes content on the last
+            // rows of a page to be clipped.
+            // Solution: inject a temporary <style> that forces EVERY height-affecting
+            // responsive class to apply at all viewport widths during measurement.
             const measureOverrideStyle = document.createElement('style');
             measureOverrideStyle.textContent = `
+                /* layout */
                 .sm\\:flex-row { flex-direction: row !important; }
                 .sm\\:flex-col { flex-direction: column !important; }
                 .sm\\:items-center { align-items: center !important; }
                 .sm\\:items-start { align-items: flex-start !important; }
                 .sm\\:gap-4 { gap: 1rem !important; }
                 .sm\\:gap-2 { gap: 0.5rem !important; }
+                .sm\\:gap-6 { gap: 1.5rem !important; }
                 .sm\\:w-auto { width: auto !important; }
+                .sm\\:w-48 { width: 12rem !important; }
                 .sm\\:mr-1 { margin-right: 0.25rem !important; }
                 .md\\:flex-row { flex-direction: row !important; }
                 .md\\:items-center { align-items: center !important; }
+                /* typography – these change line-height / element height */
+                .sm\\:text-xs { font-size: 0.75rem !important; line-height: 1rem !important; }
+                .sm\\:text-sm { font-size: 0.875rem !important; line-height: 1.25rem !important; }
+                .sm\\:text-base { font-size: 1rem !important; line-height: 1.5rem !important; }
+                .sm\\:text-lg { font-size: 1.125rem !important; line-height: 1.75rem !important; }
+                .sm\\:text-xl { font-size: 1.25rem !important; line-height: 1.75rem !important; }
+                .sm\\:text-2xl { font-size: 1.5rem !important; line-height: 2rem !important; }
+                .sm\\:text-3xl { font-size: 1.875rem !important; line-height: 2.25rem !important; }
+                .md\\:text-sm { font-size: 0.875rem !important; line-height: 1.25rem !important; }
+                .md\\:text-base { font-size: 1rem !important; line-height: 1.5rem !important; }
+                .md\\:text-lg { font-size: 1.125rem !important; line-height: 1.75rem !important; }
+                .md\\:text-xl { font-size: 1.25rem !important; line-height: 1.75rem !important; }
+                .md\\:text-2xl { font-size: 1.5rem !important; line-height: 2rem !important; }
+                /* padding – affects element height */
+                .sm\\:p-2 { padding: 0.5rem !important; }
+                .sm\\:p-4 { padding: 1rem !important; }
+                .sm\\:p-6 { padding: 1.5rem !important; }
+                .sm\\:p-8 { padding: 2rem !important; }
+                .sm\\:px-4 { padding-left: 1rem !important; padding-right: 1rem !important; }
+                .sm\\:py-2 { padding-top: 0.5rem !important; padding-bottom: 0.5rem !important; }
+                .sm\\:py-4 { padding-top: 1rem !important; padding-bottom: 1rem !important; }
+                .md\\:p-4 { padding: 1rem !important; }
+                .md\\:p-6 { padding: 1.5rem !important; }
+                .md\\:p-8 { padding: 2rem !important; }
+                /* height */
+                .sm\\:h-11 { height: 2.75rem !important; }
+                .sm\\:h-12 { height: 3rem !important; }
+                .md\\:h-11 { height: 2.75rem !important; }
+                .md\\:h-12 { height: 3rem !important; }
             `;
             document.head.appendChild(measureOverrideStyle);
 
@@ -273,7 +309,12 @@ export function SalesDataDownloadPDF({ id }: SalesDataDownloadPDFProps) {
                 const imgData = canvas.toDataURL('image/jpeg', 0.98);
                 const imgProps = pdf.getImageProperties(imgData);
                 const imgWidthIn = pageWidthIn;
-                const imgHeightIn = (imgProps.height * imgWidthIn) / imgProps.width;
+                const pageHeightIn = pdf.internal.pageSize.getHeight();
+                // Natural height the image would occupy at full width
+                const naturalImgHeightIn = (imgProps.height * imgWidthIn) / imgProps.width;
+                // Never let rendered content exceed the physical page – clamp to page height.
+                // This is the last safety net against residual measurement vs render differences.
+                const imgHeightIn = Math.min(naturalImgHeightIn, pageHeightIn);
 
                 pdf.addImage(imgData, 'JPEG', 0, 0, imgWidthIn, imgHeightIn);
                 if (i < pageContainers.length - 1) pdf.addPage();
