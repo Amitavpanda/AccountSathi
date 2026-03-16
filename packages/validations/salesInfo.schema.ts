@@ -35,7 +35,8 @@ const updatePayload = {
     accountDetails: z.string().optional(),
     additionalDetails: z.string().optional(),
     hotelExpiry: z.enum(["continue", "uncontinue", "not_to_give"]).optional(),
-    status: z.string().optional()
+    status: z.string().optional(),
+    isActive: z.boolean().optional()
   }),
 };
 
