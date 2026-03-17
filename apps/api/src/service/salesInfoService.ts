@@ -49,7 +49,7 @@ export async function getAllSalesInfo(){
 
 
 export async function updateSalesInfo(input: UpdateSalesInfoSchema) {
-    const { id, city, name, phoneNumber, address, propieder, accountDetails, additionalDetails, hotelExpiry, status } = input.body;
+    const { id, city, name, phoneNumber, address, propieder, accountDetails, additionalDetails, hotelExpiry, status, isActive } = input.body as any;
 
     try {
         const updateData: Prisma.SalesInfoUpdateInput = {};
@@ -63,6 +63,7 @@ export async function updateSalesInfo(input: UpdateSalesInfoSchema) {
         if (additionalDetails !== undefined) updateData.additionalDetails = additionalDetails;
         if (hotelExpiry !== undefined) updateData.hotelExpiry = hotelExpiry;
         if (status !== undefined) updateData.status = status;
+        if (isActive !== undefined) updateData.isActive = isActive;
 
         const updatedSalesInfo = await prisma.salesInfo.update({
             where: { id },
@@ -131,6 +132,7 @@ export async function getSalesOverview() {
                 hotelExpiry: salesInfo.hotelExpiry,
                 status: salesInfo.status,
                 phoneNumber: salesInfo.phoneNumber,
+                isActive: salesInfo.isActive,
                 lastPaymentDate: lastPayment ? lastPayment.date : null,
                 lastRiceSupplyDate: lastRiceSupply ? lastRiceSupply.date : null
             };

@@ -13,6 +13,7 @@ export type SalesOverviewType = {
     hotelExpiry: string | null
     status: string | null
     phoneNumber: string | null
+    isActive: boolean
     lastPaymentDate: string | null
     lastRiceSupplyDate: string | null
 }
@@ -187,6 +188,18 @@ export function createColumns(
                     <div className="text-sm text-gray-600">
                         {formatDate(date)}
                     </div>
+                )
+            },
+        },
+        {
+            id: "isActive",
+            header: "Active",
+            cell: ({ row }) => {
+                const active = row.original.isActive
+                return (
+                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${active ? "bg-emerald-100 text-emerald-800" : "bg-red-100 text-red-700"}`}>
+                        {active ? "Active" : "Not Active"}
+                    </span>
                 )
             },
         },

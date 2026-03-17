@@ -77,6 +77,7 @@ model SalesInfo {
   city              String?
   hotelExpiry       String?
   status            String?
+  isActive          Boolean           @default(true)
   details           SalesInfoDetail[]
 }
 

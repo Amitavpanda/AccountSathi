@@ -39,6 +39,7 @@ function SalesOverviewList() {
     const [statusValue, setStatusValue] = useState<string>("");
     const [cityValue, setCityValue] = useState<string>("");
     const [phoneNumberValue, setPhoneNumberValue] = useState<string>("");
+    const [isActiveValue, setIsActiveValue] = useState<boolean>(true);
     const [isUpdating, setIsUpdating] = useState(false);
 
     // Hidden rows state for PDF export
@@ -85,6 +86,7 @@ function SalesOverviewList() {
         setStatusValue(item.status || "");
         setCityValue(item.city || "");
         setPhoneNumberValue(item.phoneNumber || "");
+        setIsActiveValue(item.isActive ?? true);
         setIsDialogOpen(true);
     };
 
@@ -101,6 +103,7 @@ function SalesOverviewList() {
                 status: statusValue || undefined,
                 city: cityValue || undefined,
                 phoneNumber: phoneNumberValue || undefined,
+                isActive: isActiveValue,
             });
             info("Update response:", response);
             if (response.status === 200) {
@@ -113,7 +116,8 @@ function SalesOverviewList() {
                             hotelExpiry: hotelExpiryValue || null,
                             status: statusValue || null,
                             city: cityValue || null,
-                            phoneNumber: phoneNumberValue || null
+                            phoneNumber: phoneNumberValue || null,
+                            isActive: isActiveValue
                         }
                         : item
                 ));
@@ -498,6 +502,20 @@ function SalesOverviewList() {
                                 type="tel"
                                 className="col-span-3 border-gray-300 focus:border-blue-500"
                             />
+                        </div>
+                        <div className="grid grid-cols-4 items-center gap-4">
+                            <Label htmlFor="is-active" className="text-right text-gray-700">
+                                Active Status
+                            </Label>
+                            <Select value={isActiveValue ? "active" : "not_active"} onValueChange={(v) => setIsActiveValue(v === "active")}>
+                                <SelectTrigger className="col-span-3 border-gray-300">
+                                    <SelectValue placeholder="Select active status" />
+                                </SelectTrigger>
+                                <SelectContent className="bg-white rounded-xl border z-[101]">
+                                    <SelectItem className="text-gray-900 focus:bg-blue-50 focus:rounded-lg" value="active">Active</SelectItem>
+                                    <SelectItem className="text-gray-900 focus:bg-blue-50 focus:rounded-lg" value="not_active">Not Active</SelectItem>
+                                </SelectContent>
+                            </Select>
                         </div>
                     </div>
                     <DialogFooter>
