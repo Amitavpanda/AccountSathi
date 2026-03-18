@@ -89,15 +89,17 @@ export default function ActiveSalesPage() {
 
     // Apply filters
     const filteredSales = useMemo(() => {
-        return activeSales.filter((s) => {
-            const matchesName = searchName === "" || s.name.toLowerCase().includes(searchName.toLowerCase());
-            const matchesCity = cityFilter.length === 0 || cityFilter.includes(s.city || "");
-            let matchesExpiry = true;
-            if (hotelExpiryFilter !== "all") {
-                matchesExpiry = s.hotelExpiry === hotelExpiryFilter;
-            }
-            return matchesName && matchesCity && matchesExpiry;
-        });
+        return activeSales
+            .filter((s) => {
+                const matchesName = searchName === "" || s.name.toLowerCase().includes(searchName.toLowerCase());
+                const matchesCity = cityFilter.length === 0 || cityFilter.includes(s.city || "");
+                let matchesExpiry = true;
+                if (hotelExpiryFilter !== "all") {
+                    matchesExpiry = s.hotelExpiry === hotelExpiryFilter;
+                }
+                return matchesName && matchesCity && matchesExpiry;
+            })
+            .sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: "base" }));
     }, [activeSales, searchName, cityFilter, hotelExpiryFilter]);
 
     // Live total of filtered rows
