@@ -106,6 +106,7 @@ export function DataTable<TData extends SalesOverviewType, TValue>({
         getFilteredRowModel: getFilteredRowModel(),
         onSortingChange: setSorting,
         getSortedRowModel: getSortedRowModel(),
+        autoResetPageIndex: false,
         state: {
             columnFilters,
             sorting,
