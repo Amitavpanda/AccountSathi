@@ -1,4 +1,8 @@
 //@ts-check
+import { fileURLToPath } from 'url';
+import path from 'path';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -48,8 +52,11 @@ const nextConfig = {
     },
   },
 
-  // Add empty turbopack config to avoid Turbopack/webpack conflict errors
-  turbopack: {},
+  // Fix Turbopack workspace root — prevents it from scanning parent directories
+  // and picking up a package-lock.json outside the monorepo
+  turbopack: {
+    root: path.resolve(__dirname, '../..'),
+  },
 
   // Ensure proper module resolution
   webpack: (config, { isServer }) => {
