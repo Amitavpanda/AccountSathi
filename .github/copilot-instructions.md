@@ -9,6 +9,8 @@ This project enables users to create and manage accounting by uploading Sales an
 
 **Tech Stack:** Next.js, Supabase, Node.js,
 
+**Prompt Cheat Sheet:** `.github/HOW_TO_PROMPT.md` — copy-paste prompt templates for frontend, backend, QA, architecture, SEO, and more.
+
 ***
 
 ## AI Documentation Integration
@@ -93,6 +95,86 @@ For real-time, up-to-date ABP or other library docs:
 ***
 
 If you want, this file can be extended with templates for prompts, testing checklists, or team best practices summaries.
+
+***
+
+## Skill System
+
+This project uses a **universal role-based skill system**. When working on a task, identify the relevant team role and load the corresponding skill file before generating code or making decisions.
+
+### Project Context Files (read for every session)
+- **Architecture**: `.github/architecture.md` — tech stack, constraints, environment variables
+- **Design System**: `.github/design.md` — brand tokens, component library, animation guidelines
+
+### How to Use Skills
+1. Identify the task type (frontend, backend, design, QA, etc.)
+2. Read the corresponding `SKILL.md` file from `.github/skills/<name>/SKILL.md`
+3. Follow the skill's best practices, checklists, and collaboration patterns
+4. Multiple skills can apply to one task (e.g., `frontend-engineer` + `accessibility-design`)
+
+### Skill Index by Team Role
+
+| Role | Skill File |
+|------|-----------|
+| **Engineering** | |
+| Frontend Engineer | `.github/skills/frontend-engineer/SKILL.md` |
+| Backend Engineer | `.github/skills/backend-engineer/SKILL.md` |
+| Full-Stack Engineer | `.github/skills/fullstack-engineer/SKILL.md` |
+| Mobile Engineer | `.github/skills/mobile-engineer/SKILL.md` |
+| Frontend Testing | `.github/skills/frontend-testing/SKILL.md` |
+| Backend Testing | `.github/skills/backend-testing/SKILL.md` |
+| API Design | `.github/skills/api-design/SKILL.md` |
+| Microservices | `.github/skills/microservices/SKILL.md` |
+| Frontend Performance | `.github/skills/frontend-performance/SKILL.md` |
+| Monorepo Patterns | `.github/skills/monorepo-patterns/SKILL.md` |
+| **Product** | |
+| Product Discovery | `.github/skills/product-discovery/SKILL.md` |
+| Product Roadmap | `.github/skills/product-roadmap/SKILL.md` |
+| Product Requirements | `.github/skills/product-requirements/SKILL.md` |
+| Product Metrics | `.github/skills/product-metrics/SKILL.md` |
+| Stakeholder Management | `.github/skills/stakeholder-management/SKILL.md` |
+| **Design** | |
+| UX Design | `.github/skills/ux-design/SKILL.md` |
+| UI Design | `.github/skills/ui-design/SKILL.md` |
+| Design Systems | `.github/skills/design-systems/SKILL.md` |
+| UX Research | `.github/skills/ux-research/SKILL.md` |
+| Accessibility Design | `.github/skills/accessibility-design/SKILL.md` |
+| Interaction Design | `.github/skills/interaction-design/SKILL.md` |
+| **QA / Testing** | |
+| QA Strategy | `.github/skills/qa-strategy/SKILL.md` |
+| Manual Testing | `.github/skills/manual-testing/SKILL.md` |
+| Automation Testing | `.github/skills/automation-testing/SKILL.md` |
+| Performance Testing | `.github/skills/performance-testing/SKILL.md` |
+| Security Testing | `.github/skills/security-testing/SKILL.md` |
+| **Data** | |
+| Data Engineering | `.github/skills/data-engineering/SKILL.md` |
+| Data Analytics | `.github/skills/data-analytics/SKILL.md` |
+| Data Science | `.github/skills/data-science/SKILL.md` |
+| Data Governance | `.github/skills/data-governance/SKILL.md` |
+| **DevOps / SRE** | |
+| DevOps Engineer | `.github/skills/devops-engineer/SKILL.md` |
+| Containerization | `.github/skills/containerization/SKILL.md` |
+| Monitoring & Observability | `.github/skills/monitoring/SKILL.md` |
+| Security Operations | `.github/skills/security-operations/SKILL.md` |
+| Deployment Strategies | `.github/skills/deployment-strategies/SKILL.md` |
+| **Security** | |
+| Security Engineer | `.github/skills/security-engineer/SKILL.md` |
+| Application Security | `.github/skills/appsec/SKILL.md` |
+| Infrastructure Security | `.github/skills/infrastructure-security/SKILL.md` |
+| **Leadership** | |
+| Engineering Manager | `.github/skills/engineering-manager/SKILL.md` |
+| Tech Lead | `.github/skills/tech-lead/SKILL.md` |
+| Architect | `.github/skills/architect/SKILL.md` |
+| Project Management | `.github/skills/project-management/SKILL.md` |
+| **Marketing / Growth** | |
+| SEO / GEO Optimization | `.github/skills/seo-geo/SKILL.md` |
+
+### Memory System
+Learnings are captured manually during and after sessions.
+- General lessons: `.github/memory/lessons.md`
+- Anti-patterns: `.github/memory/anti-patterns.md`
+- Architecture decisions: `.github/memory/decisions.md`
+- Per-skill learnings: `.github/skills/<name>/LEARNINGS.md`
 
 ***
 
