@@ -50,6 +50,8 @@ function getHotelExpiryLabel(expiry: string | null): string {
 export default function ActiveSalesPage() {
     const [allSales, setAllSales] = useState<SalesRecord[]>([]);
     const [loading, setLoading] = useState(true);
+    const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
+    const [selectionOrder, setSelectionOrder] = useState<string[]>([]);
 
     // Filters
     const [searchName, setSearchName] = useState("");
@@ -108,10 +110,27 @@ export default function ActiveSalesPage() {
         [filteredSales]
     );
 
-    // PDF download
-    const handleDownloadPDF = useCallback(() => {
-        if (filteredSales.length === 0) {
-            alert("No data to export.");
+    const handleToggleSelect = useCallback((id: string) => {
+        setSelectedRows((prev) => {
+            const next = new Set(prev);
+            if (next.has(id)) {
+                next.delete(id);
+                setSelectionOrder((order) => order.filter((rowId) => rowId !== id));
+            } else {
+                next.add(id);
+                setSelectionOrder((order) => [...order, id]);
+            }
+            return next;
+        });
+    }, []);
+
+    const clearSelection = useCallback(() => {
+        setSelectedRows(new Set());
+        setSelectionOrder([]);
+    }, []);
+
+    const generatePDF = useCallback((rows: SalesRecord[], filename: string, pdfType: "selected" | "deselected") => {
+        if (rows.length === 0) {
             return;
         }
 
@@ -121,7 +140,8 @@ export default function ActiveSalesPage() {
         // Title
         doc.setFontSize(18);
         doc.setFont("helvetica", "bold");
-        doc.text("Active Sales Report", pageWidth / 2, 20, { align: "center" });
+        const title = pdfType === "selected" ? "Active Sales Report (Selected)" : "Active Sales Report (Deselected)";
+        doc.text(title, pageWidth / 2, 20, { align: "center" });
 
         // Date
         doc.setFontSize(10);
@@ -163,7 +183,7 @@ export default function ActiveSalesPage() {
         let currentY = startY + 12;
         let runningTotal = 0;
 
-        filteredSales.forEach((item, index) => {
+        rows.forEach((item, index) => {
             if (currentY > 270) {
                 doc.addPage();
                 currentY = 20;
@@ -198,11 +218,53 @@ export default function ActiveSalesPage() {
         doc.setTextColor(128, 128, 128);
         doc.setFontSize(8);
         doc.setFont("helvetica", "normal");
-        doc.text(`Total Active Hotels: ${filteredSales.length}`, leftMargin, currentY + 15);
+        doc.text(`Total Active Hotels: ${rows.length}`, leftMargin, currentY + 15);
 
-        const fileName = `active-sales-${today.replace(/\s/g, "-")}.pdf`;
-        doc.save(fileName);
-    }, [filteredSales, searchName, cityFilter, hotelExpiryFilter]);
+        doc.save(filename);
+    }, [searchName, cityFilter, hotelExpiryFilter]);
+
+    const handleDownloadBothPDFs = useCallback(() => {
+        if (filteredSales.length === 0) {
+            alert("No data to export.");
+            return;
+        }
+
+        const orderMap = new Map(selectionOrder.map((id, index) => [id, index]));
+        const selectedInVisible = filteredSales
+            .map((item, index) => ({ item, index }))
+            .filter(({ item }) => selectedRows.has(item.id));
+
+        selectedInVisible.sort((a, b) => {
+            const aPos = orderMap.has(a.item.id) ? orderMap.get(a.item.id)! : Number.POSITIVE_INFINITY;
+            const bPos = orderMap.has(b.item.id) ? orderMap.get(b.item.id)! : Number.POSITIVE_INFINITY;
+
+            if (aPos === bPos) {
+                return a.index - b.index;
+            }
+
+            return aPos - bPos;
+        });
+
+        const selectedRowsData = selectedInVisible.map(({ item }) => item);
+        const deselectedRowsData = filteredSales.filter((item) => !selectedRows.has(item.id));
+
+        if (selectedRowsData.length === 0) {
+            alert("No rows selected for export. Please select at least one row.");
+            return;
+        }
+
+        const today = new Date()
+            .toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })
+            .replace(/\s/g, "-");
+
+        generatePDF(selectedRowsData, `selected-active-sales-${today}.pdf`, "selected");
+
+        if (deselectedRowsData.length > 0) {
+            setTimeout(() => {
+                generatePDF(deselectedRowsData, `deselected-active-sales-${today}.pdf`, "deselected");
+            }, 300);
+        }
+    }, [filteredSales, selectedRows, selectionOrder, generatePDF]);
 
     if (loading) {
         return (
@@ -310,6 +372,55 @@ export default function ActiveSalesPage() {
                         ))}
                     </div>
                 )}
+
+                <div className="mt-4 flex flex-col gap-3 border-t pt-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="text-sm text-gray-600">
+                        <span className="font-medium">{selectedRows.size}</span> of <span className="font-medium">{filteredSales.length}</span> visible rows selected
+                        {selectedRows.size > 0 && (
+                            <button
+                                type="button"
+                                onClick={clearSelection}
+                                className="ml-2 text-blue-600 underline hover:text-blue-800"
+                            >
+                                Clear selection
+                            </button>
+                        )}
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                        <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                                filteredSales.forEach((item) => {
+                                    if (!selectedRows.has(item.id)) {
+                                        handleToggleSelect(item.id);
+                                    }
+                                });
+                            }}
+                            disabled={filteredSales.length === 0}
+                            className="h-9 px-3 border-blue-500 text-blue-600 hover:bg-blue-50"
+                        >
+                            Select All Visible
+                        </Button>
+                        <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                                filteredSales.forEach((item) => {
+                                    if (selectedRows.has(item.id)) {
+                                        handleToggleSelect(item.id);
+                                    }
+                                });
+                            }}
+                            disabled={filteredSales.length === 0}
+                            className="h-9 px-3 border-gray-300 text-gray-600 hover:bg-gray-100"
+                        >
+                            Deselect All Visible
+                        </Button>
+                    </div>
+                </div>
             </div>
 
             {/* Table */}
@@ -318,6 +429,7 @@ export default function ActiveSalesPage() {
                     <table className="w-full min-w-[700px]">
                         <thead>
                             <tr className="bg-white border-b">
+                                <th className="text-center text-xs font-semibold text-gray-700 px-4 py-3 whitespace-nowrap">Select</th>
                                 <th className="text-left text-xs font-semibold text-gray-700 px-4 py-3 whitespace-nowrap">#</th>
                                 <th className="text-left text-xs font-semibold text-gray-700 px-4 py-3 whitespace-nowrap">Hotel Name</th>
                                 <th className="text-left text-xs font-semibold text-gray-700 px-4 py-3 whitespace-nowrap">City</th>
@@ -330,7 +442,7 @@ export default function ActiveSalesPage() {
                         <tbody>
                             {filteredSales.length === 0 ? (
                                 <tr>
-                                    <td colSpan={7} className="text-center py-16 text-gray-500">
+                                    <td colSpan={8} className="text-center py-16 text-gray-500">
                                         <div className="flex flex-col items-center gap-2">
                                             <div className="text-4xl">📋</div>
                                             <div>No active sales found</div>
@@ -348,7 +460,14 @@ export default function ActiveSalesPage() {
                                     const expiryClass = expiryColors[item.hotelExpiry || ""] || "bg-gray-100 text-gray-500";
 
                                     return (
-                                        <tr key={item.id} className="border-b bg-white hover:bg-blue-50 transition-colors">
+                                        <tr key={item.id} className={`border-b transition-colors ${selectedRows.has(item.id) ? "bg-blue-50 hover:bg-blue-100" : "bg-white hover:bg-blue-50"}`}>
+                                            <td className="px-4 py-3 text-center">
+                                                <Checkbox
+                                                    checked={selectedRows.has(item.id)}
+                                                    onCheckedChange={() => handleToggleSelect(item.id)}
+                                                    aria-label={`Select ${item.name} for PDF`}
+                                                />
+                                            </td>
                                             <td className="px-4 py-3 text-sm text-gray-500">{index + 1}</td>
                                             <td className="px-4 py-3">
                                                 <Link href={`/sales/${item.id}`} className="text-blue-600 hover:text-blue-800 font-semibold text-sm hover:underline">
@@ -376,7 +495,7 @@ export default function ActiveSalesPage() {
                         {filteredSales.length > 0 && (
                             <tfoot>
                                 <tr className="bg-blue-600">
-                                    <td colSpan={6} className="px-4 py-3 text-sm font-bold text-white">
+                                    <td colSpan={7} className="px-4 py-3 text-sm font-bold text-white">
                                         Total ({filteredSales.length} hotels)
                                     </td>
                                     <td className="px-4 py-3 text-right text-sm font-bold text-white">
@@ -393,11 +512,11 @@ export default function ActiveSalesPage() {
             {/* Download Button */}
             <div className="flex justify-end">
                 <Button
-                    onClick={handleDownloadPDF}
-                    disabled={filteredSales.length === 0}
+                    onClick={handleDownloadBothPDFs}
+                    disabled={selectedRows.size === 0}
                     className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-md hover:shadow-lg transition-all duration-300 px-6 py-3 text-sm font-semibold"
                 >
-                    📥 Download PDF ({filteredSales.length} hotels · ₹{Math.abs(filteredTotal).toLocaleString("en-IN")})
+                    📥 Download Both PDFs ({selectedRows.size} selected)
                 </Button>
             </div>
         </div>
